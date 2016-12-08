@@ -17,6 +17,61 @@ Settings::Settings (int _size, QWidget * parent) : QWidget (parent), size (_size
 	slider->setMinimum (0);
 	slider->setMaximum (period - 1);
 	connect (slider, SIGNAL (valueChanged (int)), this, SLOT (update ()));
+	label = new com_label[DIR_NUM*TR_NUM];
+	check = new com_check[DIR_NUM*TR_NUM];
+	for (int i = 0; i < DIR_NUM; i++)
+		for (int j = 0; j < TR_NUM; j++) {
+			label[i*TR_NUM + j] = new QLabel (this);
+			label[i*TR_NUM + j]->setFont (QFont ("TimesNewsRoman", 10));
+			label[i*TR_NUM + j]->setGeometry (14 * size, 1.5*size + (TR_NUM*i + j)*0.5*size, size, 0.3*size);
+			switch (i) {
+			case A: label[i*TR_NUM + j]->setText ("A"); break;
+			case B: label[i*TR_NUM + j]->setText ("B"); break;
+			case C: label[i*TR_NUM + j]->setText ("C"); break;
+			case D: label[i*TR_NUM + j]->setText ("D"); break;
+			}
+			switch (j) {
+			case Left:label[i*TR_NUM + j]->setText (label[i*TR_NUM + j]->text () + "L"); break;
+			case Right:label[i*TR_NUM + j]->setText (label[i*TR_NUM + j]->text () + "R"); break;
+			case Center:label[i*TR_NUM + j]->setText (label[i*TR_NUM + j]->text () + "C"); break;
+			}
+			check[i*TR_NUM + j] = new QCheckBox (this);
+			check[i*TR_NUM + j]->setGeometry (22 * size, 1.5*size + (TR_NUM*i + j)*0.5*size, size, 0.3*size);
+		}
+	set_green = new QPushButton (this);
+	set_yellow = new QPushButton (this);
+	set_red = new QPushButton (this);
+	set_green->setGeometry (14 * size, 7.8 * size, 2 * size, size);
+	set_yellow->setGeometry (14 * size, 9.3 * size, 2 * size, size);
+	set_red->setGeometry (14 * size, 10.8 * size, 2 * size, size);
+	set_green->setText ("Set Green Behind");
+	set_yellow->setText ("Set Yellow Behind");
+	set_red->setText ("Set Red Behind");
+	connect (set_green, SIGNAL (clicked ()), this, SLOT (Ref_G ()));
+	connect (set_yellow, SIGNAL (clicked ()), this, SLOT (Ref_Y ()));
+	connect (set_red, SIGNAL (clicked ()), this, SLOT (Ref_R ()));
+	p = new QLabel (this);
+	n = new QLabel (this);
+	_p = new QLineEdit (this);
+	_n = new QLineEdit (this);
+	p->setGeometry (17 * size, 7.8*size, size, 0.5*size);
+	n->setGeometry (17 * size, 8.5*size, size, 0.5*size);
+	_p->setGeometry (18.5 * size, 7.8*size, size, 0.5*size);
+	_n->setGeometry (18.5 * size, 8.5*size, size, 0.5*size);
+	p->setText ("Period");
+	n->setText ("Now");
+	p->setFont (QFont ("TimesNewsRoman", 10));
+	n->setFont (QFont ("TimesNewsRoman", 10));
+	_p->setFont (QFont ("TimesNewsRoman", 10));
+	_n->setFont (QFont ("TimesNewsRoman", 10));
+	_p->setText (QString::number (period));
+	_n->setText (QString::number (slider->value () + 1));
+	connect (slider, SIGNAL (valueChanged (int)), this, SLOT (Ref_S ()));
+	connect (_n, SIGNAL (editingFinished ()), this, SLOT (Ref_n ()));
+	_reset = new QPushButton (this);
+	_reset->setText ("Reset\r\nchange the period");
+	_reset->setGeometry (17 * size, 9.3 * size, 2 * size, size);
+	connect (_reset, SIGNAL (clicked ()), this, SLOT (Ref_r ()));
 }
 
 Settings::~Settings () {}
@@ -46,24 +101,24 @@ void Settings::paintEvent (QPaintEvent *) {
 					painter.setPen ((QColor ("Red")));
 					painter.setBrush ((QColor ("Red")));
 					painter.drawRect (15.5 * size + i * 6.0 * size / period, 1.5*size + (TR_NUM*j + k)*0.5*size,
-						6.0 * size / period, 0.2*size);
+						6.0 * size / period, 0.3*size);
 					break;
 				case Green:
 					painter.setPen ((QColor ("Green")));
 					painter.setBrush ((QColor ("Green")));
 					painter.drawRect (15.5 * size + i * 6.0 * size / period, 1.5*size + (TR_NUM*j + k)*0.5*size,
-						6.0 * size / period, 0.2*size);
+						6.0 * size / period, 0.3*size);
 					break;
 				case Yellow:
 					painter.setPen ((QColor ("Yellow")));
 					painter.setBrush ((QColor ("Yellow")));
 					painter.drawRect (15.5 * size + i * 6.0 * size / period, 1.5*size + (TR_NUM*j + k)*0.5*size,
-						6.0 * size / period, 0.2*size);
+						6.0 * size / period, 0.3*size);
 					break;
 				}
 	painter.setPen (QPen (QColor ("black"), 3));
 	painter.drawLine (15.5 * size + 6.0*(slider->value () + 0.5)*size / period, 1.5*size,
-		15.5 * size + 6.0*(slider->value () + 0.5)*size / period, 7.2 * size);
+		15.5 * size + 6.0*(slider->value () + 0.5)*size / period, 7.5 * size);
 	for (int i = 0; i < TR_NUM; i++) {
 		switch (map[slider->value ()][A][i]) {
 		case Red:
@@ -133,5 +188,68 @@ void Settings::paintEvent (QPaintEvent *) {
 			painter.drawEllipse (lane_in[D][i][0] * size, near_side[B] * size - 1.2 * r, r, r);
 			break;
 		}
+	}
+}
+void Settings::Ref_G () {
+	for (int i = 0; i < DIR_NUM; i++)
+		for (int j = 0; j < TR_NUM; j++)
+			if (check[i*TR_NUM + j]->isChecked ())
+				for (int k = slider->value (); k < period; k++)
+					map[k][i][j] = Green;
+	this->update ();
+	for (int i = 0; i < DIR_NUM*TR_NUM; i++)
+		check[i]->setChecked (false);
+}
+
+void Settings::Ref_Y () {
+	for (int i = 0; i < DIR_NUM; i++)
+		for (int j = 0; j < TR_NUM; j++)
+			if (check[i*TR_NUM + j]->isChecked ())
+				for (int k = slider->value (); k < period; k++)
+					map[k][i][j] = Yellow;
+	this->update ();
+	for (int i = 0; i < DIR_NUM*TR_NUM; i++)
+		check[i]->setChecked (false);
+}
+
+void Settings::Ref_R () {
+	for (int i = 0; i < DIR_NUM; i++)
+		for (int j = 0; j < TR_NUM; j++)
+			if (check[i*TR_NUM + j]->isChecked ())
+				for (int k = slider->value (); k < period; k++)
+					map[k][i][j] = Red;
+	this->update ();
+	for (int i = 0; i < DIR_NUM*TR_NUM; i++)
+		check[i]->setChecked (false);
+}
+void Settings::Ref_S () {
+	_n->setText (QString::number (slider->value () + 1));
+}
+void Settings::Ref_n () {
+	if (_n->text ().toInt () <= period&&_n->text ().toInt () > 0)
+		slider->setValue (_n->text ().toInt () - 1);
+	else {
+		QMessageBox temp;
+		temp.setText ("ILLEGAL INPUT");
+		temp.exec ();
+		_n->setText (QString::number (slider->value () + 1));
+	}
+}
+void Settings::Ref_r () {
+	if (_p->text ().toInt () > 0) {
+		slider->setValue (0);
+		_n->setText ("1");
+		period = _p->text ().toInt ();
+		delete[] map;
+		map = new Light[period];
+		slider->setMaximum (period - 1);
+		for (int i = 0; i < period; i++) for (int j = 0; j < DIR_NUM; j++) for (int k = 0; k < TR_NUM; k++)
+			map[i][j][k] = Red;
+	}
+	else {
+		QMessageBox temp;
+		temp.setText ("ILLEGAL INPUT");
+		temp.exec ();
+		_p->setText (QString::number (period));
 	}
 }
