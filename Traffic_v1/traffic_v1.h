@@ -2,18 +2,19 @@
 #define TRAFFIC_V1_H
 
 #include <QtWidgets/QMainWindow>
-#include "ui_traffic_v1.h"
+#include <QDesktopWidget>
+#include <QApplication>
+#include "settings.hpp"
 
-class Traffic_v1 : public QMainWindow
-{
+class Traffic_v1 : public QMainWindow {
 	Q_OBJECT
-
-public:
-	Traffic_v1(QWidget *parent = 0);
-	~Traffic_v1();
-
 private:
-	Ui::Traffic_v1Class ui;
+	Settings* s;
+	int size;
+	double meter;
+public:
+	Traffic_v1 (QWidget *parent = 0);
+	~Traffic_v1 ();
 };
 
 #endif // TRAFFIC_V1_H

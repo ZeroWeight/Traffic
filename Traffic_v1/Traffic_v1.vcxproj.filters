@@ -50,21 +50,30 @@
     <ClCompile Include="GeneratedFiles\qrc_traffic_v1.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_settings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_settings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="traffic_v1.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="traffic_v1.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="traffic_v1.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="settings.hpp">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_traffic_v1.h">
-      <Filter>Generated Files</Filter>
+    <ClInclude Include="basic.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
