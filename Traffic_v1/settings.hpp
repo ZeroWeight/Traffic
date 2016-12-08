@@ -22,6 +22,7 @@ private:
 	QPushButton* set_yellow;
 	QPushButton* set_red;
 	QPushButton* _reset;
+	QPushButton* save;
 	QLabel* p;
 	QLabel* n;
 	QLineEdit* _p;

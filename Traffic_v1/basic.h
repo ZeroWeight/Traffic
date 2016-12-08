@@ -8,6 +8,7 @@ enum TR {
 enum Color {
 	Green, Yellow, Red
 };
+//don't change the code below
 const double near_side[DIR_NUM] = { 5.0,7.25,7.25,5.0 };
 const double far_side[DIR_NUM] = { 0,12.25,12.25,0 };
 const double lane_in[DIR_NUM][TR_NUM][2] = {
