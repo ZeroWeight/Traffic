@@ -223,6 +223,38 @@ void Settings::paintEvent (QPaintEvent *) {
 		painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
 	if (map[slider->value ()][D][Center] == Green)
 		painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
+
+	QPen* pen = new QPen (*dot_line);
+	pen->setColor (QColor ("Blue"));
+	painter.setPen (*pen);
+	// don't change the code below
+	if (map[slider->value ()][A][Left] == Yellow)
+		painter.drawArc (3.6875 * size, 3.6875 * size, 2.625*size, 2.625*size, -90 * 16, 90 * 16);
+	if (map[slider->value ()][A][Right] == Yellow)
+		painter.drawArc (4.8125 * size, 7.0625 * size, 0.375*size, 0.375*size, 0, 90 * 16);
+	if (map[slider->value ()][A][Center] == Yellow)
+		painter.drawLine (5 * size, 6.6875 * size, 7.25*size, 6.6875*size);
+
+	if (map[slider->value ()][B][Left] == Yellow)
+		painter.drawArc (3.6875 * size, 5.9375 * size, 2.625*size, 2.625*size, 0, 90 * 16);
+	if (map[slider->value ()][B][Right] == Yellow)
+		painter.drawArc (7.0625 * size, 7.0625 * size, 0.375*size, 0.375*size, 90 * 16, 90 * 16);
+	if (map[slider->value ()][B][Center] == Yellow)
+		painter.drawLine (6.6875 * size, 5 * size, 6.6875*size, 7.25*size);
+
+	if (map[slider->value ()][C][Left] == Yellow)
+		painter.drawArc (5.9375 * size, 5.9375 * size, 2.625*size, 2.625*size, 90 * 16, 90 * 16);
+	if (map[slider->value ()][C][Right] == Yellow)
+		painter.drawArc (7.0625 * size, 4.8125 * size, 0.375*size, 0.375*size, 180 * 16, 90 * 16);
+	if (map[slider->value ()][C][Center] == Yellow)
+		painter.drawLine (5 * size, 5.5625 * size, 7.25*size, 5.5625*size);
+
+	if (map[slider->value ()][D][Left] == Yellow)
+		painter.drawArc (5.9375 * size, 3.6875 * size, 2.625*size, 2.625*size, 180 * 16, 90 * 16);
+	if (map[slider->value ()][D][Right] == Yellow)
+		painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
+	if (map[slider->value ()][D][Center] == Yellow)
+		painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
 }
 void Settings::Ref_G () {
 	for (int i = 0; i < DIR_NUM; i++)
