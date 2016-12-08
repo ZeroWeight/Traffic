@@ -1,6 +1,6 @@
 ﻿#include "settings.hpp"
 
-Settings::Settings (int _size, QWidget * parent) : QWidget (parent), size (_size) {
+Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_size) {
 	main_line = new QPen (QBrush (QColor ("Black")), 5);
 	dot_line = new QPen (QBrush (QColor ("Yellow")), 3);
 	edge = new QPen (QColor ("Black"));
@@ -319,4 +319,8 @@ void Settings::Ref_r () {
 		_p->setText (QString::number (period));
 	}
 	this->update ();
+}
+void Settings::closeEvent (QCloseEvent *event) {
+	save->click ();
+	event->ignore ();
 }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <QWidget>
+#include <QMainWindow>
 #include <QPainter>
 #include <QSlider>
 #include <QLabel>
@@ -7,11 +8,12 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QCloseEvent>
 #include "basic.h"
 typedef Color Light[DIR_NUM][TR_NUM];
 typedef QLabel* com_label;
 typedef QCheckBox* com_check;
-class Settings : public QWidget {
+class Settings : public QMainWindow {
 	Q_OBJECT
 private:
 	int size;
@@ -22,12 +24,12 @@ private:
 	QPushButton* set_yellow;
 	QPushButton* set_red;
 	QPushButton* _reset;
-	QPushButton* save;
 	QLabel* p;
 	QLabel* n;
 	QLineEdit* _p;
 	QLineEdit* _n;
 public:
+	QPushButton* save;
 #pragma region painter
 	QPen* main_line;
 	QPen* dot_line;
@@ -47,4 +49,6 @@ public:
 	void Ref_S ();
 	void Ref_n ();
 	void Ref_r ();
+protected:
+	void closeEvent (QCloseEvent *event);
 };
