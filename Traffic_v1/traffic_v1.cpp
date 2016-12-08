@@ -44,8 +44,8 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	connect (timer, SIGNAL (timeout ()), this, SLOT (Ref_Timer ()));
 	connect (_reset, SIGNAL (clicked ()), this, SLOT (Ref_Reset ()));
 	edit = new QPushButton (this);
-	edit->setText ("Edit the\r\nTraffic light");
-	edit->setGeometry (15 * size, 7 * size, 2 * size, size);
+	edit->setText ("Edit the Traffic light");
+	edit->setGeometry (15 * size, 5 * size, 4 * size, size);
 	edit->setFont (QFont ("TimesNewRoman", 10));
 	connect (edit, SIGNAL (clicked ()), this, SLOT (hide ()));
 	connect (edit, SIGNAL (clicked ()), s, SLOT (show ()));
@@ -102,7 +102,7 @@ void Traffic_v1::Ref_Timer () {
 void Traffic_v1::Ref_Reset () {
 	now_t = 0;
 	now->setText ("Time:\t0 s");
-	if (scaleEdit->text ().toInt ())
+	if (scaleEdit->text ().toInt () > 0)
 		scale_t = scaleEdit->text ().toInt ();
 	else {
 		QMessageBox temp;
