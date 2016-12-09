@@ -5,16 +5,27 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QTimer>
+#include <QList>
+#include <iterator>
 #include "settings.hpp"
-
+struct Car {
+	double acc;
+	double vec;
+	double pos;
+};
+struct InNode {
+	DIR dir;
+	TR tr;
+	int delay_time;
+};
 class Traffic_v1 : public QMainWindow {
 	Q_OBJECT
 private:
+	int size;
+	double meter;
 	int now_t;
 	int scale_t;
 	Settings* s;
-	int size;
-	double meter;
 	QLabel* scale;
 	QLabel* now;
 	QLineEdit* scaleEdit;
@@ -23,6 +34,11 @@ private:
 	QPushButton* end;
 	QTimer* timer;
 	QPushButton* edit;
+	QList<Car>* car_in;
+	QList<Car>* car_out;
+	QList<InNode>* Node;
+private:
+	void sim ();
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();

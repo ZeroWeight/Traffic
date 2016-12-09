@@ -50,6 +50,9 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	connect (edit, SIGNAL (clicked ()), this, SLOT (hide ()));
 	connect (edit, SIGNAL (clicked ()), s, SLOT (show ()));
 	connect (s->save, SIGNAL (clicked ()), this, SLOT (show ()));
+	car_in = new QList<Car>[DIR_NUM*TR_NUM];
+	car_out = new QList<Car>[DIR_NUM*TR_NUM];
+	Node = new QList<InNode> ();
 }
 
 Traffic_v1::~Traffic_v1 () {}
@@ -109,5 +112,33 @@ void Traffic_v1::Ref_Reset () {
 		temp.setText ("ILLEGAL INPUT");
 		temp.exec ();
 		scaleEdit->setText (QString::number (scale_t));
+	}
+}
+void Traffic_v1::sim () {
+	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
+		QList<Car>::iterator _car_;
+		if (!car_in[i].empty ()) {
+			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
+				_car_->pos += _car_->vec*scale_t + 0.5*_car_->acc*scale_t*scale_t;
+				_car_->vec += _car_->acc*scale_t;
+			}
+		}
+		if (!car_out[i].empty ()) {
+			for (_car_ = car_out[i].begin (); _car_ != car_in[i].end (); ++_car_) {
+				_car_->pos += _car_->vec*scale_t + 0.5*_car_->acc*scale_t*scale_t;
+				_car_->vec += _car_->acc*scale_t;
+			}
+		}
+		while (!car_in[i].empty () && car_in[i].first ().pos >= 0) {
+			InNode temp;
+			temp.delay_time = (i % 3) ? (i % 3 == 1 ? 3 : 1) : 2;
+			temp.dir = (DIR)(i / 3);
+			temp.tr = (TR)(i / 3);
+			Node->append (temp);
+			car_in[i].removeFirst ();
+		}
+		while (!car_out[i].empty () && car_out[i].first ().pos >= 0) {
+			car_out[i].removeFirst ();
+		}
 	}
 }
