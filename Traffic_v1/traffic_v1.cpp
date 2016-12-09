@@ -1,5 +1,5 @@
 #include "traffic_v1.h"
-
+bool check ();
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
 	size = QApplication::desktop ()->height () / 15;
@@ -22,7 +22,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	now = new QLabel (this);
 	now->setText ("Time:\t0 s");
 	now->setFont (QFont ("TimesNewRoman", 16));
-	now->setGeometry (15 * size, 2 * size, 3 * size, size);
+	now->setGeometry (15 * size, 2 * size, 5 * size, size);
 	now_t = 0;
 	_reset = new QPushButton (this);
 	_reset->setGeometry (19 * size, 0.9*size, 2 * size, size);
@@ -72,6 +72,127 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 		painter.drawLine (size*far_side[C], size*aux_lane[i], size*near_side[C], size*aux_lane[i]);
 		painter.drawLine (size*aux_lane[i], size*far_side[D], size*aux_lane[i], size*near_side[D]);
 	}
+#pragma  region paint_car
+	painter.setPen (QPen (QColor ("Blue"))); painter.setBrush (*s->car);
+	for (int i = 0; i < TR_NUM; i++) {
+		foreach (Car _car_, car_in[A*TR_NUM + i]) {
+			if (_car_.pos >= -50.0)
+				painter.drawRect (near_side[A] * size + _car_.pos*meter - meter, lane_in[A][i] * size + -0.5*meter, 2 * meter, meter);
+		}
+		foreach (Car _car_, car_in[B*TR_NUM + i]) {
+			if (_car_.pos >= -50.0)
+				painter.drawRect (lane_in[B][i] * size + -0.5*meter, near_side[B] * size - _car_.pos*meter - meter, meter, 2 * meter);
+		}
+		foreach (Car _car_, car_in[C*TR_NUM + i]) {
+			if (_car_.pos >= -50.0)
+				painter.drawRect (near_side[C] * size - _car_.pos*meter - meter, lane_in[C][i] * size + -0.5*meter, 2 * meter, meter);
+		}
+		foreach (Car _car_, car_in[D*TR_NUM + i]) {
+			if (_car_.pos >= -50.0)
+				painter.drawRect (lane_in[D][i] * size + -0.5*meter, near_side[D] * size + _car_.pos*meter - meter, meter, 2 * meter);
+		}
+	}
+	painter.setPen (QPen (QColor ("Blue"), 5));
+	foreach (InNode _n_, *Node) {
+		if (_n_.delay_time >= 0) {
+			switch (_n_.dir) {
+			case A:
+				switch (_n_.tr) {
+				case Left:
+					painter.drawArc (3.6875 * size, 3.6875 * size, 2.625*size, 2.625*size, -90 * 16, 90 * 16);
+					break;
+				case Right:
+					painter.drawArc (4.8125 * size, 7.0625 * size, 0.375*size, 0.375*size, 0, 90 * 16);
+					break;
+				case Center:
+					painter.drawLine (5 * size, 6.6875 * size, 7.25*size, 6.6875*size);
+					break;
+				}
+				break;
+			case B:
+				switch (_n_.tr) {
+				case Left:
+					painter.drawArc (3.6875 * size, 5.9375 * size, 2.625*size, 2.625*size, 0, 90 * 16);
+					break;
+				case Right:
+					painter.drawArc (7.0625 * size, 7.0625 * size, 0.375*size, 0.375*size, 90 * 16, 90 * 16);
+					break;
+				case Center:
+					painter.drawLine (6.6875 * size, 5 * size, 6.6875*size, 7.25*size);
+					break;
+				}
+				break;
+			case C:
+				switch (_n_.tr) {
+				case Left:
+					painter.drawArc (5.9375 * size, 5.9375 * size, 2.625*size, 2.625*size, 90 * 16, 90 * 16);
+					break;
+				case Right:
+					painter.drawArc (7.0625 * size, 4.8125 * size, 0.375*size, 0.375*size, 180 * 16, 90 * 16);
+					break;
+				case Center:
+					painter.drawLine (5 * size, 5.5625 * size, 7.25*size, 5.5625*size);
+					break;
+				}
+				break;
+			case D:
+				switch (_n_.tr) {
+				case Left:
+					painter.drawArc (5.9375 * size, 3.6875 * size, 2.625*size, 2.625*size, 180 * 16, 90 * 16);
+					break;
+				case Right:
+					break;
+					painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
+				case Center:
+					painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
+					break;
+				}
+				break;
+			}
+		}
+	}
+	painter.setPen (QPen (QColor ("Blue"))); painter.setBrush (*s->car);
+
+	foreach (Car _c_, car_out[A*TR_NUM + Left]) {
+		if (_c_.pos < 50) painter.drawRect (lane_in[B][Left] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+	}
+	foreach (Car _c_, car_out[A*TR_NUM + Right]) {
+		if (_c_.pos < 50) painter.drawRect (lane_in[D][Right] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+	}
+	foreach (Car _c_, car_out[A*TR_NUM + Center]) {
+		if (_c_.pos < 50) painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Center] * size + -0.5*meter, 2 * meter, meter);
+	}
+
+	foreach (Car _c_, car_out[B*TR_NUM + Left]) {
+		if (_c_.pos < 50) painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Left] * size + -0.5*meter, 2 * meter, meter);
+	}
+	foreach (Car _c_, car_out[B*TR_NUM + Right]) {
+		if (_c_.pos < 50) painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Right] * size + -0.5*meter, 2 * meter, meter);
+	}
+	foreach (Car _c_, car_out[B*TR_NUM + Center]) {
+		if (_c_.pos < 50) painter.drawRect (lane_in[B][Center] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+	}
+
+	foreach (Car _c_, car_out[C*TR_NUM + Left]) {
+		if (_c_.pos < 50) painter.drawRect (lane_in[D][Left] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+	}
+	foreach (Car _c_, car_out[C*TR_NUM + Right]) {
+		if (_c_.pos < 50) painter.drawRect (lane_in[B][Right] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+	}
+	foreach (Car _c_, car_out[C*TR_NUM + Center]) {
+		if (_c_.pos < 50) painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Center] * size + -0.5*meter, 2 * meter, meter);
+	}
+
+	foreach (Car _c_, car_out[B*TR_NUM + Left]) {
+		if (_c_.pos < 50) painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Left] * size + -0.5*meter, 2 * meter, meter);
+	}
+	foreach (Car _c_, car_out[B*TR_NUM + Right]) {
+		if (_c_.pos < 50) painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Right] * size + -0.5*meter, 2 * meter, meter);
+	}
+	foreach (Car _c_, car_out[B*TR_NUM + Center]) {
+		if (_c_.pos < 50) painter.drawRect (lane_in[D][Center] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+	}
+#pragma  endregion
 }
 void Traffic_v1::Ref_End () {
 	if (timer->isActive ()) {
@@ -99,8 +220,12 @@ void Traffic_v1::Ref_Start () {
 	timer->start ();
 }
 void Traffic_v1::Ref_Timer () {
-	now_t += scale_t;
-	now->setText ("Time:\t" + QString::number (now_t) + " s");
+	++now_t;
+	now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
+	generate ();
+	if ((now_t % 10 * scale_t)) strategy ();
+	sim ();
+	this->update ();
 }
 void Traffic_v1::Ref_Reset () {
 	now_t = 0;
@@ -115,30 +240,64 @@ void Traffic_v1::Ref_Reset () {
 	}
 }
 void Traffic_v1::sim () {
-	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
+	for (int i = 0; i < TR_NUM*DIR_NUM*(now_t != 0); i++) {
 		QList<Car>::iterator _car_;
 		if (!car_in[i].empty ()) {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
-				_car_->pos += _car_->vec*scale_t + 0.5*_car_->acc*scale_t*scale_t;
-				_car_->vec += _car_->acc*scale_t;
+				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
+				_car_->vec += _car_->acc*scale_t / 1000.0;
 			}
 		}
 		if (!car_out[i].empty ()) {
-			for (_car_ = car_out[i].begin (); _car_ != car_in[i].end (); ++_car_) {
-				_car_->pos += _car_->vec*scale_t + 0.5*_car_->acc*scale_t*scale_t;
-				_car_->vec += _car_->acc*scale_t;
+			for (_car_ = car_out[i].begin (); _car_ != car_out[i].end (); ++_car_) {
+				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
+				_car_->vec += _car_->acc*0.1;
 			}
 		}
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0) {
 			InNode temp;
-			temp.delay_time = (i % 3) ? (i % 3 == 1 ? 3 : 1) : 2;
+			temp.delay_time = (i % 3) ? ((i % 3 == 1) ? 10 : 20) : 30;
 			temp.dir = (DIR)(i / 3);
-			temp.tr = (TR)(i / 3);
+			temp.tr = (TR)(i % 3);
 			Node->append (temp);
 			car_in[i].removeFirst ();
 		}
-		while (!car_out[i].empty () && car_out[i].first ().pos >= 0) {
+		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
 			car_out[i].removeFirst ();
 		}
 	}
+	QList<InNode>::iterator _n_;
+	if (!Node->empty ()) {
+		for (_n_ = Node->begin (); _n_ != Node->end (); ++_n_) {
+			--(_n_->delay_time);
+			if (_n_->delay_time == -1) {
+				Car temp;
+				temp.acc = 0;
+				temp.vec = 10;
+				temp.pos = 0;
+				car_out[_n_->dir*TR_NUM + _n_->tr] << temp;
+			}
+		}
+	}
+	while (!Node->empty () && Node->first ().delay_time < 0) Node->removeFirst ();
+}
+void Traffic_v1::generate () {
+	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
+		if (check () && (car_in[i].empty () || car_in[i].last ().pos > -195.0)) {
+			Car temp;
+			std::default_random_engine e;
+			std::normal_distribution<double> ND_V (15.0, 5.0);
+			temp.pos = -200.0;//control length 200m;
+			temp.vec = ND_V (e);
+			while (temp.vec < 10 || temp.vec>20)temp.vec = ND_V (e);
+			temp.acc = 0;
+			car_in[i] << temp;
+		}
+	}
+}
+void Traffic_v1::strategy () {
+	return;
+}
+bool check () {
+	return !(std::rand () & 127);
 }

@@ -129,68 +129,68 @@ void Settings::paintEvent (QPaintEvent *) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i][1] * size, r, r);
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i][1] * size, r, r);
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i][1] * size, r, r);
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
 			break;
 		}
 		switch (map[slider->value ()][B][i]) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (lane_in[B][i][0] * size, near_side[D] * size + 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (lane_in[B][i][0] * size, near_side[D] * size + 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (lane_in[B][i][0] * size, near_side[D] * size + 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
 			break;
 		}
 		switch (map[slider->value ()][C][i]) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i][1] * size, r, r);
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i][1] * size, r, r);
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i][1] * size, r, r);
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
 			break;
 		}
 		switch (map[slider->value ()][D][i]) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (lane_in[D][i][0] * size, near_side[B] * size - 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (lane_in[D][i][0] * size, near_side[B] * size - 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (lane_in[D][i][0] * size, near_side[B] * size - 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
 			break;
 		}
 	}

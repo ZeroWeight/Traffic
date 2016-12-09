@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QList>
 #include <iterator>
+#include <random>
 #include "settings.hpp"
 struct Car {
 	double acc;
@@ -39,6 +40,8 @@ private:
 	QList<InNode>* Node;
 private:
 	void sim ();
+	void generate ();
+	void strategy ();
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();
