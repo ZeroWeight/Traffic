@@ -59,6 +59,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_settings.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="traffic_v1.h">

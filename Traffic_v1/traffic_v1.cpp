@@ -1,5 +1,6 @@
 #include "traffic_v1.h"
-bool check ();
+std::default_random_engine e;
+std::normal_distribution<double> ND_V (15.0, 2);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
 	size = QApplication::desktop ()->height () / 15;
@@ -45,7 +46,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	connect (_reset, SIGNAL (clicked ()), this, SLOT (Ref_Reset ()));
 	edit = new QPushButton (this);
 	edit->setText ("Edit the Traffic light");
-	edit->setGeometry (15 * size, 5 * size, 4 * size, size);
+	edit->setGeometry (15 * size, 5 * size, 4.5 * size, size);
 	edit->setFont (QFont ("TimesNewRoman", 10));
 	connect (edit, SIGNAL (clicked ()), this, SLOT (hide ()));
 	connect (edit, SIGNAL (clicked ()), s, SLOT (show ()));
@@ -53,11 +54,32 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	car_in = new QList<Car>[DIR_NUM*TR_NUM];
 	car_out = new QList<Car>[DIR_NUM*TR_NUM];
 	Node = new QList<InNode> ();
+	fast = new QRadioButton ("Fast", this);
+	medium = new QRadioButton ("Medium", this);
+	slow = new QRadioButton ("Slow", this);
+	very_slow = new QRadioButton ("Very\r\nSlow", this);
+	fast->setFont (QFont ("TimesNewRoman", 10));
+	medium->setFont (QFont ("TimesNewRoman", 10));
+	slow->setFont (QFont ("TimesNewRoman", 10));
+	very_slow->setFont (QFont ("TimesNewRoman", 10));
+	fast->setGeometry (16.5 * size, 6.5*size, size*1.5, size);
+	medium->setGeometry (18 * size, 6.5*size, size*1.5, size);
+	slow->setGeometry (19.5 * size, 6.5*size, size*1.5, size);
+	very_slow->setGeometry (21 * size, 6.5*size, size*1.5, size);
+	medium->setChecked (true);
+	speed = new QLabel ("Sim Speed", this);
+	speed->setFont (QFont ("TimesNewRoman", 10));
+	speed->setGeometry (15 * size, 6.5*size, size*1.5, size);
+	connect (fast, SIGNAL (toggled (bool)), this, SLOT (f (bool)));
+	connect (medium, SIGNAL (toggled (bool)), this, SLOT (m (bool)));
+	connect (slow, SIGNAL (toggled (bool)), this, SLOT (_s (bool)));
+	connect (very_slow, SIGNAL (toggled (bool)), this, SLOT (ss (bool)));
 }
 
 Traffic_v1::~Traffic_v1 () {}
 void Traffic_v1::paintEvent (QPaintEvent *event) {
 	QPainter painter (this);
+	painter.setFont (QFont ("TimesNewRoman", 12));
 	painter.setPen (*(s->main_line));
 	for (int i = 0; i < 3; i++) {
 		painter.drawLine (size*far_side[A], size*main_lane[i], size*near_side[A], size*main_lane[i]);
@@ -76,20 +98,28 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 	painter.setPen (QPen (QColor ("Blue"))); painter.setBrush (*s->car);
 	for (int i = 0; i < TR_NUM; i++) {
 		foreach (Car _car_, car_in[A*TR_NUM + i]) {
-			if (_car_.pos >= -50.0)
+			if (_car_.pos >= -50.0) {
 				painter.drawRect (near_side[A] * size + _car_.pos*meter - meter, lane_in[A][i] * size + -0.5*meter, 2 * meter, meter);
+				painter.drawText (near_side[A] * size + _car_.pos*meter - meter, lane_in[A][i] * size + -0.5*meter, QString::number (_car_.index));
+			}
 		}
 		foreach (Car _car_, car_in[B*TR_NUM + i]) {
-			if (_car_.pos >= -50.0)
+			if (_car_.pos >= -50.0) {
 				painter.drawRect (lane_in[B][i] * size + -0.5*meter, near_side[B] * size - _car_.pos*meter - meter, meter, 2 * meter);
+				painter.drawText (lane_in[B][i] * size + -0.5*meter, near_side[B] * size - _car_.pos*meter - meter, QString::number (_car_.index));
+			}
 		}
 		foreach (Car _car_, car_in[C*TR_NUM + i]) {
-			if (_car_.pos >= -50.0)
+			if (_car_.pos >= -50.0) {
 				painter.drawRect (near_side[C] * size - _car_.pos*meter - meter, lane_in[C][i] * size + -0.5*meter, 2 * meter, meter);
+				painter.drawText (near_side[C] * size - _car_.pos*meter - meter, lane_in[C][i] * size + -0.5*meter, QString::number (_car_.index));
+			}
 		}
 		foreach (Car _car_, car_in[D*TR_NUM + i]) {
-			if (_car_.pos >= -50.0)
+			if (_car_.pos >= -50.0) {
 				painter.drawRect (lane_in[D][i] * size + -0.5*meter, near_side[D] * size + _car_.pos*meter - meter, meter, 2 * meter);
+				painter.drawText (lane_in[D][i] * size + -0.5*meter, near_side[D] * size + _car_.pos*meter - meter, QString::number (_car_.index));
+			}
 		}
 	}
 	painter.setPen (QPen (QColor ("Blue"), 5));
@@ -152,47 +182,153 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 		}
 	}
 	painter.setPen (QPen (QColor ("Blue"))); painter.setBrush (*s->car);
-
 	foreach (Car _c_, car_out[A*TR_NUM + Left]) {
-		if (_c_.pos < 50) painter.drawRect (lane_in[B][Left] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (lane_in[B][Left] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+			painter.drawText (lane_in[B][Left] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[A*TR_NUM + Right]) {
-		if (_c_.pos < 50) painter.drawRect (lane_in[D][Right] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (lane_in[D][Right] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+			painter.drawText (lane_in[D][Right] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[A*TR_NUM + Center]) {
-		if (_c_.pos < 50) painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Center] * size + -0.5*meter, 2 * meter, meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Center] * size + -0.5*meter, 2 * meter, meter);
+			painter.drawText (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Center] * size + -0.5*meter, QString::number (_c_.index));
+		}
 	}
 
 	foreach (Car _c_, car_out[B*TR_NUM + Left]) {
-		if (_c_.pos < 50) painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Left] * size + -0.5*meter, 2 * meter, meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Left] * size + -0.5*meter, 2 * meter, meter);
+			painter.drawText (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Left] * size + -0.5*meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[B*TR_NUM + Right]) {
-		if (_c_.pos < 50) painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Right] * size + -0.5*meter, 2 * meter, meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Right] * size + -0.5*meter, 2 * meter, meter);
+			painter.drawText (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Right] * size + -0.5*meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[B*TR_NUM + Center]) {
-		if (_c_.pos < 50) painter.drawRect (lane_in[B][Center] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (lane_in[B][Center] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+			painter.drawText (lane_in[B][Center] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, QString::number (_c_.index));
+		}
 	}
 
 	foreach (Car _c_, car_out[C*TR_NUM + Left]) {
-		if (_c_.pos < 50) painter.drawRect (lane_in[D][Left] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (lane_in[D][Left] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+			painter.drawText (lane_in[D][Left] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[C*TR_NUM + Right]) {
-		if (_c_.pos < 50) painter.drawRect (lane_in[B][Right] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (lane_in[B][Right] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, meter, 2 * meter);
+			painter.drawText (lane_in[B][Right] * size + -0.5*meter, near_side[D] * size - _c_.pos*meter - meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[C*TR_NUM + Center]) {
-		if (_c_.pos < 50) painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Center] * size + -0.5*meter, 2 * meter, meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Center] * size + -0.5*meter, 2 * meter, meter);
+			painter.drawText (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Center] * size + -0.5*meter, QString::number (_c_.index));
+		}
 	}
 
 	foreach (Car _c_, car_out[B*TR_NUM + Left]) {
-		if (_c_.pos < 50) painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Left] * size + -0.5*meter, 2 * meter, meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Left] * size + -0.5*meter, 2 * meter, meter);
+			painter.drawText (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Left] * size + -0.5*meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[B*TR_NUM + Right]) {
-		if (_c_.pos < 50) painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Right] * size + -0.5*meter, 2 * meter, meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Right] * size + -0.5*meter, 2 * meter, meter);
+			painter.drawText (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Right] * size + -0.5*meter, QString::number (_c_.index));
+		}
 	}
 	foreach (Car _c_, car_out[B*TR_NUM + Center]) {
-		if (_c_.pos < 50) painter.drawRect (lane_in[D][Center] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+		if (_c_.pos < 50) {
+			painter.drawRect (lane_in[D][Center] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
+			painter.drawText (lane_in[D][Center] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, QString::number (_c_.index));
+		}
 	}
 #pragma  endregion
+	double r = 0.2*size;
+	for (int i = 0; i < TR_NUM; i++) {
+		switch (s->map[(now_t / 10) % s->period][A][i]) {
+		case Red:
+			painter.setBrush ((QColor ("Red")));
+			painter.setPen ((QColor ("Red")));
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
+			break;
+		case Green:
+			painter.setBrush ((QColor ("Green")));
+			painter.setPen ((QColor ("Green")));
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
+			break;
+		case Yellow:
+			painter.setBrush ((QColor ("Yellow")));
+			painter.setPen ((QColor ("Yellow")));
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
+			break;
+		}
+		switch (s->map[(now_t / 10) % s->period][B][i]) {
+		case Red:
+			painter.setBrush ((QColor ("Red")));
+			painter.setPen ((QColor ("Red")));
+			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
+			break;
+		case Green:
+			painter.setBrush ((QColor ("Green")));
+			painter.setPen ((QColor ("Green")));
+			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
+			break;
+		case Yellow:
+			painter.setBrush ((QColor ("Yellow")));
+			painter.setPen ((QColor ("Yellow")));
+			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
+			break;
+		}
+		switch (s->map[(now_t / 10) % s->period][C][i]) {
+		case Red:
+			painter.setBrush ((QColor ("Red")));
+			painter.setPen ((QColor ("Red")));
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
+			break;
+		case Green:
+			painter.setBrush ((QColor ("Green")));
+			painter.setPen ((QColor ("Green")));
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
+			break;
+		case Yellow:
+			painter.setBrush ((QColor ("Yellow")));
+			painter.setPen ((QColor ("Yellow")));
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
+			break;
+		}
+		switch (s->map[(now_t / 10) % s->period][D][i]) {
+		case Red:
+			painter.setBrush ((QColor ("Red")));
+			painter.setPen ((QColor ("Red")));
+			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
+			break;
+		case Green:
+			painter.setBrush ((QColor ("Green")));
+			painter.setPen ((QColor ("Green")));
+			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
+			break;
+		case Yellow:
+			painter.setBrush ((QColor ("Yellow")));
+			painter.setPen ((QColor ("Yellow")));
+			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
+			break;
+		}
+	}
 }
 void Traffic_v1::Ref_End () {
 	if (timer->isActive ()) {
@@ -259,6 +395,7 @@ void Traffic_v1::sim () {
 			temp.delay_time = (i % 3) ? ((i % 3 == 1) ? 10 : 20) : 30;
 			temp.dir = (DIR)(i / 3);
 			temp.tr = (TR)(i % 3);
+			temp.index = car_in[i].first ().index;
 			Node->append (temp);
 			car_in[i].removeFirst ();
 		}
@@ -275,6 +412,7 @@ void Traffic_v1::sim () {
 				temp.acc = 0;
 				temp.vec = 10;
 				temp.pos = 0;
+				temp.index = _n_->index;
 				car_out[_n_->dir*TR_NUM + _n_->tr] << temp;
 			}
 		}
@@ -285,19 +423,12 @@ void Traffic_v1::generate () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
 		if (check () && (car_in[i].empty () || car_in[i].last ().pos > -195.0)) {
 			Car temp;
-			std::default_random_engine e;
-			std::normal_distribution<double> ND_V (15.0, 5.0);
 			temp.pos = -200.0;//control length 200m;
 			temp.vec = ND_V (e);
+			temp.index = ++this->index;
 			while (temp.vec < 10 || temp.vec>20)temp.vec = ND_V (e);
 			temp.acc = 0;
 			car_in[i] << temp;
 		}
 	}
-}
-void Traffic_v1::strategy () {
-	return;
-}
-bool check () {
-	return !(std::rand () & 127);
 }

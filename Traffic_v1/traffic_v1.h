@@ -6,6 +6,8 @@
 #include <QApplication>
 #include <QTimer>
 #include <QList>
+#include <QDebug>
+#include <QRadioButton>
 #include <iterator>
 #include <random>
 #include "settings.hpp"
@@ -13,11 +15,13 @@ struct Car {
 	double acc;
 	double vec;
 	double pos;
+	int index;
 };
 struct InNode {
 	DIR dir;
 	TR tr;
 	int delay_time;
+	int index;
 };
 class Traffic_v1 : public QMainWindow {
 	Q_OBJECT
@@ -25,6 +29,7 @@ private:
 	int size;
 	double meter;
 	int now_t;
+	int index = 0;
 	int scale_t;
 	Settings* s;
 	QLabel* scale;
@@ -38,10 +43,16 @@ private:
 	QList<Car>* car_in;
 	QList<Car>* car_out;
 	QList<InNode>* Node;
+	QRadioButton* fast;
+	QRadioButton* medium;
+	QRadioButton* slow;
+	QRadioButton* very_slow;
+	QLabel* speed;
 private:
 	void sim ();
 	void generate ();
 	void strategy ();
+	bool check ();
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();
@@ -52,6 +63,10 @@ public:
 	void Ref_End ();
 	void Ref_Timer ();
 	void Ref_Reset ();
+	inline void f (bool b) { if (b) timer->setInterval (1); }
+	inline void m (bool b) { if (b) timer->setInterval (10); }
+	inline void _s (bool b) { if (b) timer->setInterval (100); }
+	inline void ss (bool b) { if (b) timer->setInterval (1000); }
 };
 
 #endif // TRAFFIC_V1_H
