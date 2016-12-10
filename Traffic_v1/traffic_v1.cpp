@@ -342,6 +342,7 @@ void Traffic_v1::Ref_End () {
 		now->setText ("Time:\t0 s");
 		_reset->setEnabled (true);
 		scaleEdit->setEnabled (true);
+		Res ();
 	}
 	timer->stop ();
 	start->setEnabled (true);
@@ -359,7 +360,8 @@ void Traffic_v1::Ref_Timer () {
 	++now_t;
 	now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 	generate ();
-	if ((now_t % 10 * scale_t)) strategy ();
+	if (!(now_t % (10 * scale_t))) strategy ();
+	else emergency ();
 	sim ();
 	this->update ();
 }
@@ -374,6 +376,7 @@ void Traffic_v1::Ref_Reset () {
 		temp.exec ();
 		scaleEdit->setText (QString::number (scale_t));
 	}
+	Res ();
 }
 void Traffic_v1::sim () {
 	for (int i = 0; i < TR_NUM*DIR_NUM*(now_t != 0); i++) {
@@ -381,7 +384,11 @@ void Traffic_v1::sim () {
 		if (!car_in[i].empty ()) {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
-				_car_->vec += _car_->acc*scale_t / 1000.0;
+				_car_->vec += _car_->acc*0.1;
+				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -5.0) {
+					_car_->vec = (_car_ - 1)->vec;
+					_car_->acc = (_car_ - 1)->acc;
+				}
 			}
 		}
 		if (!car_out[i].empty ()) {
@@ -421,7 +428,7 @@ void Traffic_v1::sim () {
 }
 void Traffic_v1::generate () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
-		if (check () && (car_in[i].empty () || car_in[i].last ().pos > -195.0)) {
+		if (check () && (car_in[i].empty () || car_in[i].last ().pos > -190.0)) {
 			Car temp;
 			temp.pos = -200.0;//control length 200m;
 			temp.vec = ND_V (e);
@@ -431,4 +438,12 @@ void Traffic_v1::generate () {
 			car_in[i] << temp;
 		}
 	}
+}
+void Traffic_v1::Res () {
+	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
+		car_in[i].clear ();
+		car_out[i].clear ();
+	}
+	Node->clear ();
+	index = 0;
 }

@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QRadioButton>
 #include <iterator>
+#include <cmath>
 #include <random>
 #include "settings.hpp"
 struct Car {
@@ -49,10 +50,12 @@ private:
 	QRadioButton* very_slow;
 	QLabel* speed;
 private:
+	void Res ();
 	void sim ();
 	void generate ();
 	void strategy ();
 	bool check ();
+	void emergency ();
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();
