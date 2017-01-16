@@ -55,7 +55,8 @@ private:
 	void generate ();
 	void strategy ();
 	bool check ();
-	void emergency ();
+	void following ();
+	void _following ();
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();

@@ -1,8 +1,24 @@
 #include "traffic_v1.h"
-std::default_random_engine e;
-std::normal_distribution<double> ND_V (15.0, 2);
+double expdf (double lambda) {
+	double pV = 0.0;
+	while (1) {
+		pV = (double)rand () / (double)RAND_MAX;
+		if (pV != 1)
+			break;
+	}
+	pV = (-1.0 / lambda)*log (1 - pV);
+	return pV;
+}
+static const double lambda[DIR_NUM] = { 0.5,0.5,0.5,0.5 };
+static double go[DIR_NUM] = { 0 };
+static std::default_random_engine e;
+static std::normal_distribution<double> ND_V (15.0, 2);
+static std::normal_distribution<double> ND_A (2.5, 0.8);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
+	for (int i = 0; i < DIR_NUM; i++) {
+		go[i] = expdf (lambda[i]);
+	}
 	size = QApplication::desktop ()->height () / 15;
 	meter = size / 10.0;
 	s = new Settings (size, nullptr);
@@ -75,7 +91,6 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	connect (slow, SIGNAL (toggled (bool)), this, SLOT (_s (bool)));
 	connect (very_slow, SIGNAL (toggled (bool)), this, SLOT (ss (bool)));
 }
-
 Traffic_v1::~Traffic_v1 () {}
 void Traffic_v1::paintEvent (QPaintEvent *event) {
 	QPainter painter (this);
@@ -361,7 +376,8 @@ void Traffic_v1::Ref_Timer () {
 	now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 	generate ();
 	if (!(now_t % (10 * scale_t))) strategy ();
-	else emergency ();
+	else following ();
+	_following ();
 	sim ();
 	this->update ();
 }
@@ -385,9 +401,8 @@ void Traffic_v1::sim () {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
-				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -5.0) {
-					_car_->vec = (_car_ - 1)->vec;
-					_car_->acc = (_car_ - 1)->acc;
+				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
+					qDebug () << "E";
 				}
 			}
 		}
@@ -416,7 +431,7 @@ void Traffic_v1::sim () {
 			--(_n_->delay_time);
 			if (_n_->delay_time == -1) {
 				Car temp;
-				temp.acc = 0;
+				temp.acc = ND_A (e);
 				temp.vec = 10;
 				temp.pos = 0;
 				temp.index = _n_->index;
@@ -427,16 +442,32 @@ void Traffic_v1::sim () {
 	while (!Node->empty () && Node->first ().delay_time < 0) Node->removeFirst ();
 }
 void Traffic_v1::generate () {
-	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
-		if (check () && (car_in[i].empty () || car_in[i].last ().pos > -190.0)) {
-			Car temp;
-			temp.pos = -200.0;//control length 200m;
-			temp.vec = ND_V (e);
-			temp.index = ++this->index;
-			while (temp.vec < 10 || temp.vec>20)temp.vec = ND_V (e);
-			temp.acc = 0;
-			car_in[i] << temp;
+	for (int i = 0; i < DIR_NUM; i++) {
+		if (go[i] <= 0) {
+			bool OK[TR_NUM];
+			for (int j = 0; j < TR_NUM; j++) OK[j] = car_in[i*TR_NUM + j].empty ()
+				|| car_in[i*TR_NUM + j].last ().pos > 185;
+			int cont = 0;
+			for (int j = 0; j < TR_NUM; j++)if (OK[j]) cont++;
+			if (cont) {
+				int k = rand () % cont;
+				int j;
+				for (j = 0; j < TR_NUM; j++) {
+					if (OK[j] && !k) break;
+					else if (OK[j]) --k;
+				}
+				Car temp;
+				temp.pos = -200.0;//control length 200m;
+				temp.vec = ND_V (e);
+				temp.index = ++this->index;
+				while (temp.vec < 10 || temp.vec>20)temp.vec = ND_V (e);
+				temp.acc = ND_A (e);
+				while (temp.acc < 0.1)temp.vec = ND_A (e);
+				car_in[i*TR_NUM + j] << temp;
+			}
+			else continue;
 		}
+		else go[i] -= 0.1;
 	}
 }
 void Traffic_v1::Res () {
