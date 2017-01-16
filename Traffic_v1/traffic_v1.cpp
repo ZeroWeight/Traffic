@@ -397,8 +397,7 @@ void Traffic_v1::Ref_Timer () {
 	++now_t;
 	now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 	generate ();
-	if (!(now_t % (10 * scale_t))) strategy ();
-	else following ();
+	following ();
 	_following ();
 	sim ();
 	this->update ();
