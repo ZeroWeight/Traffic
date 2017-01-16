@@ -1,6 +1,6 @@
 #include "traffic_v1.h"
 double expdf (double lambda) {
-	double pV = 0.0;
+	double pV;
 	while (1) {
 		pV = (double)rand () / (double)RAND_MAX;
 		if (pV != 1)
@@ -9,11 +9,11 @@ double expdf (double lambda) {
 	pV = (-1.0 / lambda)*log (1 - pV);
 	return pV;
 }
-static const double lambda[DIR_NUM] = { 0.5,0.5,0.5,0.5 };
+static const double lambda[DIR_NUM] = { 3,3,3,3 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
-static std::normal_distribution<double> ND_V (15.0, 2);
-static std::normal_distribution<double> ND_A (2.5, 0.8);
+static std::normal_distribution<double> ND_V (13.8, 0.9);
+static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
 	for (int i = 0; i < DIR_NUM; i++) {
@@ -90,6 +90,28 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	connect (medium, SIGNAL (toggled (bool)), this, SLOT (m (bool)));
 	connect (slow, SIGNAL (toggled (bool)), this, SLOT (_s (bool)));
 	connect (very_slow, SIGNAL (toggled (bool)), this, SLOT (ss (bool)));
+	st = new com_label[TR_NUM*DIR_NUM];
+	_st = new com_label[TR_NUM*DIR_NUM];
+	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
+		st[i] = new QLabel (this);
+		_st[i] = new QLabel ("0", this);
+		st[i]->setFont (QFont ("TimesNewRoman", 10));
+		_st[i]->setFont (QFont ("TimesNewRoman", 10));
+		_st[i]->setGeometry (16 * size + (i / 3) * 2 * size, 8 * size + (i % 3)*size, size, size);
+		st[i]->setGeometry (15 * size + (i / 3) * 2 * size, 8 * size + (i % 3)*size, size, size);
+	}
+	st[0]->setText ("AL");
+	st[1]->setText ("AR");
+	st[2]->setText ("AC");
+	st[3]->setText ("BL");
+	st[4]->setText ("BR");
+	st[5]->setText ("BC");
+	st[6]->setText ("CL");
+	st[7]->setText ("CR");
+	st[8]->setText ("CC");
+	st[9]->setText ("DL");
+	st[10]->setText ("DR");
+	st[11]->setText ("DC");
 }
 Traffic_v1::~Traffic_v1 () {}
 void Traffic_v1::paintEvent (QPaintEvent *event) {
@@ -402,7 +424,7 @@ void Traffic_v1::sim () {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
 				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
-					qDebug () << "E";
+					qDebug () << "E" << _car_->pos << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 2)->pos << (_car_ - 2)->index;
 				}
 			}
 		}
@@ -414,6 +436,7 @@ void Traffic_v1::sim () {
 		}
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0) {
 			InNode temp;
+			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
 			temp.delay_time = (i % 3) ? ((i % 3 == 1) ? 10 : 20) : 30;
 			temp.dir = (DIR)(i / 3);
 			temp.tr = (TR)(i % 3);
@@ -432,7 +455,8 @@ void Traffic_v1::sim () {
 			if (_n_->delay_time == -1) {
 				Car temp;
 				temp.acc = ND_A (e);
-				temp.vec = 10;
+				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
+				temp.vec = 15;
 				temp.pos = 0;
 				temp.index = _n_->index;
 				car_out[_n_->dir*TR_NUM + _n_->tr] << temp;
@@ -444,9 +468,10 @@ void Traffic_v1::sim () {
 void Traffic_v1::generate () {
 	for (int i = 0; i < DIR_NUM; i++) {
 		if (go[i] <= 0) {
+			go[i] = expdf (lambda[i]);
 			bool OK[TR_NUM];
 			for (int j = 0; j < TR_NUM; j++) OK[j] = car_in[i*TR_NUM + j].empty ()
-				|| car_in[i*TR_NUM + j].last ().pos > 185;
+				|| car_in[i*TR_NUM + j].last ().pos > -189.00;
 			int cont = 0;
 			for (int j = 0; j < TR_NUM; j++)if (OK[j]) cont++;
 			if (cont) {
@@ -460,12 +485,14 @@ void Traffic_v1::generate () {
 				temp.pos = -200.0;//control length 200m;
 				temp.vec = ND_V (e);
 				temp.index = ++this->index;
-				while (temp.vec < 10 || temp.vec>20)temp.vec = ND_V (e);
+				while (temp.vec < 11.5 || temp.vec>16)temp.vec = ND_V (e);
 				temp.acc = ND_A (e);
-				while (temp.acc < 0.1)temp.vec = ND_A (e);
+				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 				car_in[i*TR_NUM + j] << temp;
 			}
-			else continue;
+			else {
+				i++; continue;
+			}
 		}
 		else go[i] -= 0.1;
 	}

@@ -49,12 +49,13 @@ private:
 	QRadioButton* slow;
 	QRadioButton* very_slow;
 	QLabel* speed;
+	com_label* st;
+	com_label* _st;
 private:
 	void Res ();
 	void sim ();
 	void generate ();
 	void strategy ();
-	bool check ();
 	void following ();
 	void _following ();
 public:
