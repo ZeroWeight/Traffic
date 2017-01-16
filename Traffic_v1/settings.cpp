@@ -47,9 +47,36 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	set_green->setText ("Set Green Behind");
 	set_yellow->setText ("Set Yellow Behind");
 	set_red->setText ("Set Red Behind");
-	connect (set_green, SIGNAL (clicked ()), this, SLOT (Ref_G ()));
-	connect (set_yellow, SIGNAL (clicked ()), this, SLOT (Ref_Y ()));
-	connect (set_red, SIGNAL (clicked ()), this, SLOT (Ref_R ()));
+	connect (set_green, &QPushButton::clicked, [=](void) {
+		for (int i = 0; i < DIR_NUM; i++)
+			for (int j = 0; j < TR_NUM; j++)
+				if (check[i*TR_NUM + j]->isChecked ())
+					for (int k = slider->value (); k < period; k++)
+						map[k][i][j] = Green;
+		this->update ();
+		for (int i = 0; i < DIR_NUM*TR_NUM; i++)
+			check[i]->setChecked (false);
+	});
+	connect (set_yellow, &QPushButton::clicked, [=](void) {
+		for (int i = 0; i < DIR_NUM; i++)
+			for (int j = 0; j < TR_NUM; j++)
+				if (check[i*TR_NUM + j]->isChecked ())
+					for (int k = slider->value (); k < period; k++)
+						map[k][i][j] = Yellow;
+		this->update ();
+		for (int i = 0; i < DIR_NUM*TR_NUM; i++)
+			check[i]->setChecked (false);
+	});
+	connect (set_red, &QPushButton::clicked, [=](void) {
+		for (int i = 0; i < DIR_NUM; i++)
+			for (int j = 0; j < TR_NUM; j++)
+				if (check[i*TR_NUM + j]->isChecked ())
+					for (int k = slider->value (); k < period; k++)
+						map[k][i][j] = Red;
+		this->update ();
+		for (int i = 0; i < DIR_NUM*TR_NUM; i++)
+			check[i]->setChecked (false);
+	});
 	p = new QLabel (this);
 	n = new QLabel (this);
 	_p = new QLineEdit (this);
@@ -66,12 +93,41 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	_n->setFont (QFont ("TimesNewsRoman", 10));
 	_p->setText (QString::number (period));
 	_n->setText (QString::number (slider->value () + 1));
-	connect (slider, SIGNAL (valueChanged (int)), this, SLOT (Ref_S ()));
-	connect (_n, SIGNAL (editingFinished ()), this, SLOT (Ref_n ()));
+	connect (slider, &QSlider::valueChanged, [=](const int i) {
+		_n->setText (QString::number (i + 1));
+	});
+	connect (_n, &QLineEdit::editingFinished, [=](void) {
+		if (_n->text ().toInt () <= period&&_n->text ().toInt () > 0)
+			slider->setValue (_n->text ().toInt () - 1);
+		else {
+			QMessageBox temp;
+			temp.setText ("ILLEGAL INPUT");
+			temp.exec ();
+			_n->setText (QString::number (slider->value () + 1));
+		}
+	});
 	_reset = new QPushButton (this);
 	_reset->setText ("Reset\r\nchange the period");
 	_reset->setGeometry (17 * size, 9.3 * size, 2 * size, size);
-	connect (_reset, SIGNAL (clicked ()), this, SLOT (Ref_r ()));
+	connect (_reset, &QPushButton::clicked, [=](void) {
+		if (_p->text ().toInt () > 0) {
+			slider->setValue (0);
+			_n->setText ("1");
+			period = _p->text ().toInt ();
+			delete[] map;
+			map = new Light[period];
+			slider->setMaximum (period - 1);
+			for (int i = 0; i < period; i++) for (int j = 0; j < DIR_NUM; j++) for (int k = 0; k < TR_NUM; k++)
+				map[i][j][k] = Red;
+		}
+		else {
+			QMessageBox temp;
+			temp.setText ("ILLEGAL INPUT");
+			temp.exec ();
+			_p->setText (QString::number (period));
+		}
+		this->update ();
+	});
 	save = new QPushButton (this);
 	save->setText ("Save\r\nQuit");
 	save->setFont (QFont ("TimesNewsRoman", 10));
@@ -255,70 +311,6 @@ void Settings::paintEvent (QPaintEvent *) {
 		painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
 	if (map[slider->value ()][D][Center] == Yellow)
 		painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
-}
-void Settings::Ref_G () {
-	for (int i = 0; i < DIR_NUM; i++)
-		for (int j = 0; j < TR_NUM; j++)
-			if (check[i*TR_NUM + j]->isChecked ())
-				for (int k = slider->value (); k < period; k++)
-					map[k][i][j] = Green;
-	this->update ();
-	for (int i = 0; i < DIR_NUM*TR_NUM; i++)
-		check[i]->setChecked (false);
-}
-
-void Settings::Ref_Y () {
-	for (int i = 0; i < DIR_NUM; i++)
-		for (int j = 0; j < TR_NUM; j++)
-			if (check[i*TR_NUM + j]->isChecked ())
-				for (int k = slider->value (); k < period; k++)
-					map[k][i][j] = Yellow;
-	this->update ();
-	for (int i = 0; i < DIR_NUM*TR_NUM; i++)
-		check[i]->setChecked (false);
-}
-
-void Settings::Ref_R () {
-	for (int i = 0; i < DIR_NUM; i++)
-		for (int j = 0; j < TR_NUM; j++)
-			if (check[i*TR_NUM + j]->isChecked ())
-				for (int k = slider->value (); k < period; k++)
-					map[k][i][j] = Red;
-	this->update ();
-	for (int i = 0; i < DIR_NUM*TR_NUM; i++)
-		check[i]->setChecked (false);
-}
-void Settings::Ref_S () {
-	_n->setText (QString::number (slider->value () + 1));
-}
-void Settings::Ref_n () {
-	if (_n->text ().toInt () <= period&&_n->text ().toInt () > 0)
-		slider->setValue (_n->text ().toInt () - 1);
-	else {
-		QMessageBox temp;
-		temp.setText ("ILLEGAL INPUT");
-		temp.exec ();
-		_n->setText (QString::number (slider->value () + 1));
-	}
-}
-void Settings::Ref_r () {
-	if (_p->text ().toInt () > 0) {
-		slider->setValue (0);
-		_n->setText ("1");
-		period = _p->text ().toInt ();
-		delete[] map;
-		map = new Light[period];
-		slider->setMaximum (period - 1);
-		for (int i = 0; i < period; i++) for (int j = 0; j < DIR_NUM; j++) for (int k = 0; k < TR_NUM; k++)
-			map[i][j][k] = Red;
-	}
-	else {
-		QMessageBox temp;
-		temp.setText ("ILLEGAL INPUT");
-		temp.exec ();
-		_p->setText (QString::number (period));
-	}
-	this->update ();
 }
 void Settings::closeEvent (QCloseEvent *event) {
 	save->click ();

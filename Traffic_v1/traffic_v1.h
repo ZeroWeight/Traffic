@@ -51,8 +51,20 @@ private:
 	QLabel* speed;
 	com_label* st;
 	com_label* _st;
+	QSlider* A_L;
+	QSlider* B_L;
+	QSlider* C_L;
+	QSlider* D_L;
+	QLabel*A_A;
+	QLabel*B_A;
+	QLabel*C_A;
+	QLabel*D_A;
+	QLabel*A_B;
+	QLabel*B_B;
+	QLabel*C_B;
+	QLabel*D_B;
+
 private:
-	void Res ();
 	void sim ();
 	void generate ();
 	void strategy ();
@@ -63,15 +75,6 @@ public:
 	~Traffic_v1 ();
 	public slots:
 	void paintEvent (QPaintEvent *event);
-	private slots:
-	void Ref_Start ();
-	void Ref_End ();
-	void Ref_Timer ();
-	void Ref_Reset ();
-	inline void f (bool b) { if (b) timer->setInterval (1); }
-	inline void m (bool b) { if (b) timer->setInterval (10); }
-	inline void _s (bool b) { if (b) timer->setInterval (100); }
-	inline void ss (bool b) { if (b) timer->setInterval (1000); }
 };
 
 #endif // TRAFFIC_V1_H

@@ -42,13 +42,6 @@ public:
 	~Settings ();
 	public slots:
 	void paintEvent (QPaintEvent *);
-	private slots:
-	void Ref_G ();
-	void Ref_Y ();
-	void Ref_R ();
-	void Ref_S ();
-	void Ref_n ();
-	void Ref_r ();
 protected:
 	void closeEvent (QCloseEvent *event);
 };

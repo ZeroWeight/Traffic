@@ -9,7 +9,7 @@ double expdf (double lambda) {
 	pV = (-1.0 / lambda)*log (1 - pV);
 	return pV;
 }
-static const double lambda[DIR_NUM] = { 3,3,3,3 };
+static double lambda[DIR_NUM] = { 3,3,3,3 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
 static std::normal_distribution<double> ND_V (13.8, 0.9);
@@ -46,23 +46,76 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	_reset->setText ("Reset\r\nSet time scale");
 	start = new QPushButton (this);
 	start->setText ("Start");
-	start->setFont (QFont ("TimesNewRoman", 16));
-	start->setGeometry (15 * size, 3.5*size, 2 * size, size);
+	start->setFont (QFont ("TimesNewRoman", 12));
+	start->setGeometry (15 * size, 3.5*size, 1.5 * size, size);
 	end = new QPushButton (this);
 	end->setText ("Pause");
-	end->setFont (QFont ("TimesNewRoman", 16));
-	end->setGeometry (17.5 * size, 3.5*size, 2 * size, size);
+	end->setFont (QFont ("TimesNewRoman", 12));
+	end->setGeometry (16.8 * size, 3.5*size, 1.5 * size, size);
 	timer = new QTimer (this);
 	timer->setInterval (10);
 	timer->stop ();
 	end->setEnabled (false);
-	connect (start, SIGNAL (clicked ()), this, SLOT (Ref_Start ()));
-	connect (end, SIGNAL (clicked ()), this, SLOT (Ref_End ()));
-	connect (timer, SIGNAL (timeout ()), this, SLOT (Ref_Timer ()));
-	connect (_reset, SIGNAL (clicked ()), this, SLOT (Ref_Reset ()));
+	connect (start, &QPushButton::clicked, [=](void) {
+		scaleEdit->setText (QString::number (scale_t));
+		scaleEdit->setEnabled (false);
+		end->setText ("Pause");
+		end->setEnabled (true);
+		_reset->setEnabled (false);
+		start->setEnabled (false);
+		timer->start ();
+	});
+	connect (end, &QPushButton::clicked, [=](void) {
+		if (timer->isActive ()) {
+			start->setText ("Resume");
+			end->setText ("End");
+		}
+		else {
+			start->setText ("Start");
+			end->setEnabled (false);
+			this->now_t = 0;
+			now->setText ("Time:\t0 s");
+			_reset->setEnabled (true);
+			scaleEdit->setEnabled (true);
+			for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
+				car_in[i].clear ();
+				car_out[i].clear ();
+			}
+			Node->clear ();
+			index = 0;
+		}
+		timer->stop ();
+		start->setEnabled (true); });
+	connect (timer, &QTimer::timeout, [=](void) {
+		++now_t;
+		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
+		generate ();
+		following ();
+		_following ();
+		sim ();
+		this->update ();
+	});
+	connect (_reset, &QPushButton::clicked, [=](void) {
+		now_t = 0;
+		now->setText ("Time:\t0 s");
+		if (scaleEdit->text ().toInt () > 0)
+			scale_t = scaleEdit->text ().toInt ();
+		else {
+			QMessageBox temp;
+			temp.setText ("ILLEGAL INPUT");
+			temp.exec ();
+			scaleEdit->setText (QString::number (scale_t));
+		}
+		for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
+			car_in[i].clear ();
+			car_out[i].clear ();
+		}
+		Node->clear ();
+		index = 0;
+	});
 	edit = new QPushButton (this);
 	edit->setText ("Edit the Traffic light");
-	edit->setGeometry (15 * size, 5 * size, 4.5 * size, size);
+	edit->setGeometry (15 * size, 5 * size, 3.3 * size, size);
 	edit->setFont (QFont ("TimesNewRoman", 10));
 	connect (edit, SIGNAL (clicked ()), this, SLOT (hide ()));
 	connect (edit, SIGNAL (clicked ()), s, SLOT (show ()));
@@ -86,10 +139,10 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	speed = new QLabel ("Sim Speed", this);
 	speed->setFont (QFont ("TimesNewRoman", 10));
 	speed->setGeometry (15 * size, 6.5*size, size*1.5, size);
-	connect (fast, SIGNAL (toggled (bool)), this, SLOT (f (bool)));
-	connect (medium, SIGNAL (toggled (bool)), this, SLOT (m (bool)));
-	connect (slow, SIGNAL (toggled (bool)), this, SLOT (_s (bool)));
-	connect (very_slow, SIGNAL (toggled (bool)), this, SLOT (ss (bool)));
+	connect (fast, &QRadioButton::toggled, [=](const bool b) {if (b) timer->setInterval (1); });
+	connect (medium, &QRadioButton::toggled, [=](const bool b) {if (b) timer->setInterval (10); });
+	connect (slow, &QRadioButton::toggled, [=](const bool b) {if (b) timer->setInterval (100); });
+	connect (very_slow, &QRadioButton::toggled, [=](const bool b) {if (b) timer->setInterval (1000); });
 	st = new com_label[TR_NUM*DIR_NUM];
 	_st = new com_label[TR_NUM*DIR_NUM];
 	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
@@ -112,6 +165,74 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	st[9]->setText ("DL");
 	st[10]->setText ("DR");
 	st[11]->setText ("DC");
+	A_L = new QSlider (Qt::Horizontal, this);
+	A_L->setMaximum (3000);
+	A_L->setValue (3000);
+	A_L->setMinimum (1);
+	A_L->setGeometry (19.5 * size, 3.5 * size, 1.5*size, 0.5*size);
+	B_L = new QSlider (Qt::Horizontal, this);
+	B_L->setMaximum (3000);
+	B_L->setValue (3000);
+	B_L->setMinimum (1);
+	B_L->setGeometry (19.5 * size, 4.2 * size, 1.5*size, 0.5*size);
+	C_L = new QSlider (Qt::Horizontal, this);
+	C_L->setMaximum (3000);
+	C_L->setValue (3000);
+	C_L->setMinimum (1);
+	C_L->setGeometry (19.5 * size, 4.8 * size, 1.5*size, 0.5*size);
+	D_L = new QSlider (Qt::Horizontal, this);
+	D_L->setMaximum (3000);
+	D_L->setValue (3000);
+	D_L->setMinimum (1);
+	D_L->setGeometry (19.5 * size, 5.5 * size, 1.5*size, 0.5*size);
+	A_A = new QLabel ("A", this);
+	A_A->setFont (QFont ("TimesNewRoman", 10));
+	A_A->setGeometry (19 * size, 3.5 * size, 0.5*size, 0.5*size);
+	B_A = new QLabel ("B", this);
+	B_A->setFont (QFont ("TimesNewRoman", 10));
+	B_A->setGeometry (19 * size, 4.2 * size, 0.5*size, 0.5*size);
+	C_A = new QLabel ("C", this);
+	C_A->setFont (QFont ("TimesNewRoman", 10));
+	C_A->setGeometry (19 * size, 4.8 * size, 0.5*size, 0.5*size);
+	D_A = new QLabel ("D", this);
+	D_A->setFont (QFont ("TimesNewRoman", 10));
+	D_A->setGeometry (19 * size, 5.5 * size, 0.5*size, 0.5*size);
+	A_B = new QLabel ("1", this);
+	A_B->setFont (QFont ("TimesNewRoman", 10));
+	A_B->setGeometry (21.5 * size, 3.5 * size, size, 0.5*size);
+	B_B = new QLabel ("1", this);
+	B_B->setFont (QFont ("TimesNewRoman", 10));
+	B_B->setGeometry (21.5 * size, 4.2 * size, size, 0.5*size);
+	C_B = new QLabel ("1", this);
+	C_B->setFont (QFont ("TimesNewRoman", 10));
+	C_B->setGeometry (21.5 * size, 4.8 * size, size, 0.5*size);
+	D_B = new QLabel ("1", this);
+	D_B->setFont (QFont ("TimesNewRoman", 10));
+	D_B->setGeometry (21.5 * size, 5.5 * size, size, 0.5*size);
+	connect (A_L, &QSlider::valueChanged,
+		[=](const int &value) {
+		A_B->setText (QString::number (double (value) / 3000));
+		lambda[0] = double (value) / 1000;
+		go[0] = expdf (lambda[0]);
+	});
+	connect (B_L, &QSlider::valueChanged,
+		[=](const int &value) {
+		B_B->setText (QString::number (double (value) / 3000));
+		lambda[1] = double (value) / 1000;
+		go[1] = expdf (lambda[0]);
+	});
+	connect (C_L, &QSlider::valueChanged,
+		[=](const int &value) {
+		C_B->setText (QString::number (double (value) / 3000));
+		lambda[2] = double (value) / 1000;
+		go[2] = expdf (lambda[0]);
+	});
+	connect (D_L, &QSlider::valueChanged,
+		[=](const int &value) {
+		D_B->setText (QString::number (double (value) / 3000));
+		lambda[3] = double (value) / 1000;
+		go[3] = expdf (lambda[0]);
+	});
 }
 Traffic_v1::~Traffic_v1 () {}
 void Traffic_v1::paintEvent (QPaintEvent *event) {
@@ -367,54 +488,6 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 		}
 	}
 }
-void Traffic_v1::Ref_End () {
-	if (timer->isActive ()) {
-		start->setText ("Resume");
-		end->setText ("End");
-	}
-	else {
-		start->setText ("Start");
-		end->setEnabled (false);
-		this->now_t = 0;
-		now->setText ("Time:\t0 s");
-		_reset->setEnabled (true);
-		scaleEdit->setEnabled (true);
-		Res ();
-	}
-	timer->stop ();
-	start->setEnabled (true);
-}
-void Traffic_v1::Ref_Start () {
-	scaleEdit->setText (QString::number (scale_t));
-	scaleEdit->setEnabled (false);
-	end->setText ("Pause");
-	end->setEnabled (true);
-	_reset->setEnabled (false);
-	start->setEnabled (false);
-	timer->start ();
-}
-void Traffic_v1::Ref_Timer () {
-	++now_t;
-	now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
-	generate ();
-	following ();
-	_following ();
-	sim ();
-	this->update ();
-}
-void Traffic_v1::Ref_Reset () {
-	now_t = 0;
-	now->setText ("Time:\t0 s");
-	if (scaleEdit->text ().toInt () > 0)
-		scale_t = scaleEdit->text ().toInt ();
-	else {
-		QMessageBox temp;
-		temp.setText ("ILLEGAL INPUT");
-		temp.exec ();
-		scaleEdit->setText (QString::number (scale_t));
-	}
-	Res ();
-}
 void Traffic_v1::sim () {
 	for (int i = 0; i < TR_NUM*DIR_NUM*(now_t != 0); i++) {
 		QList<Car>::iterator _car_;
@@ -495,12 +568,4 @@ void Traffic_v1::generate () {
 		}
 		else go[i] -= 0.1;
 	}
-}
-void Traffic_v1::Res () {
-	for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
-		car_in[i].clear ();
-		car_out[i].clear ();
-	}
-	Node->clear ();
-	index = 0;
 }
