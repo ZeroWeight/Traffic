@@ -9,6 +9,8 @@ double expdf (double lambda) {
 	pV = (-1.0 / lambda)*log (1 - pV);
 	return pV;
 }
+//designed speed limit:60kmh-1=16.67ms-1
+//gen speed 40-60kmh-1
 static double lambda[DIR_NUM] = { 3,3,3,3 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
@@ -219,19 +221,19 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		[=](const int &value) {
 		B_B->setText (QString::number (double (value) / 3000));
 		lambda[1] = double (value) / 1000;
-		go[1] = expdf (lambda[0]);
+		go[1] = expdf (lambda[1]);
 	});
 	connect (C_L, &QSlider::valueChanged,
 		[=](const int &value) {
 		C_B->setText (QString::number (double (value) / 3000));
 		lambda[2] = double (value) / 1000;
-		go[2] = expdf (lambda[0]);
+		go[2] = expdf (lambda[2]);
 	});
 	connect (D_L, &QSlider::valueChanged,
 		[=](const int &value) {
 		D_B->setText (QString::number (double (value) / 3000));
 		lambda[3] = double (value) / 1000;
-		go[3] = expdf (lambda[0]);
+		go[3] = expdf (lambda[3]);
 	});
 }
 Traffic_v1::~Traffic_v1 () {}
@@ -397,19 +399,19 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 		}
 	}
 
-	foreach (Car _c_, car_out[B*TR_NUM + Left]) {
+	foreach (Car _c_, car_out[D*TR_NUM + Left]) {
 		if (_c_.pos < 50) {
 			painter.drawRect (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Left] * size + -0.5*meter, 2 * meter, meter);
 			painter.drawText (near_side[C] * size + _c_.pos*meter - meter, lane_in[A][Left] * size + -0.5*meter, QString::number (_c_.index));
 		}
 	}
-	foreach (Car _c_, car_out[B*TR_NUM + Right]) {
+	foreach (Car _c_, car_out[D*TR_NUM + Right]) {
 		if (_c_.pos < 50) {
 			painter.drawRect (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Right] * size + -0.5*meter, 2 * meter, meter);
 			painter.drawText (near_side[A] * size - _c_.pos*meter - meter, lane_in[C][Right] * size + -0.5*meter, QString::number (_c_.index));
 		}
 	}
-	foreach (Car _c_, car_out[B*TR_NUM + Center]) {
+	foreach (Car _c_, car_out[D*TR_NUM + Center]) {
 		if (_c_.pos < 50) {
 			painter.drawRect (lane_in[D][Center] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, meter, 2 * meter);
 			painter.drawText (lane_in[D][Center] * size + -0.5*meter, near_side[B] * size + _c_.pos*meter - meter, QString::number (_c_.index));
@@ -496,7 +498,8 @@ void Traffic_v1::sim () {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
 				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
-					qDebug () << "E" << _car_->pos << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 2)->pos << (_car_ - 2)->index;
+					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc;
+					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc;
 				}
 			}
 		}

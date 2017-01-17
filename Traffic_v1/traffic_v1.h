@@ -70,6 +70,8 @@ private:
 	void strategy ();
 	void following ();
 	void _following ();
+	void free (QList<Car>::iterator i, int d);
+	void head (QList<Car>::iterator i, int d);
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();
