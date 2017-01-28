@@ -65,7 +65,7 @@ private:
 	QLabel*D_B;
 
 private:
-	void sim ();
+	void sim ()const;
 	void generate ();
 	void strategy ();
 	void following ();

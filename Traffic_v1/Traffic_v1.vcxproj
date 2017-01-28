@@ -164,6 +164,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="paint.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="traffic_v1.cpp" />
     <ClCompile Include="User.cpp" />
