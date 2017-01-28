@@ -13,7 +13,7 @@
 #include <random>
 #include "settings.hpp"
 struct Car {
-	bool block;
+	int block;
 	double acc;
 	double vec;
 	double pos;

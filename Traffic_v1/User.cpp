@@ -34,19 +34,17 @@ void Traffic_v1::following () {
 				}
 				if (it->pos - itp->pos < (S << 2)) {
 					if (it->pos - itp->pos < S) {
-						itp->acc = it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
-							/ 2.0 / (S - it->pos + itp->pos);
+						itp->acc = -3;
 					}
 					else if (it->vec < itp->vec)
 						itp->acc = it->acc + (itp->vec - it->vec)*(itp->vec - it->vec)
 						/ 2.0 / (S - it->pos + itp->pos);
 					else if (it->vec > itp->vec)
-						itp->acc = it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
-						/ 2.0 / (S - it->pos + itp->pos);
+						itp->acc = ND_A_S (e);
 					if (itp->acc < -5) itp->acc = -5;
 					if (itp->acc > 5) itp->acc = 5;
 					if (itp->vec + 0.1*itp->acc < 0) {
-						itp->acc = 0; itp->vec = 0;
+						itp->acc = 0; itp->vec = 0; itp->block = 5;
 					}
 				}
 				else  free (itp, i);
@@ -77,7 +75,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 }
 void Traffic_v1::free (QList<Car>::iterator it, int i) {
 	if (it->vec < 8)  it->acc = ND_A_A (e);
-	else if (it->vec < 16) it->acc = ND_A (e);
+	else if (it->vec < 15) it->acc = ND_A (e);
 	else if (it->vec < 17) it->acc = ND_A_S (e);
 	else it->acc = ND_A_BS (e);
 }
