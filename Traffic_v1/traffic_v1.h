@@ -13,6 +13,7 @@
 #include <random>
 #include "settings.hpp"
 struct Car {
+	bool block;
 	double acc;
 	double vec;
 	double pos;
@@ -21,6 +22,7 @@ struct Car {
 struct InNode {
 	DIR dir;
 	TR tr;
+	double vec;
 	int delay_time;
 	int index;
 };

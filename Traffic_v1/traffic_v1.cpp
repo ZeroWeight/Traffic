@@ -263,6 +263,7 @@ void Traffic_v1::sim ()const {
 			temp.delay_time = (i % 3) ? ((i % 3 == 1) ? 10 : 20) : 30;
 			temp.dir = (DIR)(i / 3);
 			temp.tr = (TR)(i % 3);
+			temp.vec = car_in[i].first ().vec;
 			temp.index = car_in[i].first ().index;
 			Node->append (temp);
 			car_in[i].removeFirst ();
@@ -279,7 +280,7 @@ void Traffic_v1::sim ()const {
 				Car temp;
 				temp.acc = ND_A (e);
 				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
-				temp.vec = 15;
+				temp.vec = _n_->vec;
 				temp.pos = 0;
 				temp.index = _n_->index;
 				car_out[_n_->dir*TR_NUM + _n_->tr] << temp;
@@ -307,6 +308,7 @@ void Traffic_v1::generate () {
 				Car temp;
 				temp.pos = -200.0;//control length 200m;
 				temp.vec = ND_V (e);
+				temp.block = false;
 				temp.index = ++this->index;
 				while (temp.vec < 11.5 || temp.vec>16)temp.vec = ND_V (e);
 				temp.acc = ND_A (e);
