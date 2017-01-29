@@ -19,6 +19,7 @@ void Traffic_v1::following () {
 		if (!car_in[i].empty ()) {
 			if (car_in[i].begin ()->block) --car_in[i].begin ()->block;
 			else head (car_in[i].begin (), i);
+#pragma region following
 			QList<Car>::iterator it;
 			QList<Car>::iterator itp;
 			for (it = car_in[i].end () - 2, itp = car_in[i].end () - 1;
@@ -59,6 +60,7 @@ void Traffic_v1::following () {
 					else  free (itp, i);
 				}
 			}
+#pragma endregion
 		}
 	}
 }
@@ -79,6 +81,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 			it->acc = it->vec*it->vec / 2 / (it->pos);
 			if (it->vec + 0.1*it->acc < 0) {
 				it->vec = it->acc = 0;
+				it->block = penalty_time;
 			}
 		}
 	}
