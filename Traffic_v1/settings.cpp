@@ -92,18 +92,18 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	_p->setFont (QFont ("TimesNewsRoman", 10));
 	_n->setFont (QFont ("TimesNewsRoman", 10));
 	_p->setText (QString::number (period));
-	_n->setText (QString::number (slider->value () + 1));
+	_n->setText (QString::number (slider->value ()));
 	connect (slider, &QSlider::valueChanged, [=](const int i) {
-		_n->setText (QString::number (i + 1));
+		_n->setText (QString::number (i));
 	});
 	connect (_n, &QLineEdit::editingFinished, [=](void) {
 		if (_n->text ().toInt () <= period&&_n->text ().toInt () > 0)
-			slider->setValue (_n->text ().toInt () - 1);
+			slider->setValue (_n->text ().toInt ());
 		else {
 			QMessageBox temp;
 			temp.setText ("ILLEGAL INPUT");
 			temp.exec ();
-			_n->setText (QString::number (slider->value () + 1));
+			_n->setText (QString::number (slider->value ()));
 		}
 	});
 	_reset = new QPushButton (this);
@@ -112,7 +112,7 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	connect (_reset, &QPushButton::clicked, [=](void) {
 		if (_p->text ().toInt () > 0) {
 			slider->setValue (0);
-			_n->setText ("1");
+			_n->setText ("0");
 			period = _p->text ().toInt ();
 			delete[] map;
 			map = new Light[period];
@@ -138,6 +138,8 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 Settings::~Settings () {}
 
 void Settings::paintEvent (QPaintEvent *) {
+	slider->setMinimum (0);
+	slider->setMaximum (period - 1);
 	double r = 0.2*size;
 	QPainter painter (this);
 	painter.setPen (*main_line);

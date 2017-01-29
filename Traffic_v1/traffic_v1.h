@@ -12,7 +12,13 @@
 #include <cmath>
 #include <random>
 #include "settings.hpp"
+enum MODE {
+	NORM,
+	STAT,
+	STOP,
+};
 struct Car {
+	MODE mode;
 	int block;
 	double acc;
 	double vec;
