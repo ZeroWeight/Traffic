@@ -1,7 +1,7 @@
 #include "traffic_v1.h"
 void Traffic_v1::paintEvent (QPaintEvent *event) {
 	QPainter painter (this);
-	painter.setFont (QFont ("TimesNewRoman", 12));
+	painter.setFont (QFont ("TimesNewRoman", 8));
 	painter.setPen (*(s->main_line));
 	for (int i = 0; i < 3; i++) {
 		painter.drawLine (size*far_side[A], size*main_lane[i], size*near_side[A], size*main_lane[i]);

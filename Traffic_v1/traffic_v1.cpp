@@ -257,7 +257,7 @@ void Traffic_v1::sim ()const {
 				_car_->vec += _car_->acc*0.1;
 			}
 		}
-		while (!car_in[i].empty () && car_in[i].first ().pos >= 0) {
+		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
 			InNode temp;
 			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
 			temp.delay_time = (i % 3) ? ((i % 3 == 1) ? 10 : 20) : 30;

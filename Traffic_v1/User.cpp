@@ -13,41 +13,51 @@ static std::normal_distribution<double> ND_A_A (3, 0.3);
 static std::normal_distribution<double> ND_A (1, 0.3);
 static std::normal_distribution<double> ND_A_S (0, 0.1);
 static std::normal_distribution<double> ND_A_BS (-0.5, 0.3);
-void Traffic_v1::strategy () {}
+const int penalty_time = 5;
 void Traffic_v1::following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 		if (!car_in[i].empty ()) {
-			head (car_in[i].begin (), i);
+			if (car_in[i].begin ()->block) --car_in[i].begin ()->block;
+			else head (car_in[i].begin (), i);
 			QList<Car>::iterator it;
 			QList<Car>::iterator itp;
 			for (it = car_in[i].end () - 2, itp = car_in[i].end () - 1;
 				itp != car_in[i].begin (); --it, --itp) {
-				if (it->vec < 10) {
-					itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
-					if (itp->acc > -1) itp->acc = 0;
-					if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
-						itp->acc = it->acc; itp->vec = 0;
-						if (itp->pos - it->pos + 5 < 0)itp->acc = 1 + it->acc;
+				if (itp->block) --itp->block;
+				else {
+					if (it->vec < 10) {
+						itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
+						if (itp->acc > -1) itp->acc = 0;
+						if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
+							itp->acc = it->acc; itp->vec = 0;
+							itp->block = penalty_time;
+						}
+						continue;
 					}
-					if (itp->vec < 5 && itp->pos - it->pos + S < 0 && it->acc>0 && Get (i) == Green)itp->acc = ND_A (e);
-					continue;
+					if (it->pos - itp->pos < (S << 2)) {
+						//slow down
+						if (it->pos - itp->pos < S) {
+							itp->acc = -3;
+						}
+						//car following mode
+						else if (it->vec < itp->vec)
+							itp->acc = it->acc + (itp->vec - it->vec)*(itp->vec - it->vec)
+							/ 2.0 / (S - it->pos + itp->pos);
+						//keep on
+						else if (it->vec > itp->vec)
+							itp->acc = ND_A_S (e);
+						//sat.
+						if (itp->acc < -5) itp->acc = -5;
+						if (itp->acc > 5) itp->acc = 5;
+						//stop
+						if (itp->vec + 0.1*itp->acc < 0) {
+							itp->acc = 0;
+							itp->vec = 0;
+							itp->block = penalty_time;
+						}
+					}
+					else  free (itp, i);
 				}
-				if (it->pos - itp->pos < (S << 2)) {
-					if (it->pos - itp->pos < S) {
-						itp->acc = -3;
-					}
-					else if (it->vec < itp->vec)
-						itp->acc = it->acc + (itp->vec - it->vec)*(itp->vec - it->vec)
-						/ 2.0 / (S - it->pos + itp->pos);
-					else if (it->vec > itp->vec)
-						itp->acc = ND_A_S (e);
-					if (itp->acc < -5) itp->acc = -5;
-					if (itp->acc > 5) itp->acc = 5;
-					if (itp->vec + 0.1*itp->acc < 0) {
-						itp->acc = 0; itp->vec = 0; itp->block = 5;
-					}
-				}
-				else  free (itp, i);
 			}
 		}
 	}
@@ -66,7 +76,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 		}
 	case Yellow:case Red:
 		if (it->pos > -100) {
-			it->acc = it->vec*it->vec / 2 / (it->pos + 0.5);
+			it->acc = it->vec*it->vec / 2 / (it->pos);
 			if (it->vec + 0.1*it->acc < 0) {
 				it->vec = it->acc = 0;
 			}

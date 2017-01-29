@@ -69,7 +69,6 @@ private:
 private:
 	void sim ()const;
 	void generate ();
-	void strategy ();
 	void following ();
 	void _following ();
 	void free (QList<Car>::iterator i, int d);
