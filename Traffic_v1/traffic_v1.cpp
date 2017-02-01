@@ -246,8 +246,8 @@ void Traffic_v1::sim ()const {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
 				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
-					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc;
-					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc;
+					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->mode;
+					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;
 				}
 			}
 		}
@@ -282,6 +282,7 @@ void Traffic_v1::sim ()const {
 				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 				temp.vec = _n_->vec;
 				temp.pos = 0;
+				temp.mode = MODE::RUN;
 				temp.index = _n_->index;
 				car_out[_n_->dir*TR_NUM + _n_->tr] << temp;
 			}
@@ -308,6 +309,7 @@ void Traffic_v1::generate () {
 				Car temp;
 				temp.pos = -200.0;//control length 200m;
 				temp.vec = ND_V (e);
+				temp.mode = MODE::RUN;
 				temp.block = false;
 				temp.index = ++this->index;
 				while (temp.vec < 11.5 || temp.vec>16)temp.vec = ND_V (e);

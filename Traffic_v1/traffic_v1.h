@@ -13,9 +13,9 @@
 #include <random>
 #include "settings.hpp"
 enum MODE {
-	NORM,
 	STAT,
-	STOP,
+	RUN,
+	BLOCK,
 };
 struct Car {
 	MODE mode;
