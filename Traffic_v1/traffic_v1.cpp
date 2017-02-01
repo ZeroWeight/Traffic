@@ -16,6 +16,7 @@ static double lambda[DIR_NUM] = { 3,3,3,3 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
 static std::normal_distribution<double> ND_V (13.8, 0.9);
+static std::normal_distribution<double> ND (0, 1);
 static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
@@ -296,7 +297,7 @@ void Traffic_v1::generate () {
 			go[i] = expdf (lambda[i]);
 			bool OK[TR_NUM];
 			for (int j = 0; j < TR_NUM; j++) OK[j] = car_in[i*TR_NUM + j].empty ()
-				|| car_in[i*TR_NUM + j].last ().pos > -189.00;
+				|| car_in[i*TR_NUM + j].last ().pos > -180.00;
 			int cont = 0;
 			for (int j = 0; j < TR_NUM; j++)if (OK[j]) cont++;
 			if (cont) {
@@ -308,11 +309,18 @@ void Traffic_v1::generate () {
 				}
 				Car temp;
 				temp.pos = -200.0;//control length 200m;
-				temp.vec = ND_V (e);
+				if (car_in[i*TR_NUM + j].empty ())
+					temp.vec = ND_V (e);
+				else
+					temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
 				temp.mode = MODE::RUN;
 				temp.block = false;
 				temp.index = ++this->index;
-				while (temp.vec < 11.5 || temp.vec>16)temp.vec = ND_V (e);
+				if (!car_in[i*TR_NUM + j].empty ())
+					while (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3 || temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3)
+						temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
+				else
+					while (temp.vec < 10 || temp.vec>16) temp.vec = ND_V (e);
 				temp.acc = ND_A (e);
 				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 				car_in[i*TR_NUM + j] << temp;

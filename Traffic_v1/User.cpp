@@ -6,7 +6,7 @@
 #define PERIOD (s->period)
 #define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
 #define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
-static const int S = 10;
+static const int S = 15;
 static const double a_max = 5;
 static std::default_random_engine e;
 static std::normal_distribution<double> ND_A_A (3, 0.3);
@@ -66,9 +66,10 @@ void Traffic_v1::following () {
 					}
 					break;
 				case MODE::RUN:
-					if (it->vec < 10 && it->acc < 3 && (it->pos - itp->pos) < 200000) {
+					if (it->vec < 5 && it->acc < 3 && it->pos - itp->pos < 60) {
 						itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
-						itp->mode = MODE::BLOCK;
+						if (it->pos - itp->pos < 10 && it->mode == MODE::BLOCK)
+							itp->mode = MODE::BLOCK;
 						if (itp->acc > -1) itp->acc = 0;
 						if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
 							itp->acc = it->acc; itp->vec = 0;
@@ -79,7 +80,8 @@ void Traffic_v1::following () {
 					if (it->pos - itp->pos < (S << 2)) {
 						//slow down
 						if (it->pos - itp->pos < S) {
-							itp->acc = -3;
+							itp->acc = it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
+								/ 2.0 * (S - it->pos + itp->pos);
 						}
 						//car following mode
 						else if (it->vec < itp->vec)
@@ -87,7 +89,8 @@ void Traffic_v1::following () {
 							/ 2.0 / (S - it->pos + itp->pos);
 						//keep on
 						else if (it->vec > itp->vec)
-							itp->acc = ND_A_S (e);
+							itp->acc = it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
+							/ 2.0 / (S - it->pos + itp->pos);
 						//sat.
 						if (itp->acc < -5) itp->acc = -5;
 						if (itp->acc > 5) itp->acc = 5;
@@ -113,7 +116,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 	case Green:
 		int j;
 		for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
-		if (j - GetTime > 10 || it->pos < -100) {//10 sec remains
+		if (j - GetTime > (-it->pos / it->vec) || it->pos < -100) {//10 sec remains
 			if (it->vec < 5)  it->acc = ND_A_A (e);
 			else if (it->vec < 16) it->acc = ND_A (e);
 			else if (it->vec < 17) it->acc = ND_A_S (e);
