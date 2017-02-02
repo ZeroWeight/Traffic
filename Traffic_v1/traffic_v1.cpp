@@ -307,23 +307,40 @@ void Traffic_v1::generate () {
 					if (OK[j] && !k) break;
 					else if (OK[j]) --k;
 				}
-				Car temp;
-				temp.pos = -200.0;//control length 200m;
-				if (car_in[i*TR_NUM + j].empty ())
-					temp.vec = ND_V (e);
-				else
-					temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
-				temp.mode = MODE::RUN;
-				temp.block = false;
-				temp.index = ++this->index;
-				if (!car_in[i*TR_NUM + j].empty ())
-					while (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3 || temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3)
+				if (j == TR_NUM) {
+					int max = 0;
+					for (int t = 0; t < TR_NUM; ++k)
+						if (car_in[i*TR_NUM + t].last ().pos > car_in[i*TR_NUM + max].last ().pos) max = t;
+					Car temp;
+					temp.pos = -200.0;
+					temp.vec == (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
+					temp.mode = MODE::RUN;
+					temp.block = false;
+					temp.index = ++this->index;
+					temp.acc = ND_A (e);
+					while (temp.acc<0.01 || temp.acc>2.5) temp.acc = ND_A (e);
+					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<0 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
+						temp.vec = car_in[i*TR_NUM + max].last ().vec - abs (ND (e));
+				}
+				else {
+					Car temp;
+					temp.pos = -200.0;//control length 200m;
+					if (car_in[i*TR_NUM + j].empty ())
+						temp.vec = ND_V (e);
+					else
 						temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
-				else
-					while (temp.vec < 10 || temp.vec>16) temp.vec = ND_V (e);
-				temp.acc = ND_A (e);
-				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
-				car_in[i*TR_NUM + j] << temp;
+					temp.mode = MODE::RUN;
+					temp.block = false;
+					temp.index = ++this->index;
+					if (!car_in[i*TR_NUM + j].empty ())
+						while (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3 || temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3)
+							temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
+					else
+						while (temp.vec < 10 || temp.vec>16) temp.vec = ND_V (e);
+					temp.acc = ND_A (e);
+					while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
+					car_in[i*TR_NUM + j] << temp;
+				}
 			}
 			else {
 				i++; continue;
