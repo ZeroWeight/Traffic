@@ -1,5 +1,6 @@
 #include "traffic_v1.h"
 static const int _S = 8;
+#define MAX_LOADING
 double expdf (double lambda) {
 	double pV;
 	while (1) {
