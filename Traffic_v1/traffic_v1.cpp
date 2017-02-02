@@ -1,10 +1,10 @@
 #include "traffic_v1.h"
 static const int _S = 8;
-#define MAX_LOADING
+#define MAX_LOAD
 double expdf (double lambda) {
 	double pV;
 	while (1) {
-		pV = (double)rand () / (double)RAND_MAX;
+		pV = double (rand ()) / double (RAND_MAX);
 		if (pV != 1)
 			break;
 	}
@@ -247,9 +247,13 @@ void Traffic_v1::sim ()const {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
-				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
+				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -0.0) {
+					double temp;
+					temp = (_car_ - 1)->pos;
+					(_car_ - 1)->pos = _car_->pos;
+					_car_->pos = temp;/*
 					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->mode;
-					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;
+					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;*/
 				}
 			}
 		}
@@ -294,6 +298,7 @@ void Traffic_v1::sim ()const {
 }
 void Traffic_v1::generate () {
 	for (int i = 0; i < DIR_NUM; i++) {
+#ifndef MAX_LOAD
 		if (go[i] <= 0) {
 			go[i] = expdf (lambda[i]);
 			bool OK[TR_NUM];
@@ -345,9 +350,25 @@ void Traffic_v1::generate () {
 			}
 			else {
 				i++; continue;
-			}
+}
 		}
 		else go[i] -= 0.1;
+#endif
+#ifdef MAX_LOAD
+		for (int j = 0; j < TR_NUM; ++j) {
+			if (car_in[i*TR_NUM + j].empty () || car_in[i*TR_NUM + j].last ().pos > -185) {
+				Car temp;
+				temp.acc = ND_A (e);
+				temp.block = false;
+				temp.mode = MODE::RUN;
+				temp.index = ++this->index;
+				temp.pos = -200.0;
+				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
+				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
+				car_in[i*TR_NUM + j] << temp;
+			}
+		}
+#endif
 	}
 }
 void Traffic_v1::_following () {

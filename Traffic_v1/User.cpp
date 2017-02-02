@@ -22,10 +22,13 @@ void Traffic_v1::following () {
 				int j;
 				for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
 				if (Get (i) == Color::Green&&j - GetTime > 10) {
-					if (car_in[i].begin ()->block) --car_in[i].begin ()->block;
-					else if (car_in[i].begin ()->vec < 3) car_in[i].begin ()->acc = 5;
-					else if (car_in[i].begin ()->vec > 3.5) car_in[i].begin ()->acc = -5;
-					else car_in[i].begin ()->acc = 0;
+					if (car_in[i].first ().pos > -20) {
+						if (car_in[i].begin ()->block) --car_in[i].begin ()->block;
+						else if (car_in[i].begin ()->vec < 3) car_in[i].begin ()->acc = 5;
+						else if (car_in[i].begin ()->vec > 3.5) car_in[i].begin ()->acc = -5;
+						else car_in[i].begin ()->acc = 0;
+					}
+					else car_in[i].first ().mode = MODE::RUN;
 				}
 				else {
 					car_in[i].begin ()->acc = car_in[i].begin ()->vec*car_in[i].begin ()->vec / 2 / (car_in[i].begin ()->pos);
@@ -51,10 +54,16 @@ void Traffic_v1::following () {
 				switch (itp->mode) {
 				case MODE::BLOCK:
 					int j;
+					if (it->mode == MODE::RUN) itp->mode = MODE::RUN;
 					for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
 					if (Get (i) == Color::Green&&j - GetTime > 10) {
 						if (itp->block) --itp->block;
+						else if (it->pos - itp->pos < 2)itp->acc = -5;
 						else itp->acc = it->acc + 0.5* (it->vec - itp->vec);
+						if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
+							itp->acc = it->acc; itp->vec = 0;
+						}
+						else if (it->pos - itp->pos > 20) itp->mode = MODE::RUN;
 					}
 					else {
 						itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
@@ -66,7 +75,7 @@ void Traffic_v1::following () {
 					}
 					break;
 				case MODE::RUN:
-					if (it->vec < 5 && it->acc < 3 && it->pos - itp->pos < 60) {
+					if (it->vec < 5 && it->acc < 3 && it->pos - itp->pos < 20) {
 						itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
 						if (it->pos - itp->pos < 10 && it->mode == MODE::BLOCK)
 							itp->mode = MODE::BLOCK;
@@ -116,7 +125,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 	case Green:
 		int j;
 		for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
-		if (j - GetTime > (-it->pos / it->vec) || it->pos < -100) {//10 sec remains
+		if (j - GetTime > 3 || it->pos < -50) {//10 sec remains
 			if (it->vec < 5)  it->acc = ND_A_A (e);
 			else if (it->vec < 16) it->acc = ND_A (e);
 			else if (it->vec < 17) it->acc = ND_A_S (e);
@@ -124,7 +133,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 			break;
 		}
 	case Yellow:case Red:
-		if (it->pos > -100) {
+		if (it->pos > -50) {
 			it->mode = MODE::BLOCK;
 			it->acc = it->vec*it->vec / 2 / (it->pos);
 			if (it->vec + 0.1*it->acc < 0) {
