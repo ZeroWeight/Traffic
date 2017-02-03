@@ -31,7 +31,7 @@ static const int _S = 8;
 #if __A__+__B__+__C__- 1
 #error Specific stategy need to be chosen
 #endif
-
+#pragma  endregion
 double expdf (double lambda) {
 	double pV = 1;
 	while (pV == 1)
