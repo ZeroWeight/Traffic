@@ -65,6 +65,12 @@
     <ClCompile Include="paint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="st1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="st2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="traffic_v1.h">

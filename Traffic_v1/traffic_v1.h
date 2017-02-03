@@ -76,6 +76,8 @@ private:
 	void sim ()const;
 	void generate ();
 	void following ();
+	void st1 ();
+	void st2 ();
 	void _following ();
 	void free (QList<Car>::iterator i, int d);
 	void head (QList<Car>::iterator i, int d);

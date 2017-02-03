@@ -166,6 +166,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="paint.cpp" />
     <ClCompile Include="settings.cpp" />
+    <ClCompile Include="st1.cpp" />
+    <ClCompile Include="st2.cpp" />
     <ClCompile Include="traffic_v1.cpp" />
     <ClCompile Include="User.cpp" />
   </ItemGroup>

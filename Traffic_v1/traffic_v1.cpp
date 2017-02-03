@@ -1,14 +1,41 @@
 #include "traffic_v1.h"
 static const int _S = 8;
 #define MAX_LOAD
+
+#define MANUAL
+#define ST1
+#define ST2
+
 #undef MAX_LOAD
+
+//uncomment the lines below to switch the stategy
+#undef MANUAL
+//#undef ST1
+#undef ST2
+#pragma  region _PRE_DEF_
+#define __A__ 0
+#define __B__ 0
+#define __C__ 0
+#ifdef MANUAL
+#undef __A__
+#define __A__ 1
+#endif
+#ifdef ST1
+#undef __B__
+#define __B__ 1
+#endif
+#ifdef ST2
+#undef __C__
+#define __C__ 1
+#endif
+#if __A__+__B__+__C__- 1
+#error Specific stategy need to be chosen
+#endif
+
 double expdf (double lambda) {
-	double pV;
-	while (1) {
+	double pV = 1;
+	while (pV == 1)
 		pV = double (rand ()) / double (RAND_MAX);
-		if (pV != 1)
-			break;
-	}
 	pV = (-1.0 / lambda)*log (1 - pV);
 	return pV;
 }
@@ -96,7 +123,15 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		++now_t;
 		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 		generate ();
+#ifdef MANUAL
 		following ();
+#endif
+#ifdef ST1
+		st1 ();
+#endif
+#ifdef ST2
+		st2 ();
+#endif
 		_following ();
 		sim ();
 		this->update ();
@@ -159,18 +194,10 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		_st[i]->setGeometry (16 * size + (i / 3) * 2 * size, 8 * size + (i % 3)*size, size, size);
 		st[i]->setGeometry (15 * size + (i / 3) * 2 * size, 8 * size + (i % 3)*size, size, size);
 	}
-	st[0]->setText ("AL");
-	st[1]->setText ("AR");
-	st[2]->setText ("AC");
-	st[3]->setText ("BL");
-	st[4]->setText ("BR");
-	st[5]->setText ("BC");
-	st[6]->setText ("CL");
-	st[7]->setText ("CR");
-	st[8]->setText ("CC");
-	st[9]->setText ("DL");
-	st[10]->setText ("DR");
-	st[11]->setText ("DC");
+	st[0]->setText ("AL");	st[1]->setText ("AR");	st[2]->setText ("AC");
+	st[3]->setText ("BL");	st[4]->setText ("BR");	st[5]->setText ("BC");
+	st[6]->setText ("CL");	st[7]->setText ("CR");	st[8]->setText ("CC");
+	st[9]->setText ("DL");	st[10]->setText ("DR");	st[11]->setText ("DC");
 	A_L = new QSlider (Qt::Horizontal, this);
 	A_L->setMaximum (3000);
 	A_L->setValue (3000);
