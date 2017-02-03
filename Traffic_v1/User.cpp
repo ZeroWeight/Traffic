@@ -54,11 +54,14 @@ void Traffic_v1::following () {
 				switch (itp->mode) {
 				case MODE::BLOCK:
 					int j;
-					if (it->mode == MODE::RUN) itp->mode = MODE::RUN;
+					if (it->mode == MODE::RUN&&it->pos - itp->pos > 10) itp->mode = MODE::RUN;
 					for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
 					if (Get (i) == Color::Green&&j - GetTime > 10) {
 						if (itp->block) --itp->block;
-						else if (it->pos - itp->pos < 2)itp->acc = -5;
+						else if (it->pos - itp->pos < 2)
+							if (it->vec > itp->vec) itp->acc = -5;
+							else itp->acc = it->acc;
+
 						else itp->acc = it->acc + 0.5* (it->vec - itp->vec);
 						if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
 							itp->acc = it->acc; itp->vec = 0;
@@ -66,16 +69,19 @@ void Traffic_v1::following () {
 						else if (it->pos - itp->pos > 20) itp->mode = MODE::RUN;
 					}
 					else {
-						itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
-						if (itp->acc > -1) itp->acc = 0;
-						if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
-							itp->acc = it->acc; itp->vec = 0;
-							itp->block = penalty_time;
+						if (it->pos - itp->pos > 5 && (itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3)) > -3) itp->acc = 3;
+						else {
+							itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
+							if (itp->acc > -1) itp->acc = 0;
+							if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
+								itp->acc = it->acc; itp->vec = 0;
+								itp->block = penalty_time;
+							}
 						}
 					}
 					break;
 				case MODE::RUN:
-					if (it->vec < 5 && it->acc < 3 && it->pos - itp->pos < 20) {
+					if (it->vec < 5 && it->acc < 3) {
 						itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
 						if (it->pos - itp->pos < 10 && it->mode == MODE::BLOCK)
 							itp->mode = MODE::BLOCK;

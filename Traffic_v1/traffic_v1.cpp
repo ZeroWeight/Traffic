@@ -1,6 +1,7 @@
 #include "traffic_v1.h"
 static const int _S = 8;
 #define MAX_LOAD
+#undef MAX_LOAD
 double expdf (double lambda) {
 	double pV;
 	while (1) {
@@ -247,11 +248,11 @@ void Traffic_v1::sim ()const {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
-				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -0.0) {
+				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
 					double temp;
-					temp = (_car_ - 1)->pos;
-					(_car_ - 1)->pos = _car_->pos;
-					_car_->pos = temp;/*
+					temp = (_car_ - 1)->vec;
+					(_car_ - 1)->vec = _car_->vec;
+					_car_->vec = temp;/*
 					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->mode;
 					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;*/
 				}
@@ -350,7 +351,7 @@ void Traffic_v1::generate () {
 			}
 			else {
 				i++; continue;
-}
+			}
 		}
 		else go[i] -= 0.1;
 #endif
