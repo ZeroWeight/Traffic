@@ -1,5 +1,8 @@
 #include "traffic_v1.h"
 static const int _S = 8;
+#define FIN
+#undef FIN
+
 #define MAX_LOAD
 
 #define MANUAL
@@ -276,12 +279,16 @@ void Traffic_v1::sim ()const {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
 				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
+#ifdef FIN
 					double temp;
 					temp = (_car_ - 1)->vec;
 					(_car_ - 1)->vec = _car_->vec;
-					_car_->vec = temp;/*
+					_car_->vec = temp;
+#endif
+#ifndef FIN
 					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->mode;
-					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;*/
+					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;
+#endif
 				}
 			}
 		}
