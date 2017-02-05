@@ -12,7 +12,11 @@ static std::normal_distribution<double> ND_A_A (3, 0.3);
 static std::normal_distribution<double> ND_A (1, 0.3);
 static std::normal_distribution<double> ND_A_S (0, 0.1);
 static std::normal_distribution<double> ND_A_BS (-0.5, 0.3);
-const int penalty_time = 5;
+static const int penalty_time = 5;
+static const double V_max = 20.0;
+static const double V_min = 10.0;
+static const double A_max = 5.0;
+
 // the stategy of flowing
 void Traffic_v1::st1 () {
 	//check the head car
@@ -135,7 +139,7 @@ void Traffic_v1::st1 () {
 					}
 					else {
 #pragma region NORM_
-						//.
+
 #pragma endregion
 					}
 					break;
