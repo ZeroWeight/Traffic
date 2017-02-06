@@ -13,9 +13,42 @@ static std::normal_distribution<double> ND_A (1, 0.3);
 static std::normal_distribution<double> ND_A_S (0, 0.1);
 static std::normal_distribution<double> ND_A_BS (-0.5, 0.3);
 static const int penalty_time = 5;
+static const double A_max_ = 3.0;
 static const double V_max = 20.0;
 static const double V_min = 10.0;
 static const double A_max = 5.0;
+inline double CalMaxTime (double pos, double vec) {
+	//dec. to the min. vec.
+	//keep the max vec till aim
+	//
+	//pos>0 vec>0
+	double time;
+	double pos_cri = (vec*vec - V_min*V_min) / (2 * A_max_);
+	if (pos <= pos_cri) {
+		double vec_ = sqrt (vec*vec - 2 * A_max_*pos);//vec at the terminal
+		time = (vec - vec_) / A_max_;
+	}
+	else {
+		double time1 = (vec - V_min) / A_max_;
+		double time2 = (pos - pos_cri) / V_min;
+		time = time1 + time2;
+	}
+	return time;
+}
+inline double CalMinTime (double pos, double vec) {
+	double time;
+	double pos_cri = (V_max*V_max - vec*vec) / (2 * A_max);
+	if (pos <= pos_cri) {
+		double vec_ = sqrt (vec*vec + 2 * A_max*pos);//vec at the terminal
+		time = (vec_ - vec) / A_max;
+	}
+	else {
+		double time1 = (V_max - vec) / A_max;
+		double time2 = (pos - pos_cri) / V_max;
+		time = time1 + time2;
+	}
+	return time;
+}
 
 // the stategy of flowing
 void Traffic_v1::st1 () {
