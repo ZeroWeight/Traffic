@@ -17,7 +17,8 @@ static const double A_max_ = 3.0;
 static const double V_max = 20.0;
 static const double V_min = 10.0;
 static const double A_max = 5.0;
-inline double CalMaxTime (double pos, double vec) {
+
+static inline double CalMaxTime (double pos, double vec) {
 	//dec. to the min. vec.
 	//keep the max vec till aim
 	//
@@ -35,7 +36,7 @@ inline double CalMaxTime (double pos, double vec) {
 	}
 	return time;
 }
-inline double CalMinTime (double pos, double vec) {
+static inline double CalMinTime (double pos, double vec) {
 	double time;
 	double pos_cri = (V_max*V_max - vec*vec) / (2 * A_max);
 	if (pos <= pos_cri) {
@@ -93,7 +94,10 @@ void Traffic_v1::st1 () {
 				break;
 			case MODE::RUN:
 #pragma region HEAD_STAT
-				//..
+				double MaxT = CalMaxTime (-car_in[i].first ().pos, car_in[i].first ().vec);
+				double MinT = CalMinTime (-car_in[i].first ().pos, car_in[i].first ().vec);
+				int tt = int (MinT) + 1;
+				//set the correct tt
 #pragma endregion
 				break;
 			default:
