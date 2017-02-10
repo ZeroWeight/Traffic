@@ -1,7 +1,7 @@
 #include "traffic_v1.h"
 static const int _S = 8;
 #define FIN
-//#undef FIN
+#undef FIN
 
 #define MAX_LOAD
 

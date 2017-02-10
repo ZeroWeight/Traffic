@@ -18,6 +18,7 @@ enum MODE {
 	BLOCK,
 };
 struct Car {
+	int arr_time;//only in st2
 	MODE mode;
 	int block;
 	double acc;
