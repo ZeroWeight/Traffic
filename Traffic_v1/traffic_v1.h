@@ -73,6 +73,8 @@ private:
 	QLabel*D_B;
 
 private:
+	double CalMaxTime (double pos, double vec);
+	double CalMinTime (double pos, double vec);
 	void sim ()const;
 	void generate ();
 	void following ();

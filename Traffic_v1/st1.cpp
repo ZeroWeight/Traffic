@@ -18,7 +18,7 @@ static const double V_max = 20.0;
 static const double V_min = 10.0;
 static const double A_max = 5.0;
 
-static inline double CalMaxTime (double pos, double vec) {
+double Traffic_v1::CalMaxTime (double pos, double vec) {
 	//dec. to the min. vec.
 	//keep the max vec till aim
 	//
@@ -36,7 +36,7 @@ static inline double CalMaxTime (double pos, double vec) {
 	}
 	return time;
 }
-static inline double CalMinTime (double pos, double vec) {
+double Traffic_v1::CalMinTime (double pos, double vec) {
 	double time;
 	double pos_cri = (V_max*V_max - vec*vec) / (2 * A_max);
 	if (pos <= pos_cri) {
