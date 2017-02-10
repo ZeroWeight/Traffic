@@ -12,7 +12,7 @@ static std::normal_distribution<double> ND_A_A (3, 0.3);
 static std::normal_distribution<double> ND_A (1, 0.3);
 static std::normal_distribution<double> ND_A_S (0, 0.1);
 static std::normal_distribution<double> ND_A_BS (-0.5, 0.3);
-static const int penalty_time = 5;
+static const int penalty_time = 20;
 static const double A_max_ = 3.0;
 static const double V_max = 20.0;
 static const double V_min = 10.0;
@@ -204,8 +204,24 @@ void Traffic_v1::st1 () {
 					}
 					else {
 #pragma region NORM_
-						//temp
-						free (itp, i);
+						//calc the car waiting
+						int remain = 0;
+						foreach (Car _car_, car_in[i]) if (_car_.mode == MODE::BLOCK) ++remain;
+						MinT = CalMinTime (-itp->pos, itp->vec) + double (remain)*1.2;
+						MaxT = CalMaxTime (-itp->pos, itp->vec) + double (remain)*1.2;
+						//calc the best t
+						for (tt = int (MinT) + 1; tt<int (MaxT); ++tt)
+							if (WILL (GetTime + tt, i) == Color::Green&&
+								WILL (GetTime + tt - 1, i) == Color::Green &&
+								(tt < 2 || WILL (GetTime + tt - 2, i) == Color::Green)) break;
+						if (tt == int (MaxT))
+							itp->acc = 0;
+						else {
+							//set a proper speed and vcc
+							double vel = -itp->pos / double (tt);
+							if (itp->vec < vel - 0.3 || itp->vec>vel + 0.3)
+								itp->acc = (vel - car_in[i].first ().vec) / (double (tt) / 2);
+						}
 #pragma endregion
 					}
 					break;

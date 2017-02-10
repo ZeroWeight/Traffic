@@ -13,7 +13,7 @@ static std::normal_distribution<double> ND_A_A (3, 0.3);
 static std::normal_distribution<double> ND_A (1, 0.3);
 static std::normal_distribution<double> ND_A_S (0, 0.1);
 static std::normal_distribution<double> ND_A_BS (-0.5, 0.3);
-const int penalty_time = 5;
+const int penalty_time = 20;
 void Traffic_v1::following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 		if (!car_in[i].empty ()) {
