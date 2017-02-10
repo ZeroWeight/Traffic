@@ -131,7 +131,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 	case Green:
 		int j;
 		for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
-		if (j - GetTime > 3 || it->pos < -50) {//10 sec remains
+		if (j - GetTime > 2 || it->pos < -50) {//10 sec remains
 			if (it->vec < 5)  it->acc = ND_A_A (e);
 			else if (it->vec < 16) it->acc = ND_A (e);
 			else if (it->vec < 17) it->acc = ND_A_S (e);
@@ -145,7 +145,8 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 			if (it->vec + 0.1*it->acc < 0) {
 				it->vec = it->acc = 0;
 				it->mode = MODE::BLOCK;
-				it->block = penalty_time;
+				if (it->pos > -10)
+					it->block = penalty_time;
 			}
 		}
 	}

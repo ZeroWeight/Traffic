@@ -1,7 +1,7 @@
 #include "traffic_v1.h"
 static const int _S = 8;
 #define FIN
-#undef FIN
+//#undef FIN
 
 #define MAX_LOAD
 
@@ -107,6 +107,9 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 			end->setText ("End");
 		}
 		else {
+			for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
+				_st[i]->setText (QString::number (0));
+			}
 			start->setText ("Start");
 			end->setEnabled (false);
 			this->now_t = 0;
@@ -354,7 +357,7 @@ void Traffic_v1::generate () {
 						if (car_in[i*TR_NUM + t].last ().pos > car_in[i*TR_NUM + max].last ().pos) max = t;
 					Car temp;
 					temp.pos = -200.0;
-					temp.vec == (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
+					temp.vec = (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
 					temp.mode = MODE::RUN;
 					temp.block = false;
 					temp.index = ++this->index;

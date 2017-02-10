@@ -77,7 +77,7 @@ void Traffic_v1::st1 () {
 			case MODE::BLOCK:
 				int j;
 				for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
-				if (Get (i) == Color::Green&&j - GetTime > 10) {
+				if (Get (i) == Color::Green&&j - GetTime > 5) {
 					if (car_in[i].first ().pos > -20) {
 						if (car_in[i].begin ()->block) --car_in[i].begin ()->block;
 						else if (car_in[i].begin ()->vec < 3) car_in[i].begin ()->acc = 5;
@@ -98,20 +98,23 @@ void Traffic_v1::st1 () {
 			case MODE::RUN:
 #pragma region HEAD_STAT
 				if (car_in[i].first ().pos < -20) {
-					MaxT = CalMaxTime (-car_in[i].first ().pos, car_in[i].first ().vec);
-					MinT = CalMinTime (-car_in[i].first ().pos, car_in[i].first ().vec);
-					//set the correct t
-					for (tt = int (MinT) + 1; tt<int (MaxT); ++tt)
-						if (WILL (GetTime + tt, i) == Color::Green&&
-							WILL (GetTime + tt - 1, i) == Color::Green &&
-							(tt < 2 || WILL (GetTime + tt - 2, i) == Color::Green)) break;
-					if (tt == int (MaxT))
-						head (car_in[i].begin (), i);
+					if (car_in[i].first ().vec<V_min || car_in[i].first ().vec>V_max) head (car_in[i].begin (), i);
 					else {
-						//set a proper speed and vcc
-						double vel = -car_in[i].first ().pos / double (tt);
-						if (car_in[i].first ().vec < vel - 0.3 || car_in[i].first ().vec>vel + 0.3)
-							car_in[i].first ().acc = (vel - car_in[i].first ().vec) / (double (tt) / 2);
+						MaxT = CalMaxTime (-car_in[i].first ().pos, car_in[i].first ().vec);
+						MinT = CalMinTime (-car_in[i].first ().pos, car_in[i].first ().vec);
+						//set the correct t
+						for (tt = int (MinT) + 1; tt<int (MaxT); ++tt)
+							if (WILL (GetTime + tt, i) == Color::Green&&
+								WILL (GetTime + tt - 1, i) == Color::Green &&
+								(tt < 2 || WILL (GetTime + tt - 2, i) == Color::Green)) break;
+						if (tt == int (MaxT))
+							head (car_in[i].begin (), i);
+						else {
+							//set a proper speed and vcc
+							double vel = -car_in[i].first ().pos / double (tt);
+							if (car_in[i].first ().vec < vel - 0.3 || car_in[i].first ().vec>vel + 0.3)
+								car_in[i].first ().acc = (vel - car_in[i].first ().vec) / (double (tt) / 2);
+						}
 					}
 				}
 				else {
@@ -142,7 +145,7 @@ void Traffic_v1::st1 () {
 					int j;
 					if (it->mode == MODE::RUN&&it->pos - itp->pos > 10) itp->mode = MODE::RUN;
 					for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
-					if (Get (i) == Color::Green&&j - GetTime > 10) {
+					if (Get (i) == Color::Green&&j - GetTime > 5) {
 						if (itp->block) --itp->block;
 						else if (it->pos - itp->pos < 2)
 							if (it->vec > itp->vec) itp->acc = -5;
@@ -204,23 +207,26 @@ void Traffic_v1::st1 () {
 					}
 					else {
 #pragma region NORM_
-						//calc the car waiting
-						int remain = 0;
-						foreach (Car _car_, car_in[i]) if (_car_.mode == MODE::BLOCK) ++remain;
-						MinT = CalMinTime (-itp->pos, itp->vec) + double (remain)*1.2;
-						MaxT = CalMaxTime (-itp->pos, itp->vec) + double (remain)*1.2;
-						//calc the best t
-						for (tt = int (MinT) + 1; tt<int (MaxT); ++tt)
-							if (WILL (GetTime + tt, i) == Color::Green&&
-								WILL (GetTime + tt - 1, i) == Color::Green &&
-								(tt < 2 || WILL (GetTime + tt - 2, i) == Color::Green)) break;
-						if (tt == int (MaxT))
-							itp->acc = 0;
+						if (itp->vec<V_min || itp->vec>V_max) free (itp, i);
 						else {
-							//set a proper speed and vcc
-							double vel = -itp->pos / double (tt);
-							if (itp->vec < vel - 0.3 || itp->vec>vel + 0.3)
-								itp->acc = (vel - car_in[i].first ().vec) / (double (tt) / 2);
+							//calc the car waiting
+							int remain = 0;
+							foreach (Car _car_, car_in[i]) if (_car_.mode == MODE::BLOCK) ++remain;
+							MinT = CalMinTime (-itp->pos, itp->vec) + double (remain)*1.2;
+							MaxT = CalMaxTime (-itp->pos, itp->vec) + double (remain)*1.2;
+							//calc the best t
+							for (tt = int (MinT) + 1; tt<int (MaxT); ++tt)
+								if (WILL (GetTime + tt, i) == Color::Green&&
+									WILL (GetTime + tt - 1, i) == Color::Green &&
+									(tt < 2 || WILL (GetTime + tt - 2, i) == Color::Green)) break;
+							if (tt == int (MaxT))
+								itp->acc = 0;
+							else {
+								//set a proper speed and vcc
+								double vel = -itp->pos / double (tt);
+								if (itp->vec < vel - 0.3 || itp->vec>vel + 0.3)
+									itp->acc = (vel - car_in[i].first ().vec) / (double (tt) / 2);
+							}
 						}
 #pragma endregion
 					}
