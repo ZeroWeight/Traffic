@@ -53,6 +53,9 @@ static inline double CalMinTime (double pos, double vec) {
 
 // the stategy of flowing
 void Traffic_v1::st1 () {
+	int tt;
+	double MaxT;
+	double MinT;
 	//check the head car
 		//check the shortest time arrive
 		//check the longest time arrive
@@ -94,10 +97,35 @@ void Traffic_v1::st1 () {
 				break;
 			case MODE::RUN:
 #pragma region HEAD_STAT
-				double MaxT = CalMaxTime (-car_in[i].first ().pos, car_in[i].first ().vec);
-				double MinT = CalMinTime (-car_in[i].first ().pos, car_in[i].first ().vec);
-				int tt = int (MinT) + 1;
-				//set the correct tt
+				if (car_in[i].first ().pos < -20) {
+					MaxT = CalMaxTime (-car_in[i].first ().pos, car_in[i].first ().vec);
+					MinT = CalMinTime (-car_in[i].first ().pos, car_in[i].first ().vec);
+					//set the correct t
+					for (tt = int (MinT) + 1; tt<int (MaxT); ++tt)
+						if (WILL (GetTime + tt, i) == Color::Green&&
+							WILL (GetTime + tt - 1, i) == Color::Green &&
+							(tt < 2 || WILL (GetTime + tt - 2, i) == Color::Green)) break;
+					if (tt == int (MaxT))
+						head (car_in[i].begin (), i);
+					else {
+						//set a proper speed and vcc
+						double vel = -car_in[i].first ().pos / double (tt);
+						if (car_in[i].first ().vec < vel - 0.3 || car_in[i].first ().vec>vel + 0.3)
+							car_in[i].first ().acc = (vel - car_in[i].first ().vec) / (double (tt) / 2);
+					}
+				}
+				else {
+					//calc the time remain
+					int rem;
+					for (rem = GetTime; WILL (rem, i) == Color::Green&&rem - GetTime < s->period; ++rem);
+					if (double (rem - GetTime) > -car_in[i].first ().pos / car_in[i].first ().vec*1.2) car_in[i].first ().acc = 0;
+					else {
+						for (rem = GetTime; WILL (rem, i) != Color::Green&&rem - GetTime < s->period; ++rem);
+						if (double (rem - GetTime) < -car_in[i].first ().pos / car_in[i].first ().vec*0.8) car_in[i].first ().acc = 0;
+						else head (car_in[i].begin (), i);
+					}
+				}
+
 #pragma endregion
 				break;
 			default:
@@ -176,7 +204,8 @@ void Traffic_v1::st1 () {
 					}
 					else {
 #pragma region NORM_
-
+						//temp
+						free (itp, i);
 #pragma endregion
 					}
 					break;
