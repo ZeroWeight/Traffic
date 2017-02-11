@@ -6,6 +6,8 @@
 #define PERIOD (s->period)
 #define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
 #define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
+#define _head car_in[i].first()
+
 static const int S = 15;
 static const double a_max = 5;
 static std::default_random_engine e;
@@ -16,34 +18,13 @@ static std::normal_distribution<double> ND_A_BS (-0.5, 0.3);
 const int penalty_time = 20;
 void Traffic_v1::following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
+	STAT:
 		if (!car_in[i].empty ()) {
-			switch (car_in[i].begin ()->mode) {
-			case MODE::BLOCK:
-				int j;
-				for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
-				if (Get (i) == Color::Green&&j - GetTime > 10) {
-					if (car_in[i].first ().pos > -20) {
-						if (car_in[i].begin ()->block) --car_in[i].begin ()->block;
-						else if (car_in[i].begin ()->vec < 3) car_in[i].begin ()->acc = 5;
-						else if (car_in[i].begin ()->vec > 3.5) car_in[i].begin ()->acc = -5;
-						else car_in[i].begin ()->acc = 0;
-					}
-					else car_in[i].first ().mode = MODE::RUN;
-				}
-				else {
-					car_in[i].begin ()->acc = car_in[i].begin ()->vec*car_in[i].begin ()->vec / 2 / (car_in[i].begin ()->pos);
-					if (car_in[i].begin ()->acc > -1) car_in[i].begin ()->acc = 0;
-					if (car_in[i].begin ()->vec + 0.1*car_in[i].begin ()->acc <= 0 || car_in[i].begin ()->vec < 0.1) {
-						car_in[i].begin ()->acc = car_in[i].begin ()->acc; car_in[i].begin ()->vec = 0;
-						car_in[i].begin ()->block = penalty_time;
-					}
-				}
-				break;
-			case MODE::RUN:
-				head (car_in[i].begin (), i);
-				break;
-			default:
-				break;
+			head (car_in[i].begin (), i);
+			if (_head.pos > car_block[i].last ().pos - 5 && Get (i) == Color::Red) {
+				car_block[i] << _head;
+				car_in[i].pop_front ();
+				goto STAT;
 			}
 
 #pragma region following
@@ -139,9 +120,12 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 			break;
 		}
 	case Yellow:case Red:
-		if (it->pos > -50) {
+		if (it->pos > -50 + car_block[i].empty () ? 0 : car_block[i].last ().pos) {
 			it->mode = MODE::BLOCK;
-			it->acc = it->vec*it->vec / 2 / (it->pos);
+			if (car_block[i].empty ())
+				it->acc = it->vec*it->vec / 2 / (it->pos);
+			else
+				it->acc = it->vec*it->vec / 2 / (it->pos - car_block[i].last ().pos + 5);
 			if (it->vec + 0.1*it->acc < 0) {
 				it->vec = it->acc = 0;
 				it->mode = MODE::BLOCK;
