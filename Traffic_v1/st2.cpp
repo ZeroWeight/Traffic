@@ -34,7 +34,7 @@ void Traffic_v1::st2 () {
 			else {
 				//unable to use the advanced tech
 			}
-			/*--------------------  cale other -------------------*/
+			/*--------------------  calc other -------------------*/
 			QList<Car>::iterator it;
 			for (it = car_in[i].begin () + 1; it != car_in[i].end (); ++it) {
 				int Min = int (CalMinTime (-it->pos, it->vec) + 1);
