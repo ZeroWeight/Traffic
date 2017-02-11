@@ -1,6 +1,40 @@
 #ifndef TRAFFIC_V1_H
 #define TRAFFIC_V1_H
+#define FIN
+#undef FIN
 
+#define MAX_LOAD
+
+#define MANUAL
+#define ST1
+#define ST2
+
+#undef MAX_LOAD
+
+//uncomment the lines below to switch the stategy
+#undef MANUAL
+//#undef ST1
+#undef ST2
+#pragma  region _PRE_DEF_
+#define __A__ 0
+#define __B__ 0
+#define __C__ 0
+#ifdef MANUAL
+#undef __A__
+#define __A__ 1
+#endif
+#ifdef ST1
+#undef __B__
+#define __B__ 1
+#endif
+#ifdef ST2
+#undef __C__
+#define __C__ 1
+#endif
+#if __A__+__B__+__C__- 1
+#error Specific stategy need to be chosen
+#endif
+#pragma  endregion
 #include <QtWidgets/QMainWindow>
 #include <QDesktopWidget>
 #include <QApplication>
