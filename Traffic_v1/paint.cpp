@@ -43,6 +43,31 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 				painter.drawText (lane_in[D][i] * size + -0.5*meter, near_side[D] * size + _car_.pos*meter - meter, QString::number (_car_.index));
 			}
 		}
+
+		foreach (Car _car_, car_block[A*TR_NUM + i]) {
+			if (_car_.pos >= -50.0) {
+				painter.drawRect (near_side[A] * size + _car_.pos*meter - meter, lane_in[A][i] * size + -0.5*meter, 2 * meter, meter);
+				painter.drawText (near_side[A] * size + _car_.pos*meter - meter, lane_in[A][i] * size + -0.5*meter, QString::number (_car_.index));
+			}
+		}
+		foreach (Car _car_, car_block[B*TR_NUM + i]) {
+			if (_car_.pos >= -50.0) {
+				painter.drawRect (lane_in[B][i] * size + -0.5*meter, near_side[B] * size - _car_.pos*meter - meter, meter, 2 * meter);
+				painter.drawText (lane_in[B][i] * size + -0.5*meter, near_side[B] * size - _car_.pos*meter - meter, QString::number (_car_.index));
+			}
+		}
+		foreach (Car _car_, car_block[C*TR_NUM + i]) {
+			if (_car_.pos >= -50.0) {
+				painter.drawRect (near_side[C] * size - _car_.pos*meter - meter, lane_in[C][i] * size + -0.5*meter, 2 * meter, meter);
+				painter.drawText (near_side[C] * size - _car_.pos*meter - meter, lane_in[C][i] * size + -0.5*meter, QString::number (_car_.index));
+			}
+		}
+		foreach (Car _car_, car_block[D*TR_NUM + i]) {
+			if (_car_.pos >= -50.0) {
+				painter.drawRect (lane_in[D][i] * size + -0.5*meter, near_side[D] * size + _car_.pos*meter - meter, meter, 2 * meter);
+				painter.drawText (lane_in[D][i] * size + -0.5*meter, near_side[D] * size + _car_.pos*meter - meter, QString::number (_car_.index));
+			}
+		}
 	}
 	painter.setPen (QPen (QColor ("Blue"), 5));
 	foreach (InNode _n_, *Node) {

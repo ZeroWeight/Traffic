@@ -86,9 +86,12 @@ private:
 	QPushButton* end;
 	QTimer* timer;
 	QPushButton* edit;
+	/*---------------------*/
 	QList<Car>* car_in;
 	QList<Car>* car_out;
 	QList<InNode>* Node;
+	QList<Car>* car_block;
+	/*--------------------*/
 	QRadioButton* fast;
 	QRadioButton* medium;
 	QRadioButton* slow;
