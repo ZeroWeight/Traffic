@@ -1,4 +1,11 @@
 #include "traffic_v1.h"
+
+#define GetTime (int(now_t/10))
+#define dir(i) ((i)/3)
+#define tr(i) ((i)%3)
+#define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
+#define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
+
 static const int _S = 8;
 double expdf (double lambda) {
 	double pV = 1;
@@ -258,14 +265,21 @@ void Traffic_v1::sim ()const {
 					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->mode;
 					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;
 #endif
+				}
 			}
 		}
-	}
 		if (!car_out[i].empty ()) {
 			for (_car_ = car_out[i].begin (); _car_ != car_out[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
 			}
+		}
+		//space: 5m
+		//max load: 1
+		//therefore
+		if (!car_block->empty () && WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green) {
+			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
+				_car_->pos += 0.5;
 		}
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
 			InNode temp;
@@ -278,10 +292,21 @@ void Traffic_v1::sim ()const {
 			Node->append (temp);
 			car_in[i].removeFirst ();
 		}
+		while (!car_block[i].empty () && car_block[i].first ().pos >= 0.5) {
+			InNode temp;
+			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
+			temp.delay_time = (i % 3) ? ((i % 3 == 1) ? 10 : 20) : 30;
+			temp.dir = (DIR)(i / 3);
+			temp.tr = (TR)(i % 3);
+			temp.vec = 10;
+			temp.index = car_in[i].first ().index;
+			Node->append (temp);
+			car_block[i].removeFirst ();
+		}
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
 			car_out[i].removeFirst ();
 		}
-}
+	}
 	QList<InNode>::iterator _n_;
 	if (!Node->empty ()) {
 		for (_n_ = Node->begin (); _n_ != Node->end (); ++_n_) {
@@ -370,11 +395,11 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
+				}
 			}
-	}
 #endif
-}
-}
+		}
+	}
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 		if (!car_out[i].empty ()) {
