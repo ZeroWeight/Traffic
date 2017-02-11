@@ -275,12 +275,12 @@ void Traffic_v1::sim ()const {
 				_car_->vec += _car_->acc*0.1;
 			}
 		}
-		//space: 5m
+		//space: 4m
 		//max load: 1
 		//therefore
 		if (!car_block[i].empty () && WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green) {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
-				_car_->pos += 0.5;
+				_car_->pos += 0.4;
 		}
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
 			InNode temp;
