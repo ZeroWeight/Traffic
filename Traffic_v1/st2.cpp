@@ -30,11 +30,19 @@ void Traffic_v1::st2 () {
 			if (OK) {
 				//able to use the advanced tech
 				head.arr_time = HAble + GetTime;
+				if (head.vec < -head.pos / HAble*0.97)
+					head.acc = A_max;
+				else if (head.vec > -head.pos / HAble*1.03)
+					head.acc = 0.5*(head.vec*head.vec - head.pos*head.pos / HAble / HAble) / head.pos*1.03;
+				else head.acc = 0;
 			}
 			else {
+				head.arr_time = MaxT;
 				//unable to use the advanced tech
+				if (head.pos < -30) head.acc = 1;
+				else head.acc = head.vec*head.vec / head.pos*0.5;
 			}
-			/*--------------------  calc other -------------------*/
+			/*-------------------- Calc other -------------------*/
 			QList<Car>::iterator it;
 			for (it = car_in[i].begin () + 1; it != car_in[i].end (); ++it) {
 				int Min = int (CalMinTime (-it->pos, it->vec) + 1);

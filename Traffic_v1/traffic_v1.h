@@ -13,8 +13,8 @@
 
 //uncomment the lines below to switch the stategy
 #undef MANUAL
-//#undef ST1
-#undef ST2
+#undef ST1
+//#undef ST2
 #pragma  region _PRE_DEF_
 #define __A__ 0
 #define __B__ 0
@@ -52,7 +52,9 @@ enum MODE {
 	BLOCK,
 };
 struct Car {
-	int arr_time;//only in st2
+#ifdef ST2
+	int arr_time;
+#endif
 	MODE mode;
 	int block;
 	double acc;
