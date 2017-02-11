@@ -26,87 +26,43 @@ void Traffic_v1::following () {
 				car_in[i].pop_front ();
 				goto STAT;
 			}
-
 #pragma region following
 			QList<Car>::iterator it;
 			QList<Car>::iterator itp;
 			for (it = car_in[i].end () - 2, itp = car_in[i].end () - 1;
 				itp != car_in[i].begin (); --it, --itp) {
-				switch (itp->mode) {
-				case MODE::BLOCK:
-					int j;
-					if (it->mode == MODE::RUN&&it->pos - itp->pos > 10) itp->mode = MODE::RUN;
-					for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) % PERIOD; j++);
-					if (Get (i) == Color::Green&&j - GetTime > 10) {
-						if (itp->block) --itp->block;
-						else if (it->pos - itp->pos < 2)
-							if (it->vec > itp->vec) itp->acc = -5;
-							else itp->acc = it->acc;
-
-						else itp->acc = it->acc + 0.5* (it->vec - itp->vec);
-						if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
-							itp->acc = it->acc; itp->vec = 0;
-						}
-						else if (it->pos - itp->pos > 20) itp->mode = MODE::RUN;
+				if (it->pos - itp->pos < (S << 2)) {
+					//slow down
+					if (it->pos - itp->pos < S) {
+						itp->acc = it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
+							/ 2.0 * (S - it->pos + itp->pos);
 					}
-					else {
-						if (it->pos - itp->pos > 5 && (itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3)) > -3) itp->acc = 3;
-						else {
-							itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
-							if (itp->acc > -1) itp->acc = 0;
-							if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
-								itp->acc = it->acc; itp->vec = 0;
-								itp->block = penalty_time;
-							}
-						}
+					//car following mode
+					else if (it->vec < itp->vec)
+						itp->acc = (it->acc + (itp->vec - it->vec)*(itp->vec - it->vec)
+							/ 2.0 / (S - it->pos + itp->pos));
+					//keep on
+					else if (it->vec > itp->vec)
+						itp->acc = 0.9*(it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
+							/ 2.0 / (S - it->pos + itp->pos));
+					//sat.
+					if (itp->acc < -5) itp->acc = -5;
+					if (itp->acc > 5) itp->acc = 5;
+					//stop
+					if (itp->vec + 0.1*itp->acc < 0) {
+						itp->acc = 0;
+						itp->vec = 0;
+						itp->block = penalty_time;
 					}
-					break;
-				case MODE::RUN:
-					if (it->vec < 5 && it->acc < 3) {
-						itp->acc = itp->vec*itp->vec / 2 / (itp->pos - it->pos + 3);
-						if (it->pos - itp->pos < 10 && it->mode == MODE::BLOCK)
-							itp->mode = MODE::BLOCK;
-						if (itp->acc > -1) itp->acc = 0;
-						if (itp->vec + 0.1*itp->acc <= 0 || itp->vec < 0.1) {
-							itp->acc = it->acc; itp->vec = 0;
-							itp->block = penalty_time;
-						}
-						continue;
-					}
-					if (it->pos - itp->pos < (S << 2)) {
-						//slow down
-						if (it->pos - itp->pos < S) {
-							itp->acc = it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
-								/ 2.0 * (S - it->pos + itp->pos);
-						}
-						//car following mode
-						else if (it->vec < itp->vec)
-							itp->acc = it->acc + (itp->vec - it->vec)*(itp->vec - it->vec)
-							/ 2.0 / (S - it->pos + itp->pos);
-						//keep on
-						else if (it->vec > itp->vec)
-							itp->acc = it->acc - (itp->vec - it->vec)*(itp->vec - it->vec)
-							/ 2.0 / (S - it->pos + itp->pos);
-						//sat.
-						if (itp->acc < -5) itp->acc = -5;
-						if (itp->acc > 5) itp->acc = 5;
-						//stop
-						if (itp->vec + 0.1*itp->acc < 0) {
-							itp->acc = 0;
-							itp->vec = 0;
-							itp->block = penalty_time;
-						}
-					}
-					else  free (itp, i);
-					break;
-				default:
-					break;
 				}
+				else  free (itp, i);
+				break;
 			}
-#pragma endregion
 		}
+#pragma endregion
 	}
 }
+
 void Traffic_v1::head (QList<Car>::iterator it, int i) {
 	switch (Get (i)) {
 	case Green:

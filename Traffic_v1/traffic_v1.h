@@ -52,9 +52,7 @@ enum MODE {
 	BLOCK,
 };
 struct Car {
-#ifdef ST2
 	int arr_time;
-#endif
 	MODE mode;
 	int block;
 	double acc;
