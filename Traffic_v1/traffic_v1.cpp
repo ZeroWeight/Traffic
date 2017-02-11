@@ -91,6 +91,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 			for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
 				car_in[i].clear ();
 				car_out[i].clear ();
+				car_block[i].clear ();
 			}
 			Node->clear ();
 			index = 0;
@@ -262,8 +263,8 @@ void Traffic_v1::sim ()const {
 					_car_->vec = temp;
 #endif
 #ifndef FIN
-					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->mode;
-					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << _car_->mode;
+					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->index;
+					qDebug () << "P" << (_car_)->pos << (_car_)->vec << (_car_)->acc << (_car_)->index;
 #endif
 				}
 			}
@@ -277,7 +278,7 @@ void Traffic_v1::sim ()const {
 		//space: 5m
 		//max load: 1
 		//therefore
-		if (!car_block->empty () && WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green) {
+		if (!car_block[i].empty () && WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green) {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
 				_car_->pos += 0.5;
 		}
@@ -343,6 +344,7 @@ void Traffic_v1::generate () {
 					else if (OK[j]) --k;
 				}
 				if (j == TR_NUM) {
+					//return;
 					int max = 0;
 					for (int t = 0; t < TR_NUM; ++k)
 						if (car_in[i*TR_NUM + t].last ().pos > car_in[i*TR_NUM + max].last ().pos) max = t;
@@ -395,11 +397,11 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
-				}
 			}
-#endif
 		}
+#endif
 	}
+}
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 		if (!car_out[i].empty ()) {
