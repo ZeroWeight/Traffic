@@ -18,7 +18,7 @@ void Traffic_v1::st2 () {
 			}
 			if (_head.pos < 0) {
 				//solve the head car
-				if (_head.pos < -30) {
+				if (_head.pos < -10) {
 					int TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.05*car_block[i].count ());
 					int TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count ());
 					int rt;
@@ -45,7 +45,7 @@ void Traffic_v1::st2 () {
 				else {
 					if (WILL (int (-_head.pos / _head.vec), i) == Color::Green&&
 						WILL (int (-_head.pos / _head.vec) + 1, i) == Color::Green) {
-						_head.acc = 0;
+						_head.acc = 5;
 						_head.time_arr = int (-_head.pos / _head.vec) + 1;
 					}
 					else {
@@ -63,7 +63,7 @@ void Traffic_v1::st2 () {
 			QList<Car>::iterator it;
 			for (it = car_in[i].begin () + 1; it != car_in[i].end (); ++it) {
 				//for the other vehicle
-				if (it->pos < -20) {
+				if (it->pos < -10) {
 					int MinT = int (CalMinTime (-it->pos, it->vec) + 1.05*car_block[i].count ());
 					int MaxT = int (CalMaxTime (-it->pos, it->vec) + 0.95*car_block[i].count ());
 					int _rt;
@@ -110,7 +110,7 @@ void Traffic_v1::st2 () {
 				else {
 					if (WILL (int (-it->pos / it->vec), i) == Color::Green&&
 						WILL (int (-it->pos / it->vec) + 1, i) == Color::Green) {
-						it->acc = 0;
+						it->acc = 5;
 						it->time_arr = int (-it->pos / it->vec) + 1;
 					}
 					else {
