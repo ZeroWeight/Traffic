@@ -46,15 +46,8 @@
 #include <cmath>
 #include <random>
 #include "settings.hpp"
-enum MODE {
-	STAT,
-	RUN,
-	BLOCK,
-};
 struct Car {
-	int arr_time;
-	MODE mode;
-	int block;
+	int time_table[200];
 	double acc;
 	double vec;
 	double pos;

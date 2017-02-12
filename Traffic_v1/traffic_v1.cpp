@@ -322,7 +322,6 @@ void Traffic_v1::sim ()const {
 				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 				temp.vec = _n_->vec;
 				temp.pos = 0;
-				temp.mode = MODE::RUN;
 				temp.index = _n_->index;
 				car_out[_n_->dir*TR_NUM + _n_->tr] << temp;
 			}
@@ -355,8 +354,6 @@ void Traffic_v1::generate () {
 					Car temp;
 					temp.pos = -200.0;
 					temp.vec = (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
-					temp.mode = MODE::RUN;
-					temp.block = false;
 					temp.index = ++this->index;
 					temp.acc = ND_A (e);
 					while (temp.acc<0.01 || temp.acc>2.5) temp.acc = ND_A (e);
@@ -370,8 +367,6 @@ void Traffic_v1::generate () {
 						temp.vec = ND_V (e);
 					else
 						temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
-					temp.mode = MODE::RUN;
-					temp.block = false;
 					temp.index = ++this->index;
 					if (!car_in[i*TR_NUM + j].empty ())
 						while (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3 || temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3)
@@ -405,7 +400,7 @@ void Traffic_v1::generate () {
 		}
 #endif
 	}
-}
+		}
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 		if (!car_out[i].empty ()) {

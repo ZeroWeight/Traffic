@@ -100,7 +100,6 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 		}
 	case Yellow:case Red:
 		if (it->pos > -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {
-			it->mode = MODE::BLOCK;
 			if (car_block[i].empty ())
 				if (it->vec < 0.5) it->acc = 3;
 				else it->acc = it->vec*it->vec / 2 / (it->pos);
