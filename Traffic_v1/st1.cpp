@@ -88,7 +88,7 @@ void Traffic_v1::st1 () {
 					}
 					if (rt < Tmax) {
 						if (itp->vec < -itp->pos / rt*0.9) a_st1 = 5;
-						else if (itp->vec > -itp->pos / rt*1.1) a_st1 = -0.6*(itp->pos + itp->vec*rt) / rt / rt;
+						else if (itp->vec > -itp->pos / rt*1.1) a_st1 = -2.1*(itp->pos + itp->vec*rt) / rt / rt;
 						else a_st1 = 0;
 					}
 					itp->acc = itp->acc < a_st1 ? itp->acc : a_st1;

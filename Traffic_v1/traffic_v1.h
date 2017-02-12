@@ -47,7 +47,7 @@
 #include <random>
 #include "settings.hpp"
 struct Car {
-	int time_table[200];
+	int time_arr;
 	double acc;
 	double vec;
 	double pos;

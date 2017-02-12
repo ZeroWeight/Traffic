@@ -26,19 +26,21 @@ namespace QT_NAMESPACE {
 }
 #endif
 
-int QT_RCC_MANGLE_NAMESPACE (qInitResources_traffic_v1)();
-int QT_RCC_MANGLE_NAMESPACE (qInitResources_traffic_v1)() {
-	return 1;
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_traffic_v1)();
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_traffic_v1)()
+{
+    return 1;
 }
 
-int QT_RCC_MANGLE_NAMESPACE (qCleanupResources_traffic_v1)();
-int QT_RCC_MANGLE_NAMESPACE (qCleanupResources_traffic_v1)() {
-	return 1;
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_traffic_v1)();
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_traffic_v1)()
+{
+    return 1;
 }
 
 namespace {
-	struct initializer {
-		initializer () { QT_RCC_MANGLE_NAMESPACE (qInitResources_traffic_v1)(); }
-		~initializer () { QT_RCC_MANGLE_NAMESPACE (qCleanupResources_traffic_v1)(); }
-	} dummy;
+   struct initializer {
+       initializer() { QT_RCC_MANGLE_NAMESPACE(qInitResources_traffic_v1)(); }
+       ~initializer() { QT_RCC_MANGLE_NAMESPACE(qCleanupResources_traffic_v1)(); }
+   } dummy;
 }
