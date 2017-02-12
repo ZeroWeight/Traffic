@@ -40,10 +40,10 @@ void Traffic_v1::following () {
 					//car following mode
 					else if (it->vec < 1 && itp->vec < 1) itp->acc = 0.5;
 					else if (it->vec < itp->vec)
-						itp->acc = it->acc + 1.03* (itp->vec - it->vec)*(itp->vec - it->vec)
+						itp->acc = it->acc + 1.1* (itp->vec - it->vec)*(itp->vec - it->vec)
 						/ 2.0 / ((d + c*it->vec) - it->pos + itp->pos);
 					else if (it->vec > itp->vec)
-						itp->acc = it->acc - 0.97* (itp->vec - it->vec)*(itp->vec - it->vec)
+						itp->acc = it->acc - 0.5* (itp->vec - it->vec)*(itp->vec - it->vec)
 						/ 2.0 / ((d + c*it->vec) - it->pos + itp->pos);
 					//sat.
 					if (itp->acc < -5) itp->acc = -5;
@@ -81,8 +81,21 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 				else if (it->vec < 16) it->acc = ND_A (e);
 				else if (it->vec < 17) it->acc = ND_A_S (e);
 			}
-			else if (it->vec < 3) it->acc = 2;
-			else it->acc = 0;
+			else if (!car_block[i].empty ()
+				&& WILL (GetTime, i) == Color::Green
+				&& WILL (GetTime - 1, i) == Color::Green
+				&&WILL (GetTime - 2, i) == Color::Green
+				&& WILL (GetTime - 3, i) == Color::Green) {
+				if (it->vec < 3) it->acc = 2;
+				else it->acc = 0;
+			}
+			else {
+				if (it->vec < 0.5) it->acc = 3;
+				else it->acc = it->vec*it->vec / 2 / (it->pos - car_block[i].last ().pos + 4);
+				if (it->vec + 0.1*it->acc < 0) {
+					it->vec = it->acc = 0;
+				}
+			}
 			break;
 		}
 	case Yellow:case Red:

@@ -67,13 +67,14 @@ void Traffic_v1::st1 () {
 				car_in[i].pop_front ();
 				goto STAT;
 			}
-			else head (car_in[i].begin (), i);
+			else st1_head (car_in[i].begin (), i);
 #pragma region following
 			QList<Car>::iterator it;
 			QList<Car>::iterator itp;
 			for (it = car_in[i].end () - 2, itp = car_in[i].end () - 1;
 				itp != car_in[i].begin (); --it, --itp) {
 				if (it->pos - itp->pos < ((d + c*it->vec) * 4)) {
+#pragma region 2chose1
 					//slow down
 					if (it->pos - itp->pos < (d + c*it->vec))
 						itp->acc = -5;
@@ -85,6 +86,21 @@ void Traffic_v1::st1 () {
 					else if (it->vec > itp->vec)
 						itp->acc = it->acc - 0.97* (itp->vec - it->vec)*(itp->vec - it->vec)
 						/ 2.0 / ((d + c*it->vec) - it->pos + itp->pos);
+					double a_st1 = 5;
+					int Tmin = int (CalMinTime (-itp->pos, itp->vec) + 1.05*car_block[i].count ());
+					int Tmax = int (CalMaxTime (-itp->pos, itp->vec) + 0.95*car_block[i].count ());
+					int rt;
+					for (rt = Tmin + 1; rt < Tmax; ++rt) {
+						if (WILL (rt + GetTime, i) == Color::Green&&WILL (rt + GetTime - 1, i) == Color::Green&&WILL (rt + GetTime + 1, i) == Color::Green)
+							break;
+					}
+					if (rt < Tmax) {
+						if (itp->vec < -itp->pos / rt*0.9) a_st1 = 5;
+						else if (itp->vec > -itp->pos / rt*1.1) a_st1 = -0.6*(itp->pos + itp->vec*rt) / rt / rt;
+						else a_st1 = 0;
+					}
+					itp->acc = itp->acc < a_st1 ? itp->acc : a_st1;
+#pragma endregion
 					//sat.
 					if (itp->acc < -5) itp->acc = -5;
 					if (itp->acc > 5) itp->acc = 5;
@@ -96,7 +112,7 @@ void Traffic_v1::st1 () {
 						itp->vec = 0;
 					}
 				}
-				else  free (itp, i);
+				else  st1_free (itp, i);
 			}
 		}
 #pragma endregion
@@ -104,13 +120,39 @@ void Traffic_v1::st1 () {
 }
 
 void Traffic_v1::st1_free (QList<Car>::iterator it, int i) {
-	if (it->vec < 8)  it->acc = ND_A_A (e);
-	else if (it->vec < 15) it->acc = ND_A (e);
-	else if (it->vec < 17) it->acc = ND_A_S (e);
-	else it->acc = ND_A_BS (e);
+	int Tmin = int (CalMinTime (-it->pos, it->vec) + 1.05*car_block[i].count ());
+	int Tmax = int (CalMaxTime (-it->pos, it->vec) + 0.95*car_block[i].count ());
+	int rt;
+	for (rt = Tmin + 1; rt < Tmax; ++rt) {
+		if (WILL (rt + GetTime, i) == Color::Green&&WILL (rt + GetTime - 1, i) == Color::Green&&WILL (rt + GetTime + 1, i) == Color::Green)
+			break;
+	}
+	if (rt < Tmax) {
+		if (it->vec < -it->pos / rt*0.9) it->acc = 5;
+		else if (it->vec > -it->pos / rt*1.1) it->acc = -0.6*(it->pos + it->vec*rt) / rt / rt;
+		else it->acc = 0;
+	}
+	else {
+		if (it->vec < 8)  it->acc = ND_A_A (e);
+		else if (it->vec < 15) it->acc = ND_A (e);
+		else if (it->vec < 17) it->acc = ND_A_S (e);
+		else it->acc = ND_A_BS (e);
+	}
 }
 
 void Traffic_v1::st1_head (QList<Car>::iterator it, int i) {
+	if (Get (i) == Color::Green&&it->pos > 0) {
+		it->acc = 5;
+		return;
+	}
+
+	int Tmin = int (CalMinTime (-it->pos, it->vec) + 1.05*car_block[i].count ());
+	int Tmax = int (CalMaxTime (-it->pos, it->vec) + 0.95*car_block[i].count ());
+	int rt;
+	for (rt = Tmin + 1; rt < Tmax; ++rt) {
+		if (WILL (rt + GetTime, i) == Color::Green&&WILL (rt + GetTime - 1, i) == Color::Green&&WILL (rt + GetTime + 1, i) == Color::Green)
+			break;
+	}
 	switch (Get (i)) {
 	case Green:
 		int j;
@@ -128,8 +170,21 @@ void Traffic_v1::st1_head (QList<Car>::iterator it, int i) {
 				else if (it->vec < 16) it->acc = ND_A (e);
 				else if (it->vec < 17) it->acc = ND_A_S (e);
 			}
-			else if (it->vec < 3) it->acc = 2;
-			else it->acc = 0;
+			else if (!car_block[i].empty ()
+				&& WILL (GetTime, i) == Color::Green
+				&& WILL (GetTime - 1, i) == Color::Green
+				&&WILL (GetTime - 2, i) == Color::Green
+				&& WILL (GetTime - 3, i) == Color::Green) {
+				if (it->vec < 3) it->acc = 2;
+				else it->acc = 0;
+			}
+			else {
+				if (it->vec < 0.5) it->acc = 3;
+				else it->acc = it->vec*it->vec / 2 / (it->pos - car_block[i].last ().pos + 4);
+				if (it->vec + 0.1*it->acc < 0) {
+					it->vec = it->acc = 0;
+				}
+			}
 			break;
 		}
 	case Yellow:case Red:
@@ -152,5 +207,15 @@ void Traffic_v1::st1_head (QList<Car>::iterator it, int i) {
 			else it->acc = ND_A_BS (e);
 			break;
 		}
+	}
+	if (rt < Tmax) {
+		double acc_st1;
+		if (it->vec < -it->pos / rt*0.9) acc_st1 = 5;
+		else if (it->vec > -it->pos / rt*1.1) acc_st1 = -0.6*(it->pos + it->vec*rt) / rt / rt;
+		else acc_st1 = 0;
+		if (car_block[i].empty ()) it->acc = acc_st1;
+		else if (it->pos > -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos))
+			it->acc = it->acc > acc_st1 ? acc_st1 : it->acc;
+		else it->acc = acc_st1;
 	}
 }

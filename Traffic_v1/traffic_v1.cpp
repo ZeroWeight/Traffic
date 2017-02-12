@@ -278,7 +278,11 @@ void Traffic_v1::sim ()const {
 		//space: 4m
 		//max load: 1
 		//therefore
-		if (!car_block[i].empty () && WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green) {
+		if (!car_block[i].empty ()
+			&& WILL (GetTime, i) == Color::Green
+			&& WILL (GetTime - 1, i) == Color::Green
+			&&WILL (GetTime - 2, i) == Color::Green
+			&& WILL (GetTime - 3, i) == Color::Green) {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
 				_car_->pos += 0.4;
 		}
