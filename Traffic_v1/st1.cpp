@@ -102,3 +102,55 @@ void Traffic_v1::st1 () {
 #pragma endregion
 	}
 }
+
+void Traffic_v1::st1_free (QList<Car>::iterator it, int i) {
+	if (it->vec < 8)  it->acc = ND_A_A (e);
+	else if (it->vec < 15) it->acc = ND_A (e);
+	else if (it->vec < 17) it->acc = ND_A_S (e);
+	else it->acc = ND_A_BS (e);
+}
+
+void Traffic_v1::st1_head (QList<Car>::iterator it, int i) {
+	switch (Get (i)) {
+	case Green:
+		int j;
+		for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) < PERIOD; ++j);
+		if (it->pos < -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {//10 sec remains
+			if (it->vec < 5)  it->acc = ND_A_A (e);
+			else if (it->vec < 16) it->acc = ND_A (e);
+			else if (it->vec < 17) it->acc = ND_A_S (e);
+			else it->acc = ND_A_BS (e);
+			break;
+		}
+		else if (j - GetTime > 2 && it->pos > -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {
+			if (car_block[i].empty ()) {
+				if (it->vec < 10) it->acc = 5;
+				else if (it->vec < 16) it->acc = ND_A (e);
+				else if (it->vec < 17) it->acc = ND_A_S (e);
+			}
+			else if (it->vec < 3) it->acc = 2;
+			else it->acc = 0;
+			break;
+		}
+	case Yellow:case Red:
+		if (it->pos > -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {
+			it->mode = MODE::BLOCK;
+			if (car_block[i].empty ())
+				if (it->vec < 0.5) it->acc = 3;
+				else it->acc = it->vec*it->vec / 2 / (it->pos);
+			else
+				if (it->vec < 0.5) it->acc = 3;
+				else it->acc = it->vec*it->vec / 2 / (it->pos - car_block[i].last ().pos + 4);
+				if (it->vec + 0.1*it->acc < 0) {
+					it->vec = it->acc = 0;
+				}
+		}
+		else {
+			if (it->vec < 5)  it->acc = ND_A_A (e);
+			else if (it->vec < 16) it->acc = ND_A (e);
+			else if (it->vec < 17) it->acc = ND_A_S (e);
+			else it->acc = ND_A_BS (e);
+			break;
+		}
+	}
+}
