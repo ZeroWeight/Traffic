@@ -1,12 +1,4 @@
 ﻿#include "traffic_v1.h"
-#define GetTime (int(now_t/10))
-#define dir(i) ((i)/3)
-#define tr(i) ((i)%3)
-#define HEAD(i) (car_in[(i)].first())
-#define PERIOD (s->period)
-#define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
-#define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
-#define _head car_in[i].first()
 
 static const int S = 15;
 static const double a_max = 5;
