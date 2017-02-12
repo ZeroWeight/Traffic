@@ -20,6 +20,7 @@ double Traffic_v1::CalMaxTime (double pos, double vec) {
 	//keep the max vec till aim
 	//
 	//pos>0 vec>0
+	if (vec < V_min) return pos / vec;
 	double time;
 	double pos_cri = (vec*vec - V_min*V_min) / (2 * A_max_);
 	if (pos <= pos_cri) {

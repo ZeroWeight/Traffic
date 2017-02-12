@@ -18,25 +18,42 @@ void Traffic_v1::st2 () {
 			}
 			if (_head.pos < 0) {
 				//solve the head car
-				int TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.05*car_block[i].count ());
-				int TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count ());
-				int rt;
-				for (rt = TminH + 1; rt < TmaxH; ++rt) {
-					if (WILL (rt + GetTime, i) == Color::Green&&WILL (rt + GetTime - 1, i) == Color::Green&&WILL (rt + GetTime + 1, i) == Color::Green)
-						break;
-				}
-				if (rt < TmaxH) {
-					if (-_head.pos < _head.vec*rt*0.95) _head.acc = 2.1 / rt / rt*(-_head.pos - _head.vec*rt);
-					else if (-_head.pos > _head.vec*rt*1.05) _head.acc = 5;
-					else _head.acc = 0;
-					_head.time_arr = GetTime + rt;
+				if (_head.pos < -30) {
+					int TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.05*car_block[i].count ());
+					int TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count ());
+					int rt;
+					for (rt = TminH + 1; rt < TmaxH; ++rt) {
+						if (WILL (rt + GetTime, i) == Color::Green&&WILL (rt + GetTime - 1, i) == Color::Green&&WILL (rt + GetTime + 1, i) == Color::Green)
+							break;
+					}
+					if (rt < TmaxH) {
+						if (-_head.pos < _head.vec*rt*0.95) _head.acc = 2.1 / rt / rt*(-_head.pos - _head.vec*rt);
+						else if (-_head.pos > _head.vec*rt*1.05) _head.acc = 5;
+						else _head.acc = 0;
+						_head.time_arr = GetTime + rt;
+					}
+					else {
+						if (_head.pos > -20 + (car_block[i].empty () ? 0 : (-4 + car_block[i].last ().pos))) {
+							_head.acc = _head.vec*_head.vec / 2.1 / (car_block[i].empty () ?
+								_head.pos : (_head.pos + 4 - car_block[i].last ().pos));
+							if (_head.vec < 3) _head.acc = 0;
+						}
+						else _head.acc = 3;
+						_head.time_arr = 0;
+					}
 				}
 				else {
-					if (_head.pos > -30 + (car_block[i].empty () ? 0 : (-4 + car_block[i].last ().pos)))
+					if (WILL (int (-_head.pos / _head.vec), i) == Color::Green&&
+						WILL (int (-_head.pos / _head.vec) + 1, i) == Color::Green) {
+						_head.acc = 0;
+						_head.time_arr = int (-_head.pos / _head.vec) + 1;
+					}
+					else {
 						_head.acc = _head.vec*_head.vec / 2.1 / (car_block[i].empty () ?
 							_head.pos : (_head.pos + 4 - car_block[i].last ().pos));
-					else _head.acc = 3;
-					_head.time_arr = 0;
+						if (_head.vec < 3) _head.acc = 0;
+						_head.time_arr = 0;
+					}
 				}
 			}
 			else {
@@ -46,47 +63,70 @@ void Traffic_v1::st2 () {
 			QList<Car>::iterator it;
 			for (it = car_in[i].begin () + 1; it != car_in[i].end (); ++it) {
 				//for the other vehicle
-				int MinT = int (CalMinTime (-it->pos, it->vec) + 1.05*car_block[i].count ());
-				int MaxT = int (CalMaxTime (-it->pos, it->vec) + 0.95*car_block[i].count ());
-				int _rt;
-				for (_rt = max (MinT, (it - 1)->time_arr) + 1; _rt < MaxT; ++_rt) {
-					if (WILL (_rt + GetTime, i) == Color::Green&&
-						WILL (_rt + GetTime - 1, i) == Color::Green&&
-						WILL (_rt + GetTime + 1, i) == Color::Green)
-						break;
-				}
-				if (_rt < MaxT) {
-					if (-it->pos < it->vec*_rt*0.95) {
-						it->acc = 2.1 / _rt / _rt*(-it->pos - it->vec*_rt);
-						if ((it - 1)->acc < it->acc && (it - 1)->pos - it->pos < 20)
-							if (it->vec < (it - 1)->vec) it->acc = ((it - 1)->acc + it->acc) / 2;
-							else it->acc = (it - 1)->acc - 3;
+				if (it->pos < -20) {
+					int MinT = int (CalMinTime (-it->pos, it->vec) + 1.05*car_block[i].count ());
+					int MaxT = int (CalMaxTime (-it->pos, it->vec) + 0.95*car_block[i].count ());
+					int _rt;
+					for (_rt = max (MinT, (it - 1)->time_arr) + 1; _rt < MaxT; ++_rt) {
+						if (WILL (_rt + GetTime, i) == Color::Green&&
+							WILL (_rt + GetTime - 1, i) == Color::Green&&
+							WILL (_rt + GetTime + 1, i) == Color::Green)
+							break;
 					}
-					else if (-it->pos > it->vec*_rt*1.05) {
-						it->acc = 5;
-						if ((it - 1)->acc < it->acc && (it - 1)->pos - it->pos < 20)
-							if (it->vec < (it - 1)->vec) it->acc = ((it - 1)->acc + it->acc) / 2;
-							else it->acc = (it - 1)->acc - 3;
+					if (_rt < MaxT) {
+						if (-it->pos < it->vec*_rt*0.95) {
+							it->acc = 2.1 / _rt / _rt*(-it->pos - it->vec*_rt);
+							if ((it - 1)->acc < it->acc && (it - 1)->pos - it->pos < 20)
+								if (it->vec < (it - 1)->vec) it->acc = ((it - 1)->acc + it->acc) / 2;
+								else it->acc = (it - 1)->acc - 3;
+						}
+						else if (-it->pos > it->vec*_rt*1.05) {
+							it->acc = 5;
+							if ((it - 1)->acc < it->acc && (it - 1)->pos - it->pos < 20)
+								if (it->vec < (it - 1)->vec) it->acc = ((it - 1)->acc + it->acc) / 2;
+								else it->acc = (it - 1)->acc - 3;
+						}
+						else it->acc = 0;
+						it->time_arr = GetTime + _rt;
 					}
-					else it->acc = 0;
-					it->time_arr = GetTime + _rt;
+					else {
+						if (it->pos > -20 + (car_block[i].empty () ? 0 :
+							(-4 + car_block[i].last ().pos)) + 4 * (car_in[i].begin () - it)) {
+							it->acc = it->vec*it->vec / 2.1 / (car_block[i].empty () ?
+								it->pos :
+								(it->pos + 4 - car_block[i].last ().pos) + 4 * (it - car_in[i].begin ()));
+							if (it->vec < 3) it->acc = 0;
+						}
+						else {
+							//just follow the car
+							if (it->vec > (it - 1)->vec && (it - 1)->pos - it->pos < 10) it->acc = (it - 1)->acc - 10;
+							else if (it->vec < (it - 1)->vec && (it - 1)->pos - it->pos > 10) it->acc = (it - 1)->acc + 5;
+							else if (it->vec > (it - 1)->vec && (it - 1)->pos - it->pos > 10) it->acc = (it - 1)->acc - 1;
+							else if (it->vec < (it - 1)->vec && (it - 1)->pos - it->pos < 10) it->acc = (it - 1)->acc + 1;
+						}
+						it->time_arr = 0;
+					}
 				}
 				else {
-					if (it->pos > -30 + (car_block[i].empty () ? 0 :
-						(-4 + car_block[i].last ().pos)) + 4 * (car_in[i].begin () - it))
-						it->acc = it->vec*it->vec / 2.1 / (car_block[i].empty () ?
-							_head.pos :
-							(_head.pos + 4 - car_block[i].last ().pos) + 4 * (it - car_in[i].begin ()));
-					else {
-						//just follow the car
-						if (it->vec > (it - 1)->vec && (it - 1)->pos - it->pos < 10) it->acc = (it - 1)->acc - 10;
-						else if (it->vec < (it - 1)->vec && (it - 1)->pos - it->pos > 10) it->acc = (it - 1)->acc + 5;
-						else if (it->vec > (it - 1)->vec && (it - 1)->pos - it->pos > 10) it->acc = (it - 1)->acc - 1;
-						else if (it->vec < (it - 1)->vec && (it - 1)->pos - it->pos < 10) it->acc = (it - 1)->acc + 1;
+					if (WILL (int (-it->pos / it->vec), i) == Color::Green&&
+						WILL (int (-it->pos / it->vec) + 1, i) == Color::Green) {
+						it->acc = 0;
+						it->time_arr = int (-it->pos / it->vec) + 1;
 					}
-					it->time_arr = 0;
+					else {
+						it->acc = it->vec*it->vec / 2.1 / (car_block[i].empty () ?
+							it->pos :
+							(it->pos + 4 - car_block[i].last ().pos) + 4 * (it - car_in[i].begin ()));
+						if (it->vec < 3) it->acc = 0;
+						it->time_arr = 0;
+					}
 				}
 			}
+			for (it = car_in[i].begin (); it != car_in[i].end (); ++it)
+				if (it->vec + it->acc*0.1 < 0) {
+					it->vec = 0;
+					it->acc = 1;
+				}
 		}
 	}
 }
