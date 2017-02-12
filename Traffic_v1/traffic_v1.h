@@ -13,8 +13,8 @@
 
 //uncomment the lines below to switch the stategy
 #undef MANUAL
-//#undef ST1
-#undef ST2
+#undef ST1
+//#undef ST2
 #pragma  region _PRE_DEF_
 #define __A__ 0
 #define __B__ 0
