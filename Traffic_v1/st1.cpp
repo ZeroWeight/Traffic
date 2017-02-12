@@ -11,8 +11,8 @@ static std::normal_distribution<double> ND_A_S (0, 0.1);
 static std::normal_distribution<double> ND_A_BS (-0.5, 0.3);
 static const int penalty_time = 20;
 static const double A_max_ = 3.0;
-static const double V_max = 20.0;
-static const double V_min = 10.0;
+static const double V_max = 25.0;
+static const double V_min = 5.0;
 static const double A_max = 5.0;
 
 double Traffic_v1::CalMaxTime (double pos, double vec) {
