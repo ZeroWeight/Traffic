@@ -97,5 +97,6 @@
     <None Include="conhole.md">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="result.md" />
   </ItemGroup>
 </Project>

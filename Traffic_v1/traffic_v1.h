@@ -1,7 +1,7 @@
 #ifndef TRAFFIC_V1_H
 #define TRAFFIC_V1_H
 #define FIN
-#undef FIN
+//#undef FIN
 
 #define MAX_LOAD
 
