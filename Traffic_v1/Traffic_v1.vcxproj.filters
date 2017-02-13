@@ -71,6 +71,9 @@
     <ClCompile Include="st2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="write.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="traffic_v1.h">
@@ -97,6 +100,11 @@
     <None Include="conhole.md">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="result.md" />
+    <None Include="plan.md">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="result.md">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -52,6 +52,8 @@ struct Car {
 	double vec;
 	double pos;
 	int index;
+	double vec_init;
+	int enter_time_d;
 };
 struct InNode {
 	DIR dir;
@@ -102,11 +104,12 @@ private:
 	QLabel*B_B;
 	QLabel*C_B;
 	QLabel*D_B;
-
+	QFile* _road;
+	QFile* _car;
 private:
 	double CalMaxTime (double pos, double vec);
 	double CalMinTime (double pos, double vec);
-	void sim ()const;
+	void sim ();
 	void generate ();
 	void following ();
 	void st1 ();
@@ -116,6 +119,9 @@ private:
 	void head (QList<Car>::iterator i, int d);
 	void st1_free (QList<Car>::iterator i, int d);
 	void st1_head (QList<Car>::iterator i, int d);
+	void c_write (Car car);
+	void main_write ();
+	void init_write ();
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();

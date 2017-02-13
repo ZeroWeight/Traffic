@@ -170,6 +170,7 @@
     <ClCompile Include="st2.cpp" />
     <ClCompile Include="traffic_v1.cpp" />
     <ClCompile Include="User.cpp" />
+    <ClCompile Include="write.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="traffic_v1.h">
@@ -239,6 +240,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="conhole.md" />
+    <None Include="plan.md" />
     <None Include="result.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

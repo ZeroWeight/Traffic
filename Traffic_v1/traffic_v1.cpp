@@ -27,6 +27,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	for (int i = 0; i < DIR_NUM; i++) {
 		go[i] = expdf (lambda[i]);
 	}
+	init_write ();
 	size = QApplication::desktop ()->height () / 15;
 	meter = size / 10.0;
 	s = new Settings (size, nullptr);
@@ -114,6 +115,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		_following ();
 		sim ();
 		this->update ();
+		main_write ();
 	});
 	connect (_reset, &QPushButton::clicked, [=](void) {
 		now_t = 0;
@@ -248,7 +250,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	});
 }
 Traffic_v1::~Traffic_v1 () {}
-void Traffic_v1::sim ()const {
+void Traffic_v1::sim () {
 	for (int i = 0; i < TR_NUM*DIR_NUM*(now_t != 0); i++) {
 		QList<Car>::iterator _car_;
 		if (!car_in[i].empty ()) {
@@ -295,6 +297,7 @@ void Traffic_v1::sim ()const {
 			temp.vec = car_in[i].first ().vec;
 			temp.index = car_in[i].first ().index;
 			Node->append (temp);
+			c_write (car_in[i].first ());
 			car_in[i].removeFirst ();
 		}
 		while (!car_block[i].empty () && car_block[i].first ().pos >= 0.5) {
@@ -306,6 +309,7 @@ void Traffic_v1::sim ()const {
 			temp.vec = 10;
 			temp.index = car_in[i].first ().index;
 			Node->append (temp);
+			c_write (car_block[i].first ());
 			car_block[i].removeFirst ();
 		}
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
@@ -356,6 +360,8 @@ void Traffic_v1::generate () {
 					temp.vec = (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
 					temp.index = ++this->index;
 					temp.acc = ND_A (e);
+					temp.vec_init = temp.vec;
+					temp.enter_time_d = now_t;
 					while (temp.acc<0.01 || temp.acc>2.5) temp.acc = ND_A (e);
 					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<0 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
 						temp.vec = car_in[i*TR_NUM + max].last ().vec - abs (ND (e));
@@ -396,11 +402,11 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
-			}
 		}
-#endif
 	}
-		}
+#endif
+}
+}
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 		if (!car_out[i].empty ()) {
