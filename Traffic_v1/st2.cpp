@@ -22,7 +22,7 @@ void Traffic_v1::st2 () {
 					int TminH;
 					int TmaxH;
 					if (_head.pos < -8 * car_block[i].count ()) {
-						TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.05*car_block[i].count ());
+						TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.5*car_block[i].count ());
 						TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count ());
 					}
 					else {
@@ -31,7 +31,11 @@ void Traffic_v1::st2 () {
 					}
 					int rt;
 					for (rt = TminH; rt < TmaxH; ++rt) {
-						if (WILL (rt + GetTime, i) == Color::Green&&WILL (max (rt - 1, 0) + GetTime, i) == Color::Green)
+						if (WILL (rt + GetTime, i) == Color::Green
+							&&WILL (max (rt - 1, 0) + GetTime, i) == Color::Green
+							&&WILL (max (rt - 2, 0) + GetTime, i) == Color::Green
+							&&WILL (max (rt - 3, 0) + GetTime, i) == Color::Green
+							&&WILL (max (rt - 4, 0) + GetTime, i) == Color::Green)
 							break;
 					}
 					if (rt < TmaxH) {
@@ -84,11 +88,15 @@ void Traffic_v1::st2 () {
 			for (it = car_in[i].begin () + 1; it != car_in[i].end (); ++it) {
 				//for the other vehicle
 				if (it->pos < -5) {
-					int MinT = int (CalMinTime (-it->pos, it->vec) + 1.05*car_block[i].count ());
+					int MinT = int (CalMinTime (-it->pos, it->vec) + 1.5*car_block[i].count ());
 					int MaxT = int (CalMaxTime (-it->pos, it->vec) + 0.95*car_block[i].count ());
 					int _rt;
 					for (_rt = max (MinT, (it - 1)->time_arr); _rt < MaxT; ++_rt) {
-						if (WILL (_rt + GetTime, i) == Color::Green&&WILL (max (_rt - 1, 0) + GetTime, i) == Color::Green)
+						if (WILL (_rt + GetTime, i) == Color::Green&&
+							WILL (max (_rt - 1, 0) + GetTime, i) == Color::Green&&
+							WILL (max (_rt - 2, 0) + GetTime, i) == Color::Green&&
+							WILL (max (_rt - 3, 0) + GetTime, i) == Color::Green&&
+							WILL (max (_rt - 4, 0) + GetTime, i) == Color::Green)
 							break;
 					}
 					if (_rt < MaxT) {

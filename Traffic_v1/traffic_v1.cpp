@@ -20,7 +20,7 @@ static double lambda[DIR_NUM] = { 3,3,3,3 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
 static std::normal_distribution<double> ND_V (13.8, 0.9);
-static std::normal_distribution<double> ND (0, 1);
+static std::normal_distribution<double> ND (0, 0.5);
 static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
@@ -364,9 +364,10 @@ void Traffic_v1::generate () {
 					temp.vec = (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
 					temp.index = ++this->index;
 					temp.acc = ND_A (e);
+					temp.time_arr = 0;
 					temp.enter_time_d = now_t;
 					while (temp.acc<0.01 || temp.acc>2.5) temp.acc = ND_A (e);
-					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<5 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
+					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<3 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
 						temp.vec = car_in[i*TR_NUM + max].last ().vec - abs (ND (e));
 					temp.vec_init = temp.vec;
 				}
@@ -380,13 +381,17 @@ void Traffic_v1::generate () {
 						temp.vec = car_in[i*TR_NUM + j].last ().vec + ND (e);
 					temp.index = ++this->index;
 					if (!car_in[i*TR_NUM + j].empty ())
-						while (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3
+						if (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3
 							|| temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3
 							|| temp.vec > 25 || temp.vec < 5)
-							temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
-					else
-						while (temp.vec < 10 || temp.vec>16) temp.vec = ND_V (e);
+							goto RES;
+						else
+							while (temp.vec < 10 || temp.vec>16) {
+							RES:
+								temp.vec = ND_V (e);
+							}
 					temp.acc = ND_A (e);
+					temp.time_arr = 0;
 					temp.vec_init = temp.vec;
 					while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 					car_in[i*TR_NUM + j] << temp;
@@ -410,8 +415,8 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
-	}
-}
+			}
+		}
 #endif
 	}
 }
