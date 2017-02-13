@@ -8,17 +8,14 @@
 #define MANUAL
 #define ST1
 #define ST2
-
-#undef MAX_LOAD
-
-//uncomment the lines below to switch the stategy
-#undef MANUAL
-#undef ST1
-//#undef ST2
+#define COMBO
+#include "property.hpp"
 #pragma  region _PRE_DEF_
 #define __A__ 0
 #define __B__ 0
 #define __C__ 0
+#define __D__ 0
+#define SUM (R_0+R_1+R_2)
 #ifdef MANUAL
 #undef __A__
 #define __A__ 1
@@ -31,8 +28,15 @@
 #undef __C__
 #define __C__ 1
 #endif
-#if __A__+__B__+__C__- 1
+#ifdef COMBO
+#undef __D__
+#define __D__ 1
+#endif
+#if __A__+__B__+__C__+__D__- 1
 #error Specific stategy need to be chosen
+#endif
+#if __D__&&!(R_0>=0&&R_1>=0&&R_2>=0&&(R_0+R_1+R_2))
+#error Combo stategy ratio need to be corrected
 #endif
 #pragma  endregion
 #include <QtWidgets/QMainWindow>
@@ -57,6 +61,7 @@ struct Car {
 	int index;
 	double vec_init;
 	int enter_time_d;
+	Type type;
 };
 struct InNode {
 	DIR dir;
@@ -130,6 +135,7 @@ private:
 	void c_write (Car car);
 	void main_write ();
 	void init_write ();
+	void combo ();
 public:
 	Traffic_v1 (QWidget *parent = 0);
 	~Traffic_v1 ();

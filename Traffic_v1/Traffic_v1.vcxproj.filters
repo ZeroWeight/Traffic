@@ -74,6 +74,9 @@
     <ClCompile Include="write.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="combo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="traffic_v1.h">
@@ -88,6 +91,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="property.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

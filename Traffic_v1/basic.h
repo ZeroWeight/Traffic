@@ -19,3 +19,6 @@ const double lane_in[DIR_NUM][TR_NUM] = {
 };
 const double main_lane[3] = { 5,6.125,7.25 };
 const double aux_lane[4] = { 5.375,5.75,6.5,6.875 };
+enum Type {
+	C_0, C_1, C_2
+};

@@ -113,6 +113,9 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 #ifdef ST2
 		st2 ();
 #endif
+#ifdef COMBO
+		combo ();
+#endif
 		_following ();
 		sim ();
 		this->update ();
@@ -361,6 +364,13 @@ void Traffic_v1::generate () {
 					for (int t = 0; t < TR_NUM; ++k)
 						if (car_in[i*TR_NUM + t].last ().pos > car_in[i*TR_NUM + max].last ().pos) max = t;
 					Car temp;
+#ifdef COMBO
+					double var = double (rand ()) / double (RAND_MAX);
+					if (0 <= var && var <= double (R_0) / double (SUM)) temp.type = Type::C_0;
+					else if (double (R_0) / double (SUM) <= var && var <= double (R_0 + R_1) /
+						double (SUM)) temp.type = Type::C_1;
+					else temp.type = Type::C_2;
+#endif
 					temp.pos = -200.0;
 					temp.vec = (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
 					temp.index = ++this->index;
@@ -371,6 +381,7 @@ void Traffic_v1::generate () {
 					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<3 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
 						temp.vec = car_in[i*TR_NUM + max].last ().vec - abs (ND (e));
 					temp.vec_init = temp.vec;
+					car_in[i*TR_NUM + j] << temp;
 				}
 				else {
 					Car temp;
@@ -395,6 +406,13 @@ void Traffic_v1::generate () {
 					temp.time_arr = 0;
 					temp.vec_init = temp.vec;
 					while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
+#ifdef COMBO
+					double var = double (rand ()) / double (RAND_MAX);
+					if (0 <= var && var <= double (R_0) / double (SUM)) temp.type = Type::C_0;
+					else if (double (R_0) / double (SUM) <= var && var <= double (R_0 + R_1) /
+						double (SUM)) temp.type = Type::C_1;
+					else temp.type = Type::C_2;
+#endif
 					car_in[i*TR_NUM + j] << temp;
 				}
 			}
@@ -417,9 +435,9 @@ void Traffic_v1::generate () {
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
 			}
-	}
+		}
 #endif
-}
+	}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
