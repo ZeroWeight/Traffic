@@ -43,6 +43,9 @@ void Traffic_v1::init_write () {
 #ifdef ST2
 	folder += "2";
 #endif
+#ifdef COMBO
+	folder += QString::number (R_0) + ',' + QString::number (R_1) + ',' + QString::number (R_2);
+#endif
 	system (QString ("mkdir " + folder).toStdString ().data ());
 	_road = new QFile (folder + "\\road.csv");
 	_car = new QFile (folder + "\\car.csv");
