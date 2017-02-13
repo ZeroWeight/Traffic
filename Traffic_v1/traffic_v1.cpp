@@ -387,6 +387,7 @@ void Traffic_v1::generate () {
 					else
 						while (temp.vec < 10 || temp.vec>16) temp.vec = ND_V (e);
 					temp.acc = ND_A (e);
+					temp.vec_init = temp.vec;
 					while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 					car_in[i*TR_NUM + j] << temp;
 				}
@@ -410,9 +411,9 @@ void Traffic_v1::generate () {
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
 			}
-		}
-#endif
 	}
+#endif
+}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
