@@ -1,6 +1,9 @@
 ﻿#include "traffic_v1.h"
 
-void Traffic_v1::c_write (Car car) {}
+void Traffic_v1::c_write (Car car) {
+	double time_r = double (now_t - car.enter_time_d) / 10.0;
+	(*__car) << car.vec_init << ',' << CalMinTime (200, car.vec_init) << ',' << time_r << '\n';
+}
 
 void Traffic_v1::main_write () {}
 
@@ -24,12 +27,17 @@ void Traffic_v1::init_write () {
 #ifdef ST2
 	folder += "2";
 #endif
-	QString command = "mkdir " + folder;
-	system (command.toStdString ().data ());
-	QString road = folder + "\\road.csv";
-	QString car = folder + "\\car.csv";
-	_road = new QFile (road);
-	_car = new QFile (car);
-	qDebug () << _road->open (QIODevice::WriteOnly);
-	qDebug () << _car->open (QIODevice::WriteOnly);
+	system (QString ("mkdir " + folder).toStdString ().data ());
+	_road = new QFile (folder + "\\road.csv");
+	_car = new QFile (folder + "\\car.csv");
+	_stop = new QFile (folder + "\\stop.csv");
+	_road->open (QIODevice::WriteOnly);
+	_car->open (QIODevice::WriteOnly);
+	_stop->open (QIODevice::WriteOnly);
+	__road = new QTextStream (_road);
+	__stop = new QTextStream (_stop);
+	__car = new QTextStream (_car);
+	(*__car) << QString ("init_velocity,thoritical_time,act_time\n");
+	(*__road) << QString ("time,00,01,02,10,11,12,20,21,22,30,31,32,AVE\n");
+	(*__stop) << QString ("time,00,01,02,10,11,12,20,21,22,30,31,32,AVE\n");
 }

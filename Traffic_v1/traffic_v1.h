@@ -109,6 +109,10 @@ private:
 	QLabel*D_B;
 	QFile* _road;
 	QFile* _car;
+	QFile* _stop;
+	QTextStream* __road;
+	QTextStream* __car;
+	QTextStream* __stop;
 private:
 	double CalMaxTime (double pos, double vec);
 	double CalMinTime (double pos, double vec);

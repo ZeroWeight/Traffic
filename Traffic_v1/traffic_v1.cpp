@@ -249,7 +249,14 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		go[3] = expdf (lambda[3]);
 	});
 }
-Traffic_v1::~Traffic_v1 () {}
+Traffic_v1::~Traffic_v1 () {
+	_car->flush ();
+	_stop->flush ();
+	_road->flush ();
+	_car->close ();
+	_stop->close ();
+	_road->close ();
+}
 void Traffic_v1::sim () {
 	for (int i = 0; i < TR_NUM*DIR_NUM*(now_t != 0); i++) {
 		QList<Car>::iterator _car_;
@@ -402,10 +409,10 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
+			}
 		}
-	}
 #endif
-}
+	}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {

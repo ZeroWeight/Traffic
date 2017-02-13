@@ -4,6 +4,7 @@ static const int S = 15;
 static const double a_max = 5;
 static const double c = 0.7;
 static const double d = 4;
+static const double V_max = 25;
 static std::default_random_engine e;
 static std::normal_distribution<double> ND_A_A (3, 0.3);
 static std::normal_distribution<double> ND_A (1, 0.3);
@@ -49,6 +50,12 @@ void Traffic_v1::following () {
 					}
 				}
 				else  free (itp, i);
+			}
+			for (it = car_in[i].begin (); it != car_in[i].end (); ++it) {
+				if (it->vec > V_max) {
+					it->vec = V_max;
+					it->acc = 0;
+				}
 			}
 		}
 #pragma endregion

@@ -107,8 +107,14 @@ void Traffic_v1::st1 () {
 				}
 				else  st1_free (itp, i);
 			}
-		}
+			for (it = car_in[i].begin (); it != car_in[i].end (); ++it) {
+				if (it->vec > V_max) {
+					it->vec = V_max;
+					it->acc = 0;
+				}
+			}
 #pragma endregion
+		}
 	}
 }
 

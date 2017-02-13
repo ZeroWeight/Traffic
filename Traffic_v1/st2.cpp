@@ -2,7 +2,7 @@
 
 static const int penalty_time = 20;
 static const double A_max_ = 3.0;
-static const double V_max = 30.0;
+static const double V_max = 25.0;
 static const double V_min = 5.0;
 static const double A_max = 5.0;
 
