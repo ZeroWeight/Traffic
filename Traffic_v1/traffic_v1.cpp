@@ -264,12 +264,9 @@ void Traffic_v1::sim () {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
-				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
+				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0 && (_car_ - 1)->vec < _car_->vec) {
 #ifdef FIN
-					double temp;
-					temp = (_car_ - 1)->vec;
 					(_car_ - 1)->vec = _car_->vec;
-					_car_->vec = temp;
 #endif
 #ifndef FIN
 					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->index;
@@ -367,22 +364,25 @@ void Traffic_v1::generate () {
 					temp.vec = (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
 					temp.index = ++this->index;
 					temp.acc = ND_A (e);
-					temp.vec_init = temp.vec;
 					temp.enter_time_d = now_t;
 					while (temp.acc<0.01 || temp.acc>2.5) temp.acc = ND_A (e);
-					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<0 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
+					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<5 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
 						temp.vec = car_in[i*TR_NUM + max].last ().vec - abs (ND (e));
+					temp.vec_init = temp.vec;
 				}
 				else {
 					Car temp;
+					temp.enter_time_d = now_t;
 					temp.pos = -200.0;//control length 200m;
 					if (car_in[i*TR_NUM + j].empty ())
 						temp.vec = ND_V (e);
 					else
-						temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
+						temp.vec = car_in[i*TR_NUM + j].last ().vec + ND (e);
 					temp.index = ++this->index;
 					if (!car_in[i*TR_NUM + j].empty ())
-						while (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3 || temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3)
+						while (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3
+							|| temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3
+							|| temp.vec > 25 || temp.vec < 5)
 							temp.vec = (car_in[i*TR_NUM + j].end () - 1)->vec + ND (e);
 					else
 						while (temp.vec < 10 || temp.vec>16) temp.vec = ND_V (e);
@@ -410,10 +410,10 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
-			}
 	}
-#endif
 }
+#endif
+	}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {

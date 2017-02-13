@@ -2,10 +2,18 @@
 
 void Traffic_v1::c_write (Car car) {
 	double time_r = double (now_t - car.enter_time_d) / 10.0;
-	(*__car) << car.vec_init << ',' << CalMinTime (200, car.vec_init) << ',' << time_r << '\n';
+	(*__car) << car.vec_init << ',' << CalMinTime (200, car.vec_init) << ',' << time_r << ',' << time_r - CalMinTime (200, car.vec_init) << '\n';
 }
 
-void Traffic_v1::main_write () {}
+void Traffic_v1::main_write () {
+	double sum = _st[0]->text ().toInt ();
+	(*__road) << double (now_t) / 10.0 << ',' << _st[0]->text ().toInt ();
+	for (int i = 1; i < TR_NUM*DIR_NUM; ++i) {
+		(*__road) << ',' << _st[i]->text ().toInt ();
+		sum += _st[i]->text ().toInt ();
+	}
+	(*__road) << ',' << sum / 12.0 << '\n';
+}
 
 void Traffic_v1::init_write () {
 	int hour = QTime::currentTime ().hour ();
@@ -37,7 +45,7 @@ void Traffic_v1::init_write () {
 	__road = new QTextStream (_road);
 	__stop = new QTextStream (_stop);
 	__car = new QTextStream (_car);
-	(*__car) << QString ("init_velocity,thoritical_time,act_time\n");
+	(*__car) << QString ("init_velocity,thoritical_time,act_time,delta\n");
 	(*__road) << QString ("time,00,01,02,10,11,12,20,21,22,30,31,32,AVE\n");
 	(*__stop) << QString ("time,00,01,02,10,11,12,20,21,22,30,31,32,AVE\n");
 }

@@ -148,11 +148,13 @@ void Traffic_v1::st2 () {
 					it->vec = 0;
 					it->acc = 1;
 				}
-			for (it = car_in[i].begin (); it != car_in[i].end (); ++it)
+			for (it = car_in[i].begin (); it != car_in[i].end (); ++it) {
 				if (it->vec + it->acc*0.1 > V_max) {
 					it->vec = V_max;
 					it->acc = 0;
 				}
+				if (it->acc > A_max) it->acc = A_max;
+			}
 		}
 	}
 }

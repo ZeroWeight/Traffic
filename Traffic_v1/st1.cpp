@@ -112,6 +112,7 @@ void Traffic_v1::st1 () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
+				if (it->acc > A_max) it->acc = A_max;
 			}
 #pragma endregion
 		}
