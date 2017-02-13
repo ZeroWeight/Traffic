@@ -39,6 +39,9 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QTimer>
+#include <QTime>
+#include <QDateTime>
+#include <QDate>
 #include <QList>
 #include <QDebug>
 #include <QRadioButton>
