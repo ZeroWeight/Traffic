@@ -113,6 +113,7 @@ private:
 	QTextStream* __road;
 	QTextStream* __car;
 	QTextStream* __stop;
+	int stop_num[TR_NUM*DIR_NUM];
 private:
 	double CalMaxTime (double pos, double vec);
 	double CalMinTime (double pos, double vec);

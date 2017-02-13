@@ -14,6 +14,13 @@ void Traffic_v1::main_write () {
 		sum += _st[i]->text ().toInt ();
 	}
 	(*__road) << ',' << sum / 12.0 << '\n';
+	sum = stop_num[0];
+	(*__stop) << double (now_t) / 10.0 << ',' << stop_num[0];
+	for (int i = 1; i < TR_NUM*DIR_NUM; ++i) {
+		(*__stop) << ',' << stop_num[i];
+		sum += stop_num[i];
+	}
+	(*__stop) << ',' << sum / 12.0 << '\n';
 }
 
 void Traffic_v1::init_write () {

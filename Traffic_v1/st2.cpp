@@ -14,6 +14,7 @@ void Traffic_v1::st2 () {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
+				++stop_num[i];
 				goto STAT;
 			}
 			if (_head.pos < 0) {
@@ -160,6 +161,11 @@ void Traffic_v1::st2 () {
 				if (it->vec + it->acc*0.1 > V_max) {
 					it->vec = V_max;
 					it->acc = 0;
+				}
+				if (it->vec < 0) {
+					it->vec = 0;
+					it->acc = 0;
+					++stop_num[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;
 			}

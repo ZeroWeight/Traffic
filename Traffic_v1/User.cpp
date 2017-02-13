@@ -19,6 +19,7 @@ void Traffic_v1::following () {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
+				++stop_num[i];
 				goto STAT;
 			}
 			else head (car_in[i].begin (), i);
@@ -56,6 +57,11 @@ void Traffic_v1::following () {
 				if (it->vec > V_max) {
 					it->vec = V_max;
 					it->acc = 0;
+				}
+				if (it->vec < 0) {
+					it->vec = 0;
+					it->acc = 0;
+					++stop_num[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;
 			}
