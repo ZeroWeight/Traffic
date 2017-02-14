@@ -162,9 +162,9 @@ void Traffic_v1::st2 () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
-				if (it->vec < 0) {
-					it->vec = 0;
-					it->acc = 0;
+				if (it->vec < 5) {
+					it->vec = 5;
+					it->acc = 5;
 					++stop_num[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;
