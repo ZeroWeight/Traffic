@@ -242,6 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="conhole.md" />
+    <None Include="group.bat" />
     <None Include="plan.md" />
     <None Include="result.md" />
   </ItemGroup>

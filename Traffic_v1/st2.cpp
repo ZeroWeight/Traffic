@@ -52,7 +52,8 @@ void Traffic_v1::st2 () {
 						if (_head.pos > -20 + (car_block[i].empty () ? 0 : (-4 + car_block[i].last ().pos))) {
 							_head.acc = _head.vec*_head.vec / 2.1 / (car_block[i].empty () ?
 								_head.pos : (_head.pos + 4 - car_block[i].last ().pos));
-							if (_head.vec < 3) _head.acc = 0;
+							if (_head.vec < 3 && !car_block[i].empty ()) _head.acc = 0;
+							if (_head.vec < 5) _head.acc = 5;
 						}
 						else _head.acc = 3;
 						_head.time_arr = 0;

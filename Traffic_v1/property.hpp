@@ -22,9 +22,13 @@ means switch on the second strategy*/
 /*--------------------------------------------------------------------*/
 /*----------------------  ratio setting  -----------------------------*/
 //if you choose the combo stratery, set a sequence of ratio for the cars
-
+#ifndef BAT
 #define R_0 10			//means the non_control strategy
 #define R_1 10			//the first strategy
 #define R_2 10			//the second strategy
-
+#endif
 /*--------------------------------------------------------------------*/
+
+/*------------------------- Advanced Usage --------------------------*/
+//#undef BAT
+//#undef FIN

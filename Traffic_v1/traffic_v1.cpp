@@ -28,7 +28,6 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	for (int i = 0; i < DIR_NUM; i++) {
 		go[i] = expdf (lambda[i]);
 	}
-	init_write ();
 	size = QApplication::desktop ()->height () / 15;
 	meter = size / 10.0;
 	s = new Settings (size, nullptr);
@@ -102,6 +101,10 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		start->setEnabled (true); });
 	connect (timer, &QTimer::timeout, [=](void) {
 		++now_t;
+#ifdef BAT
+		if (now_t == 100000)
+			this->close ();
+#endif
 		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 		generate ();
 #ifdef MANUAL
@@ -114,6 +117,9 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		st2 ();
 #endif
 #ifdef COMBO
+		combo ();
+#endif
+#ifdef BAT
 		combo ();
 #endif
 		_following ();
@@ -252,6 +258,9 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		lambda[3] = double (value) / 1000;
 		go[3] = expdf (lambda[3]);
 	});
+#ifdef BAT
+	fast->setChecked (true);
+#endif
 }
 Traffic_v1::~Traffic_v1 () {
 	_car->flush ();

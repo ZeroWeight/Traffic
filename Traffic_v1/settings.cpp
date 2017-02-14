@@ -1,5 +1,6 @@
 ﻿#include "settings.hpp"
-
+#define BAT
+#include "property.hpp"
 Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_size) {
 	main_line = new QPen (QBrush (QColor ("Black")), 5);
 	dot_line = new QPen (QBrush (QColor ("Yellow")), 3);
@@ -8,10 +9,27 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	dashes << 5 << 3 << 5 << 3;
 	dot_line->setDashPattern (dashes);
 	car = new QBrush (QColor ("Blue"));
+#ifndef BAT
 	period = 300;
+#endif
+#ifdef BAT
+	period = 60;
+#endif
 	map = new Light[period];
+#ifndef BAT
 	for (int i = 0; i < period; i++) for (int j = 0; j < DIR_NUM; j++) for (int k = 0; k < TR_NUM; k++)
 		map[i][j][k] = Red;
+#endif
+#ifdef BAT
+	for (int i = 0; i < (period >> 1); ++i) for (int k = 0; k < TR_NUM; k++) {
+		map[i][DIR::A][k] = map[i][DIR::C][k] = Color::Red;
+		map[i][DIR::B][k] = map[i][DIR::D][k] = Color::Green;
+	}
+	for (int i = (period >> 1); i < period; ++i) for (int k = 0; k < TR_NUM; k++) {
+		map[i][DIR::A][k] = map[i][DIR::C][k] = Color::Green;
+		map[i][DIR::B][k] = map[i][DIR::D][k] = Color::Red;
+	}
+#endif
 	slider = new QSlider (Qt::Horizontal, this);
 	slider->setGeometry (15.5 * size, 0.7*size, 6 * size, 0.5*size);
 	slider->setMinimum (0);

@@ -112,5 +112,8 @@
     <None Include="result.md">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="group.bat">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
