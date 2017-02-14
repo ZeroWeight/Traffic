@@ -260,7 +260,7 @@ void Traffic_v1::combo () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
-				if (it->vec < 5) {
+				if (it->vec < 1) {
 					it->vec = 5;
 					it->acc = 5;
 					++stop_num[i];
