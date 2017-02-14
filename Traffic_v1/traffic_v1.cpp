@@ -62,7 +62,12 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	end->setFont (QFont ("TimesNewRoman", 12));
 	end->setGeometry (16.8 * size, 3.5*size, 1.5 * size, size);
 	timer = new QTimer (this);
+#ifndef BAT
 	timer->setInterval (10);
+#endif
+#ifdef BAT
+	timer->setInterval (1);
+#endif
 	timer->stop ();
 	end->setEnabled (false);
 	connect (start, &QPushButton::clicked, [=](void) {
