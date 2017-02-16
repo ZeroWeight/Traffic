@@ -107,7 +107,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	connect (timer, &QTimer::timeout, [=](void) {
 		++now_t;
 #ifdef BAT
-		if (now_t == 100000)
+		if (now_t == 36000)
 			this->close ();
 #endif
 		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
@@ -129,7 +129,9 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 #endif
 		_following ();
 		sim ();
+#ifndef BAT
 		this->update ();
+#endif
 		main_write ();
 	});
 	connect (_reset, &QPushButton::clicked, [=](void) {

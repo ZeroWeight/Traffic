@@ -17,6 +17,8 @@ int main (int argc, char *argv[]) {
 #ifdef BAT
 	w.start->click ();
 #endif
+#ifndef BAT
 	w.show ();
+#endif
 	return a.exec ();
 }
