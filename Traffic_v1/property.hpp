@@ -9,8 +9,8 @@
 means switch on the second strategy*/
 #undef BAT
 
-//#undef MANUAL		//means the non_control strategy
-#undef ST1			//the first strategy
+#undef MANUAL		//means the non_control strategy
+//#undef ST1			//the first strategy
 #undef ST2		//the second strategy
 #undef COMBO		//the combo strategy
 
