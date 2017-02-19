@@ -110,9 +110,11 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		if (now_t == 36000)
 			this->close ();
 #endif
+		qDebug () << "1";
 		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 		generate ();
 #ifdef MANUAL
+		qDebug () << "1";
 		following ();
 #endif
 #ifdef ST1
@@ -127,11 +129,16 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 #ifdef BAT
 		combo ();
 #endif
+		qDebug () << "2";
 		_following ();
+		qDebug () << "3";
 		sim ();
+		qDebug () << "4";
 #ifndef BAT
+		qDebug () << "5";
 		this->update ();
 #endif
+		qDebug () << "6";
 		main_write ();
 	});
 	connect (_reset, &QPushButton::clicked, [=](void) {
@@ -280,6 +287,7 @@ Traffic_v1::~Traffic_v1 () {
 void Traffic_v1::sim () {
 	for (int i = 0; i < TR_NUM*DIR_NUM*(now_t != 0); i++) {
 		QList<Car>::iterator _car_;
+		qDebug () << "A";
 		if (!car_in[i].empty ()) {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
@@ -295,6 +303,7 @@ void Traffic_v1::sim () {
 				}
 			}
 		}
+		qDebug () << "B";
 		if (!car_out[i].empty ()) {
 			for (_car_ = car_out[i].begin (); _car_ != car_out[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
@@ -304,6 +313,7 @@ void Traffic_v1::sim () {
 		//space: 4m
 		//max load: 1
 		//therefore
+		qDebug () << "C";
 		if (!car_block[i].empty ()
 			&& WILL (GetTime, i) == Color::Green
 			&& WILL (GetTime - 1, i) == Color::Green
@@ -313,6 +323,7 @@ void Traffic_v1::sim () {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
 				_car_->pos += 0.4;
 		}
+		qDebug () << "D";
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
 			InNode temp;
 			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
@@ -325,6 +336,7 @@ void Traffic_v1::sim () {
 			c_write (car_in[i].first ());
 			car_in[i].removeFirst ();
 		}
+		qDebug () << "E";
 		while (!car_block[i].empty () && car_block[i].first ().pos >= 0.5) {
 			InNode temp;
 			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
@@ -332,15 +344,17 @@ void Traffic_v1::sim () {
 			temp.dir = (DIR)(i / 3);
 			temp.tr = (TR)(i % 3);
 			temp.vec = 10;
-			temp.index = car_in[i].first ().index;
+			temp.index = car_block[i].first ().index;
 			Node->append (temp);
 			c_write (car_block[i].first ());
 			car_block[i].removeFirst ();
 		}
+		qDebug () << "F";
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
 			car_out[i].removeFirst ();
 		}
 	}
+
 	QList<InNode>::iterator _n_;
 	if (!Node->empty ()) {
 		for (_n_ = Node->begin (); _n_ != Node->end (); ++_n_) {
@@ -356,7 +370,9 @@ void Traffic_v1::sim () {
 			}
 		}
 	}
+	qDebug () << "G";
 	while (!Node->empty () && Node->first ().delay_time < 0) Node->removeFirst ();
+	qDebug () << "H";
 }
 void Traffic_v1::generate () {
 	for (int i = 0; i < DIR_NUM; i++) {
@@ -375,32 +391,7 @@ void Traffic_v1::generate () {
 					if (OK[j] && !k) break;
 					else if (OK[j]) --k;
 				}
-				if (j == TR_NUM) {
-					//return;
-					int max = 0;
-					for (int t = 0; t < TR_NUM; ++k)
-						if (car_in[i*TR_NUM + t].last ().pos > car_in[i*TR_NUM + max].last ().pos) max = t;
-					Car temp;
-#ifdef COMBO
-					double var = double (rand ()) / double (RAND_MAX);
-					if (0 <= var && var <= double (R_0) / double (SUM)) temp.type = Type::C_0;
-					else if (double (R_0) / double (SUM) <= var && var <= double (R_0 + R_1) /
-						double (SUM)) temp.type = Type::C_1;
-					else temp.type = Type::C_2;
-#endif
-					temp.pos = -200.0;
-					temp.vec = (car_in[i*TR_NUM + max].last ().vec) - abs (ND (e));
-					temp.index = ++this->index;
-					temp.acc = ND_A (e);
-					temp.time_arr = 0;
-					temp.enter_time_d = now_t;
-					while (temp.acc<0.01 || temp.acc>2.5) temp.acc = ND_A (e);
-					while (temp.vec < car_in[i*TR_NUM + max].last ().vec - 5 || temp.vec<3 || temp.vec>car_in[i*TR_NUM + max].last ().vec)
-						temp.vec = car_in[i*TR_NUM + max].last ().vec - abs (ND (e));
-					temp.vec_init = temp.vec;
-					car_in[i*TR_NUM + j] << temp;
-				}
-				else {
+				{
 					Car temp;
 					temp.enter_time_d = now_t;
 					temp.pos = -200.0;//control length 200m;
@@ -432,9 +423,6 @@ void Traffic_v1::generate () {
 #endif
 					car_in[i*TR_NUM + j] << temp;
 				}
-			}
-			else {
-				i++; continue;
 			}
 		}
 		else go[i] -= 0.1;
