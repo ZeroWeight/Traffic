@@ -1,5 +1,6 @@
 ﻿#include "traffic_v1.h"
 
+static const int penalty_time = 20;
 static const double A_max_ = 3.0;
 static const double V_max = 25.0;
 static const double V_min = 5.0;
@@ -9,12 +10,7 @@ void Traffic_v1::st2 () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && ((Get (i) == Color::Red
-				|| (!(car_block[i].empty () || (WILL (GetTime, i) == Color::Green
-					&& WILL (GetTime - 1, i) == Color::Green
-					&&WILL (GetTime - 2, i) == Color::Green
-					&& WILL (GetTime - 3, i) == Color::Green
-					&& WILL (GetTime - 4, i) == Color::Green)))))) {
+			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4.2) && Get (i) == Color::Red) {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
@@ -57,8 +53,7 @@ void Traffic_v1::st2 () {
 						if (_head.pos > -20 + (car_block[i].empty () ? 0 : (-4 + car_block[i].last ().pos))) {
 							_head.acc = _head.vec*_head.vec / 2.1 / (car_block[i].empty () ?
 								_head.pos : (_head.pos + 4 - car_block[i].last ().pos));
-							if (_head.vec < 3 && !car_block[i].empty ()) _head.acc = 0;
-							if (_head.vec < 5) _head.acc = 5;
+							if (_head.vec < 3) _head.acc = 0;
 						}
 						else _head.acc = 3;
 						_head.time_arr = 0;
@@ -167,9 +162,9 @@ void Traffic_v1::st2 () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
-				if (it->vec < 5) {
-					it->vec = 1;
-					it->acc = 5;
+				if (it->vec < 0) {
+					it->vec = 0;
+					it->acc = 0;
 					++stop_num[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;
