@@ -15,7 +15,13 @@ void Traffic_v1::following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && Get (i) == Color::Red) {
+			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && (Get (i) == Color::Red
+				|| (!(!car_block[i].empty ()
+					&& WILL (GetTime, i) == Color::Green
+					&& WILL (GetTime - 1, i) == Color::Green
+					&&WILL (GetTime - 2, i) == Color::Green
+					&& WILL (GetTime - 3, i) == Color::Green
+					&& WILL (GetTime - 4, i) == Color::Green)))) {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
@@ -87,23 +93,18 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 				if (it->vec < 10) it->acc = 5;
 				else if (it->vec < 16) it->acc = ND_A (e);
 				else if (it->vec < 17) it->acc = ND_A_S (e);
+				break;
 			}
 			else if (!car_block[i].empty ()
 				&& WILL (GetTime, i) == Color::Green
 				&& WILL (GetTime - 1, i) == Color::Green
 				&&WILL (GetTime - 2, i) == Color::Green
-				&& WILL (GetTime - 3, i) == Color::Green) {
+				&& WILL (GetTime - 3, i) == Color::Green
+				&& WILL (GetTime - 4, i) == Color::Green) {
 				if (it->vec < 3) it->acc = 2;
 				else it->acc = 0;
+				break;
 			}
-			else {
-				if (it->vec < 0.5) it->acc = 3;
-				else it->acc = it->vec*it->vec / 2 / (it->pos - car_block[i].last ().pos + 4);
-				if (it->vec + 0.1*it->acc < 0) {
-					it->vec = it->acc = 0;
-				}
-			}
-			break;
 		}
 	case Yellow:case Red:
 		if (it->pos > -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {

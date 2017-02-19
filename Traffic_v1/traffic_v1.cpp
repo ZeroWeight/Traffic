@@ -308,7 +308,8 @@ void Traffic_v1::sim () {
 			&& WILL (GetTime, i) == Color::Green
 			&& WILL (GetTime - 1, i) == Color::Green
 			&&WILL (GetTime - 2, i) == Color::Green
-			&& WILL (GetTime - 3, i) == Color::Green) {
+			&& WILL (GetTime - 3, i) == Color::Green
+			&& WILL (GetTime - 4, i) == Color::Green) {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
 				_car_->pos += 0.4;
 		}
@@ -451,9 +452,9 @@ void Traffic_v1::generate () {
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
 			}
-		}
-#endif
 	}
+#endif
+}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {

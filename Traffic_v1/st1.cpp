@@ -53,7 +53,13 @@ void Traffic_v1::st1 () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && Get (i) == Color::Red) {
+			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && (Get (i) == Color::Red
+				|| (!(!car_block[i].empty ()
+					&& WILL (GetTime, i) == Color::Green
+					&& WILL (GetTime - 1, i) == Color::Green
+					&&WILL (GetTime - 2, i) == Color::Green
+					&& WILL (GetTime - 3, i) == Color::Green
+					&& WILL (GetTime - 4, i) == Color::Green)))) {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
@@ -215,7 +221,7 @@ void Traffic_v1::st1_head (QList<Car>::iterator it, int i) {
 	if (rt < Tmax) {
 		double acc_st1;
 		if (it->vec < -it->pos / rt*0.9) acc_st1 = 5;
-		else if (it->vec > -it->pos / rt*1.1) acc_st1 = -0.6*(it->pos + it->vec*rt) / rt / rt;
+		else if (it->vec > -it->pos / rt*1.1) acc_st1 = -5;
 		else acc_st1 = 0;
 		if (car_block[i].empty ()) it->acc = acc_st1;
 		else if (it->pos > -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos))
