@@ -6,3 +6,5 @@ car_passed,car_stopped
 ## car.cvs
 when a car is out
 car_delay
+
+# stop car stat
