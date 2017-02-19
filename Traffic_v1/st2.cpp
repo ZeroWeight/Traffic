@@ -165,6 +165,7 @@ void Traffic_v1::st2 () {
 					it->vec = 0;
 					it->acc = 3;
 					++stop_num[i];
+					++stop_time[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;
 			}

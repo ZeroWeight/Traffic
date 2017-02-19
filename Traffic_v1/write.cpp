@@ -14,6 +14,7 @@ void Traffic_v1::main_write () {
 		sum += _st[i]->text ().toInt ();
 	}
 	(*__road) << ',' << sum / 12.0 << ',' << index << '\n';
+
 	sum = stop_num[0];
 	(*__stop) << double (now_t) / 10.0 << ',' << stop_num[0];
 	for (int i = 1; i < TR_NUM*DIR_NUM; ++i) {
@@ -21,6 +22,14 @@ void Traffic_v1::main_write () {
 		sum += stop_num[i];
 	}
 	(*__stop) << ',' << sum / 12.0 << ',' << index << '\n';
+
+	sum = stop_time[0];
+	(*__stopT) << double (now_t) / 10.0 << ',' << double (stop_num[0]) / 10.0;
+	for (int i = 1; i < TR_NUM*DIR_NUM; ++i) {
+		(*__stopT) << ',' << double (stop_time[i]) / 10.0;
+		sum += stop_time[i];
+	}
+	(*__stopT) << ',' << sum / 120.0 << '\n';
 }
 
 void Traffic_v1::init_write () {
@@ -53,15 +62,19 @@ void Traffic_v1::init_write () {
 #endif
 	system (QString ("mkdir " + folder).toStdString ().data ());
 	_road = new QFile (folder + "\\road.csv");
+	_stopT = new QFile (folder + "\\stop_time.csv");
 	_car = new QFile (folder + "\\car.csv");
 	_stop = new QFile (folder + "\\stop.csv");
 	_road->open (QIODevice::WriteOnly);
 	_car->open (QIODevice::WriteOnly);
 	_stop->open (QIODevice::WriteOnly);
+	_stopT->open (QIODevice::WriteOnly);
 	__road = new QTextStream (_road);
 	__stop = new QTextStream (_stop);
 	__car = new QTextStream (_car);
+	__stopT = new QTextStream (_stopT);
 	(*__car) << QString ("init_velocity,thoritical_time,act_time,delta\n");
 	(*__road) << QString ("time,00,01,02,10,11,12,20,21,22,30,31,32,AVE,ALL\n");
 	(*__stop) << QString ("time,00,01,02,10,11,12,20,21,22,30,31,32,AVE,ALL\n");
+	(*__stopT) << QString ("time,00,01,02,10,11,12,20,21,22,30,31,32,AVE\n");
 }

@@ -24,7 +24,9 @@ static std::normal_distribution<double> ND (0, 0.5);
 static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
-	for (int i = 0; i < DIR_NUM*TR_NUM; ++i) stop_num[i] = 0;
+	for (int i = 0; i < DIR_NUM*TR_NUM; ++i) {
+		stop_num[i] = 0; stop_time[i] = 0;
+	}
 	for (int i = 0; i < DIR_NUM; i++) {
 		go[i] = expdf (lambda[i]);
 	}
@@ -323,6 +325,7 @@ void Traffic_v1::sim () {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
 				_car_->pos += 0.4;
 		}
+		else if (!car_block[i].empty ()) stop_time[i] += car_block[i].count ();
 		qDebug () << "D";
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
 			InNode temp;
@@ -440,9 +443,9 @@ void Traffic_v1::generate () {
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
 			}
-		}
-#endif
 	}
+#endif
+}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {

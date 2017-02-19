@@ -55,6 +55,8 @@
 #include <cmath>
 #include <random>
 #include "settings.hpp"
+#include "basic.h"
+
 struct Car {
 	int time_arr;
 	double acc;
@@ -125,10 +127,13 @@ private:
 	QFile* _road;
 	QFile* _car;
 	QFile* _stop;
+	QFile* _stopT;
+	QTextStream* __stopT;
 	QTextStream* __road;
 	QTextStream* __car;
 	QTextStream* __stop;
 	int stop_num[TR_NUM*DIR_NUM];
+	int stop_time[TR_NUM*DIR_NUM];
 private:
 	double CalMaxTime (double pos, double vec);
 	double CalMinTime (double pos, double vec);
