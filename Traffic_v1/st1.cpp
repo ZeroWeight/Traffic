@@ -119,7 +119,7 @@ void Traffic_v1::st1 () {
 				}
 				if (it->vec < 0) {
 					it->vec = 0;
-					it->acc = 3;
+					it->acc = 2;
 					++stop_num[i];
 					++stop_time[i];
 				}

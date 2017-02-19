@@ -112,6 +112,10 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		if (now_t == 36000)
 			this->close ();
 #endif
+		if (!(now_t % 36000)) {
+			if (timer->isActive ())
+				end->click ();
+		}
 		qDebug () << "1";
 		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 		generate ();
@@ -282,9 +286,11 @@ Traffic_v1::~Traffic_v1 () {
 	_car->flush ();
 	_stop->flush ();
 	_road->flush ();
+	_stopT->flush ();
 	_car->close ();
 	_stop->close ();
 	_road->close ();
+	_stopT->close ();
 }
 void Traffic_v1::sim () {
 	for (int i = 0; i < TR_NUM*DIR_NUM*(now_t != 0); i++) {
@@ -442,7 +448,7 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
-			}
+		}
 	}
 #endif
 }
