@@ -10,7 +10,12 @@ void Traffic_v1::st2 () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4.2) && Get (i) == Color::Red) {
+			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && ((Get (i) == Color::Red
+				|| (!(car_block[i].empty () || (WILL (GetTime, i) == Color::Green
+					&& WILL (GetTime - 1, i) == Color::Green
+					&&WILL (GetTime - 2, i) == Color::Green
+					&& WILL (GetTime - 3, i) == Color::Green
+					&& WILL (GetTime - 4, i) == Color::Green)))))) {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
@@ -22,14 +27,8 @@ void Traffic_v1::st2 () {
 				if (_head.pos < -5) {
 					int TminH;
 					int TmaxH;
-					if (_head.pos < -8 * car_block[i].count ()) {
-						TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.5*car_block[i].count ());
-						TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count ());
-					}
-					else {
-						TminH = int (CalMinTime (-_head.pos - 3 * car_block[i].count (), _head.vec) + 1.05*car_block[i].count ());
-						TmaxH = int (CalMaxTime (-_head.pos - 2 * car_block[i].count (), _head.vec) + 0.95*car_block[i].count ());
-					}
+					TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.05*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 5 : 0));
+					TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 5 : 0));
 					int rt;
 					for (rt = TminH; rt < TmaxH; ++rt) {
 						if (WILL (rt + GetTime, i) == Color::Green
