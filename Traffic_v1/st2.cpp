@@ -27,8 +27,8 @@ void Traffic_v1::st2 () {
 				if (_head.pos < -5) {
 					int TminH;
 					int TmaxH;
-					TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.05*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 5 : 0));
-					TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 5 : 0));
+					TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.1*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 7 : 0));
+					TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.9*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 7 : 0));
 					int rt;
 					for (rt = TminH; rt < TmaxH; ++rt) {
 						if (WILL (rt + GetTime, i) == Color::Green
@@ -163,7 +163,7 @@ void Traffic_v1::st2 () {
 				}
 				if (it->vec < 0) {
 					it->vec = 0;
-					it->acc = 0;
+					it->acc = 3;
 					++stop_num[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;

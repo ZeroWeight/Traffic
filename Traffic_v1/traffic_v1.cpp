@@ -284,9 +284,9 @@ void Traffic_v1::sim () {
 			for (_car_ = car_in[i].begin (); _car_ != car_in[i].end (); ++_car_) {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
-				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0 && (_car_ - 1)->vec < _car_->vec) {
+				if (_car_ != car_in[i].begin () && (_car_->pos - (_car_ - 1)->pos) > -1.0) {
 #ifdef FIN
-					(_car_ - 1)->vec = _car_->vec;
+					(_car_)->vec = (_car_ - 1)->vec;
 #endif
 #ifndef FIN
 					qDebug () << "E" << (_car_ - 1)->pos << (_car_ - 1)->vec << (_car_ - 1)->acc << (_car_ - 1)->index;
@@ -452,9 +452,9 @@ void Traffic_v1::generate () {
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
 			}
-	}
+		}
 #endif
-}
+	}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {

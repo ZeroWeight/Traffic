@@ -60,14 +60,8 @@ void Traffic_v1::combo () {
 						if (_head.pos < -5) {
 							int TminH;
 							int TmaxH;
-							if (_head.pos < -8 * car_block[i].count ()) {
-								TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.5*car_block[i].count ());
-								TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.95*car_block[i].count ());
-							}
-							else {
-								TminH = int (CalMinTime (-_head.pos - 3 * car_block[i].count (), _head.vec) + 1.05*car_block[i].count ());
-								TmaxH = int (CalMaxTime (-_head.pos - 2 * car_block[i].count (), _head.vec) + 0.95*car_block[i].count ());
-							}
+							TminH = int (CalMinTime (-_head.pos, _head.vec) + 1.1*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 7 : 0));
+							TmaxH = int (CalMaxTime (-_head.pos, _head.vec) + 0.9*car_block[i].count () + ((!car_block[i].empty () && Get (i) == Color::Red) ? 7 : 0));
 							int rt;
 							for (rt = TminH; rt < TmaxH; ++rt) {
 								if (WILL (rt + GetTime, i) == Color::Green
@@ -265,9 +259,9 @@ void Traffic_v1::combo () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
-				if (it->vec < 1) {
-					it->vec = 5;
-					it->acc = 5;
+				if (it->vec < 0) {
+					it->vec = 0;
+					it->acc = 3;
 					++stop_num[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;

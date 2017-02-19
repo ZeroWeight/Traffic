@@ -65,7 +65,7 @@ void Traffic_v1::following () {
 				}
 				if (it->vec < 0) {
 					it->vec = 0;
-					it->acc = 0;
+					it->acc = 3;
 					++stop_num[i];
 				}
 				if (it->acc > A_max) it->acc = A_max;
