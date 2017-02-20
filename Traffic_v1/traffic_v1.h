@@ -134,6 +134,7 @@ private:
 	QTextStream* __stop;
 	int stop_num[TR_NUM*DIR_NUM];
 	int stop_time[TR_NUM*DIR_NUM];
+	int car_pass[TR_NUM*DIR_NUM];
 private:
 	double CalMaxTime (double pos, double vec);
 	double CalMinTime (double pos, double vec);

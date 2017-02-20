@@ -15,16 +15,15 @@ void Traffic_v1::following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && ((Get (i) == Color::Red
-				|| (!(car_block[i].empty () || (WILL (GetTime, i) == Color::Green
-					&& WILL (GetTime - 1, i) == Color::Green
-					&&WILL (GetTime - 2, i) == Color::Green
-					&& WILL (GetTime - 3, i) == Color::Green
-					&& WILL (GetTime - 4, i) == Color::Green)))))) {
+			if ((_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && (Get (i) == Color::Red)) ||
+				(!car_block[i].empty () && _head.pos > car_block[i].last ().pos - 4)) {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
-				++stop_num[i];
+				if (!car_block[i].empty () && !(WILL (GetTime, i) == Color::Green &&
+					WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green&&
+					WILL (GetTime - 3, i) == Color::Green&&WILL (GetTime - 4, i) == Color::Green))
+					++stop_num[i];
 				goto STAT;
 			}
 			else head (car_in[i].begin (), i);
@@ -101,7 +100,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 				&&WILL (GetTime - 2, i) == Color::Green
 				&& WILL (GetTime - 3, i) == Color::Green
 				&& WILL (GetTime - 4, i) == Color::Green) {
-				if (it->vec < 3) it->acc = 2;
+				if (it->vec < 1) it->acc = 2;
 				else it->acc = 0;
 				break;
 			}

@@ -10,16 +10,15 @@ void Traffic_v1::st2 () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && ((Get (i) == Color::Red
-				|| (!(car_block[i].empty () || (WILL (GetTime, i) == Color::Green
-					&& WILL (GetTime - 1, i) == Color::Green
-					&&WILL (GetTime - 2, i) == Color::Green
-					&& WILL (GetTime - 3, i) == Color::Green
-					&& WILL (GetTime - 4, i) == Color::Green)))))) {
+			if ((_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && (Get (i) == Color::Red)) ||
+				(!car_block[i].empty () && _head.pos > car_block[i].last ().pos - 4)) {
 				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
-				++stop_num[i];
+				if (!car_block[i].empty () && !(WILL (GetTime, i) == Color::Green &&
+					WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green&&
+					WILL (GetTime - 3, i) == Color::Green&&WILL (GetTime - 4, i) == Color::Green))
+					++stop_num[i];
 				goto STAT;
 			}
 			if (_head.pos < 0) {
@@ -43,9 +42,8 @@ void Traffic_v1::st2 () {
 						else if (-_head.pos > _head.vec*rt*1.05) _head.acc = 5;
 						else _head.acc = 0;
 						_head.time_arr = GetTime + rt;
-						if (!car_block[i].empty () && _head.pos > -5 + car_block[i].last ().pos) {
-							_head.vec = 4;
-							_head.acc = 0;
+						if (!car_block[i].empty () && _head.pos > -10 + car_block[i].last ().pos) {
+							_head.acc = -3;
 						}
 					}
 					else {

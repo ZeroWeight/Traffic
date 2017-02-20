@@ -25,7 +25,7 @@ static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
 	for (int i = 0; i < DIR_NUM*TR_NUM; ++i) {
-		stop_num[i] = 0; stop_time[i] = 0;
+		stop_num[i] = 0; stop_time[i] = 0; car_pass[i] = 0;
 	}
 	for (int i = 0; i < DIR_NUM; i++) {
 		go[i] = expdf (lambda[i]);
@@ -329,8 +329,11 @@ void Traffic_v1::sim () {
 			&& WILL (GetTime - 3, i) == Color::Green
 			&& WILL (GetTime - 4, i) == Color::Green) {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
-				_car_->pos += 0.4;
+				if (car_pass[i] < 9)
+					_car_->pos += 0.2;
+				else _car_->pos += 0.4;
 		}
+		if (Get (i) != Color::Green) car_pass[i] = 0;
 		else if (!car_block[i].empty ()) stop_time[i] += car_block[i].count ();
 		qDebug () << "D";
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
@@ -357,6 +360,7 @@ void Traffic_v1::sim () {
 			Node->append (temp);
 			c_write (car_block[i].first ());
 			car_block[i].removeFirst ();
+			++car_pass[i];
 		}
 		qDebug () << "F";
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
@@ -387,52 +391,51 @@ void Traffic_v1::generate () {
 	for (int i = 0; i < DIR_NUM; i++) {
 #ifndef MAX_LOAD
 		if (go[i] <= 0) {
-			go[i] = expdf (lambda[i]);
 			bool OK[TR_NUM];
 			for (int j = 0; j < TR_NUM; j++) OK[j] = car_in[i*TR_NUM + j].empty ()
 				|| car_in[i*TR_NUM + j].last ().pos > -180.00;
 			int cont = 0;
 			for (int j = 0; j < TR_NUM; j++)if (OK[j]) cont++;
 			if (cont) {
+				go[i] = expdf (lambda[i]);
 				int k = rand () % cont;
 				int j;
 				for (j = 0; j < TR_NUM; j++) {
 					if (OK[j] && !k) break;
 					else if (OK[j]) --k;
 				}
-				{
-					Car temp;
-					temp.enter_time_d = now_t;
-					temp.pos = -200.0;//control length 200m;
-					if (car_in[i*TR_NUM + j].empty ())
-						temp.vec = ND_V (e);
+				Car temp;
+				temp.enter_time_d = now_t;
+				temp.pos = -200.0;//control length 200m;
+				if (car_in[i*TR_NUM + j].empty ())
+					temp.vec = ND_V (e);
+				else
+					temp.vec = car_in[i*TR_NUM + j].last ().vec + ND (e);
+				temp.index = ++this->index;
+				if (!car_in[i*TR_NUM + j].empty ())
+					if (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3
+						|| temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3
+						|| temp.vec > 25 || temp.vec < 5)
+						goto RES;
 					else
-						temp.vec = car_in[i*TR_NUM + j].last ().vec + ND (e);
-					temp.index = ++this->index;
-					if (!car_in[i*TR_NUM + j].empty ())
-						if (temp.vec < (car_in[i*TR_NUM + j].end () - 1)->vec - 3
-							|| temp.vec> (car_in[i*TR_NUM + j].end () - 1)->vec + 3
-							|| temp.vec > 25 || temp.vec < 5)
-							goto RES;
-						else
-							while (temp.vec < 10 || temp.vec>16) {
-							RES:
-								temp.vec = ND_V (e);
-							}
-					temp.acc = ND_A (e);
-					temp.time_arr = 0;
-					temp.vec_init = temp.vec;
-					while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
+						while (temp.vec < 10 || temp.vec>16) {
+						RES:
+							temp.vec = ND_V (e);
+						}
+				temp.acc = ND_A (e);
+				temp.time_arr = 0;
+				temp.vec_init = temp.vec;
+				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 #ifdef COMBO
-					double var = double (rand ()) / double (RAND_MAX);
-					if (0 <= var && var <= double (R_0) / double (SUM)) temp.type = Type::C_0;
-					else if (double (R_0) / double (SUM) <= var && var <= double (R_0 + R_1) /
-						double (SUM)) temp.type = Type::C_1;
-					else temp.type = Type::C_2;
+				double var = double (rand ()) / double (RAND_MAX);
+				if (0 <= var && var <= double (R_0) / double (SUM)) temp.type = Type::C_0;
+				else if (double (R_0) / double (SUM) <= var && var <= double (R_0 + R_1) /
+					double (SUM)) temp.type = Type::C_1;
+				else temp.type = Type::C_2;
 #endif
-					car_in[i*TR_NUM + j] << temp;
-				}
+				car_in[i*TR_NUM + j] << temp;
 			}
+			else go[i] -= 0.1;
 		}
 		else go[i] -= 0.1;
 #endif
