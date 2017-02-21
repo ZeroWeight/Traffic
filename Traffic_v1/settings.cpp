@@ -8,7 +8,19 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	dashes << 5 << 3 << 5 << 3;
 	dot_line->setDashPattern (dashes);
 	car = new QBrush (QColor ("Blue"));
+	period = 300;
+#ifdef _60_B_
 	period = 60;
+#endif
+#ifdef _90_B_
+	period = 90;
+#endif
+#ifdef _120_B_
+	period = 120;
+#endif
+#ifdef _150_B_
+	period = 150;
+#endif
 	map = new Light[period];
 	for (int i = 0; i < (period >> 1); ++i) for (int k = 0; k < TR_NUM; k++) {
 		map[i][DIR::A][k] = map[i][DIR::C][k] = Color::Red;

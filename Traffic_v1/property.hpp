@@ -8,10 +8,15 @@
 #undef COMBO
 means switch on the second strategy*/
 #undef BAT
-
+#ifndef _A_0_
 #undef MANUAL		//means the non_control strategy
+#endif
+#ifndef _A_1_
 #undef ST1			//the first strategy
-//#undef ST2		//the second strategy
+#endif
+#ifndef _A_2_
+#undef ST2		//the second strategy
+#endif
 #undef COMBO		//the combo strategy
 
 /*--------------------------------------------------------------------*/
