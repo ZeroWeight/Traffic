@@ -42,8 +42,8 @@ void Traffic_v1::st2 () {
 						else if (-_head.pos > _head.vec*rt*1.05) _head.acc = 5;
 						else _head.acc = 0;
 						_head.time_arr = GetTime + rt;
-						if (!car_block[i].empty () && _head.pos > -10 + car_block[i].last ().pos) {
-							_head.acc = -3;
+						if (!car_block[i].empty () && _head.pos > -5 + car_block[i].last ().pos) {
+							_head.vec = 2;
 						}
 					}
 					else {
@@ -100,9 +100,9 @@ void Traffic_v1::st2 () {
 					if (_rt < MaxT) {
 						if (-it->pos < it->vec*_rt*0.95) {
 							it->acc = -5;
-							if ((it - 1)->acc < it->acc && (it - 1)->pos - it->pos < 15)
+							if ((it - 1)->acc < it->acc && (it - 1)->pos - it->pos < 10)
 								if (it->vec < (it - 1)->vec) it->acc = ((it - 1)->acc + it->acc) / 2;
-								else it->acc = (it - 1)->acc - 10;
+								else it->acc = min ((it - 1)->acc - 10, -10);
 							else if ((it - 1)->pos - it->pos < 20) it->acc *= 1.1;
 						}
 						else if (-it->pos > it->vec*_rt*1.05) {
@@ -159,9 +159,9 @@ void Traffic_v1::st2 () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
-				if (it->vec < 0) {
-					it->vec = 0;
-					it->acc = 2;
+				if (it->vec < 3) {
+					it->vec = 3;
+					it->acc = 0;
 					++stop_num[i];
 					++stop_time[i];
 				}

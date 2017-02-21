@@ -62,9 +62,9 @@ void Traffic_v1::following () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
-				if (it->vec < 0) {
-					it->vec = 0;
-					it->acc = 2;
+				if (it->vec < 3) {
+					it->vec = 3;
+					it->acc = 0;
 					++stop_num[i];
 					++stop_time[i];
 				}
