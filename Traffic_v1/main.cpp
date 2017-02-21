@@ -1,9 +1,6 @@
 #include "traffic_v1.h"
 #include <QtWidgets/QApplication>
 #include <ctime>
-#ifdef _A_A_A_
-#error hehehe
-#endif
 int main (int argc, char *argv[]) {
 	srand (time (0));
 	QApplication a (argc, argv);
