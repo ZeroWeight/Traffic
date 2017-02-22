@@ -10,9 +10,9 @@ void Traffic_v1::st2 () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if ((_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && (Get (i) == Color::Red)) ||
-				(!car_block[i].empty () && _head.pos > car_block[i].last ().pos - 4)) {
-				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
+			if ((_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 5) && (Get (i) == Color::Red)) ||
+				(!car_block[i].empty () && _head.pos > car_block[i].last ().pos - 5)) {
+				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 5);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
 				if (!(WILL (GetTime, i) == Color::Green &&
@@ -159,11 +159,13 @@ void Traffic_v1::st2 () {
 					it->vec = V_max;
 					it->acc = 0;
 				}
-				if (it->vec < 3) {
-					it->vec = 3;
-					it->acc = 0;
-					++stop_num[i];
+				if (it->vec < 2) {
 					++stop_time[i];
+					if (it->vec < 0) {
+						it->vec = 0;
+						it->acc = 0;
+						++stop_num[i];
+					}
 				}
 				if (it->acc > A_max) it->acc = A_max;
 			}
