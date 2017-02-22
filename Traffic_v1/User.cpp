@@ -101,10 +101,20 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 				&& WILL (GetTime - 1, i) == Color::Green
 				&&WILL (GetTime - 2, i) == Color::Green
 				&& WILL (GetTime - 3, i) == Color::Green
-				&& WILL (GetTime - 4, i) == Color::Green) {
-				if (it->vec < 1 && car_pass[i] < 9) it->acc = 2;
-				if (it->vec < 3 && car_pass[i] >= 9) it->acc = 2;
-				else it->acc = 0;
+				&& WILL (GetTime - 4, i) == Color::Green ||
+				it->pos < -10 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {
+				if (it->pos < -10 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {
+					if (it->vec < 10) it->acc = 2;
+					else it->acc = 0;
+				}
+				else {
+					if (car_pass[i] < 10)
+						if (it->vec < 1.5) it->acc = 2;
+						else it->acc = 0;
+					else
+						if (it->vec < 2) it->acc = 2;
+						else it->acc = 0;
+				}
 				break;
 			}
 		}

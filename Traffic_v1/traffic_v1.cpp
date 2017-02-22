@@ -322,15 +322,13 @@ void Traffic_v1::sim () {
 		if (!car_block[i].empty ()
 			&& WILL (GetTime, i) == Color::Green
 			&& WILL (GetTime - 1, i) == Color::Green
-			&&WILL (GetTime - 2, i) == Color::Green
-			&& WILL (GetTime - 3, i) == Color::Green
-			&& WILL (GetTime - 4, i) == Color::Green) {
+			&&WILL (GetTime - 2, i) == Color::Green) {
 			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
 				if (car_pass[i] < 10)
 					_car_->pos += 0.18 + 0.004*car_pass[i];
 				else _car_->pos += 0.22;
 		}
-		if (Get (i) != Color::Green&&WILL (GetTime - 1, i) == Color::Green) stop_num[i] += car_block[i].count ();
+		if (Get (i) != Color::Green&&WILL (GetTime - 1, i) == Color::Green&&now_t == 10 * GetTime) stop_num[i] += car_block[i].count ();
 		if (Get (i) != Color::Green) {
 			car_pass[i] = 0;
 			stop_time[i] += car_block[i].count ();
