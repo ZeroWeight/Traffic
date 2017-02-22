@@ -330,6 +330,10 @@ void Traffic_v1::sim () {
 					_car_->pos += 0.18 + 0.004*car_pass[i];
 				else _car_->pos += 0.22;
 		}
+		else if (!car_block[i].empty () && car_block[i].first ().pos < 0) {
+			for (_car_ = car_block[i].begin (); _car_ != car_block[i].end (); ++_car_)
+				_car_->pos += 0.1;
+		}
 		if (Get (i) != Color::Green&&WILL (GetTime - 1, i) == Color::Green&&now_t == 10 * GetTime) stop_num[i] += car_block[i].count ();
 		if (Get (i) != Color::Green) {
 			car_pass[i] = 0;
