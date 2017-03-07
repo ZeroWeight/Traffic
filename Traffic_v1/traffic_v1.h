@@ -91,10 +91,7 @@ private:
 	int index = 0;
 	int scale_t;
 	Settings* s;
-	QLabel* scale;
 	QLabel* now;
-	QLineEdit* scaleEdit;
-	QPushButton* _reset;
 public:
 	QPushButton* start;
 private:

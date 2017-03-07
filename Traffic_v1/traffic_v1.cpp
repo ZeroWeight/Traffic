@@ -38,23 +38,12 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	s->setFixedHeight (size*12.25);
 	s->setFixedWidth (size * 23);
 	s->hide ();
-	scale = new QLabel (this);
-	scale->setGeometry (15 * size, size, size, 0.7*size);
-	scale->setText ("Time\r\nScale");
-	scale->setFont (QFont ("TimesNewRoman", 10));
 	scale_t = 1;
-	scaleEdit = new QLineEdit (this);
-	scaleEdit->setText (QString::number (scale_t));
-	scaleEdit->setGeometry (16.5*size, size, size, 0.7*size);
-	scaleEdit->setFont (QFont ("TimesNewRoman", 10));
 	now = new QLabel (this);
 	now->setText ("Time:\t0 s");
 	now->setFont (QFont ("TimesNewRoman", 16));
 	now->setGeometry (15 * size, 2 * size, 5 * size, size);
 	now_t = 0;
-	_reset = new QPushButton (this);
-	_reset->setGeometry (19 * size, 0.9*size, 2 * size, size);
-	_reset->setText ("Reset\r\nSet time scale");
 	start = new QPushButton (this);
 	start->setText ("Start");
 	start->setFont (QFont ("TimesNewRoman", 12));
@@ -73,11 +62,8 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	timer->stop ();
 	end->setEnabled (false);
 	connect (start, &QPushButton::clicked, [=](void) {
-		scaleEdit->setText (QString::number (scale_t));
-		scaleEdit->setEnabled (false);
 		end->setText ("Pause");
 		end->setEnabled (true);
-		_reset->setEnabled (false);
 		start->setEnabled (false);
 		timer->start ();
 	});
@@ -94,8 +80,6 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 			end->setEnabled (false);
 			this->now_t = 0;
 			now->setText ("Time:\t0 s");
-			_reset->setEnabled (true);
-			scaleEdit->setEnabled (true);
 			for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
 				car_in[i].clear ();
 				car_out[i].clear ();
@@ -146,25 +130,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 #endif
 		qDebug () << "6";
 		main_write ();
-	});
-	connect (_reset, &QPushButton::clicked, [=](void) {
-		now_t = 0;
-		now->setText ("Time:\t0 s");
-		if (scaleEdit->text ().toInt () > 0)
-			scale_t = scaleEdit->text ().toInt ();
-		else {
-			QMessageBox temp;
-			temp.setText ("ILLEGAL INPUT");
-			temp.exec ();
-			scaleEdit->setText (QString::number (scale_t));
-		}
-		for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
-			car_in[i].clear ();
-			car_out[i].clear ();
-		}
-		Node->clear ();
-		index = 0;
-	});
+		});
 	edit = new QPushButton (this);
 	edit->setText ("Edit the Traffic light");
 	edit->setGeometry (15 * size, 5 * size, 3.3 * size, size);
@@ -281,7 +247,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 #ifdef BAT
 	fast->setChecked (true);
 #endif
-}
+	}
 Traffic_v1::~Traffic_v1 () {
 	_car->flush ();
 	_stop->flush ();
@@ -370,7 +336,7 @@ void Traffic_v1::sim () {
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
 			car_out[i].removeFirst ();
 		}
-	}
+}
 
 	QList<InNode>::iterator _n_;
 	if (!Node->empty ()) {
@@ -479,9 +445,9 @@ void Traffic_v1::_following () {
 					if (itp->acc < -5) itp->acc = -5;
 					if (itp->acc > 5) itp->acc = 5;
 					if (itp->vec < 5)itp->acc = 0;
-				}
+	}
 				free (itp, i);
-			}
+}
 		}
 	}
-}
+			}
