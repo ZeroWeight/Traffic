@@ -17,7 +17,7 @@ means switch on the second strategy*/
 #ifndef _A_2_
 #undef ST2		//the second strategy
 #endif
-#undef COMBO		//the combo strategy
+//#undef COMBO		//the combo strategy
 
 /*--------------------------------------------------------------------*/
 

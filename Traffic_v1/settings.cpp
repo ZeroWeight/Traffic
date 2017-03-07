@@ -1,4 +1,5 @@
 ﻿#include "settings.hpp"
+#define COMBO
 #include "property.hpp"
 Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_size) {
 	main_line = new QPen (QBrush (QColor ("Black")), 5);
@@ -9,6 +10,7 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	dot_line->setDashPattern (dashes);
 	car = new QBrush (QColor ("Blue"));
 	period = 300;
+#ifndef COMBO
 #ifdef _60_B_
 	period = 60;
 #endif
@@ -21,6 +23,8 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 #ifdef _150_B_
 	period = 150;
 #endif
+#endif
+
 	map = new Light[period];
 	for (int i = 0; i < (period >> 1); ++i) for (int k = 0; k < TR_NUM; k++) {
 		map[i][DIR::A][k] = map[i][DIR::C][k] = Color::Red;

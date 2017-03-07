@@ -33,8 +33,10 @@
 #undef __D__
 #define __D__ 1
 #endif
+#ifndef COMBO
 #if __A__+__B__+__C__+__D__- 1
 #error Specific stategy need to be chosen
+#endif
 #endif
 #if __D__&&!(R_0>=0&&R_1>=0&&R_2>=0&&(R_0+R_1+R_2))
 #error Combo stategy ratio need to be corrected
