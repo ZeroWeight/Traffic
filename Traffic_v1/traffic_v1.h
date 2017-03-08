@@ -98,6 +98,9 @@ private:
 	QRadioButton* slow;
 	QRadioButton* very_slow;
 	QLabel* speed;
+	QLabel* ratio;
+	QSlider* ratio_setting;
+	QLabel* ratio_shower;
 	com_label* st;
 	com_label* _st;
 	QSlider* A_L;

@@ -224,6 +224,21 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		lambda[3] = double (value) / 1000;
 		go[3] = expdf (lambda[3]);
 	});
+	ratio = new QLabel (this);
+	ratio->setText ("Ratio controled");
+	ratio->setFont (QFont ("TimesNewRoman", 16));
+	ratio->setGeometry (15 * size, size, size * 3, size);
+	ratio_setting = new QSlider (Qt::Horizontal, this);
+	ratio_setting->setMaximum (1000);
+	ratio_setting->setMinimum (0);
+	ratio_setting->setGeometry (19 * size, 1.25*size, size * 3, 0.5*size);
+	ratio_shower = new QLabel (this);
+	ratio_shower->setFont (QFont ("TimesNewRoman", 16));
+	ratio_shower->setGeometry (19 * size, 2 * size, 3 * size, size);
+	ratio_shower->setText ("Ratio: 0.000");
+	connect (ratio_setting, &QSlider::valueChanged, [=](const int &value) {
+		ratio_shower->setText (QString ("Ratio: ") + QString::number (double (ratio_setting->value ()) / 1000));
+	});
 }
 Traffic_v1::~Traffic_v1 () {
 	_car->flush ();
@@ -394,9 +409,9 @@ void Traffic_v1::generate () {
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
 			}
-	}
+		}
 #endif
-}
+	}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
