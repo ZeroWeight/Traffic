@@ -5,7 +5,7 @@
 #define tr(i) ((i)%3)
 #define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
 #define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
-
+#define COM1 //for debug
 static const int _S = 8;
 double expdf (double lambda) {
 	double pV = 1;
@@ -385,10 +385,16 @@ void Traffic_v1::generate () {
 				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 #ifdef COMBO
 				double var = double (rand ()) / double (RAND_MAX);
-				if (0 <= var && var <= double (10) / double (30)) temp.type = Type::C_0;
-				else if (double (10) / double (30) <= var && var <= double (20) /
-					double (30)) temp.type = Type::C_1;
-				else temp.type = Type::C_2;
+				double value = double (ratio_setting->value ()) / 1000.0;
+				if (var < value)
+
+#ifdef COM1
+					temp.type = C_1;
+#endif
+#ifdef COM2
+				temp.type = C_2;
+#endif
+				else temp.type = C_0;
 #endif
 				car_in[i*TR_NUM + j] << temp;
 			}
