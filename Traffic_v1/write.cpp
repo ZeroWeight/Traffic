@@ -43,7 +43,6 @@ void Traffic_v1::init_write () {
 		(hour < 10 ? '0' + QString::number (hour) : QString::number (hour)) +
 		(minute < 10 ? '0' + QString::number (minute) : QString::number (minute)) +
 		(second < 10 ? '0' + QString::number (second) : QString::number (second)) + '+';
-#ifndef BAT
 #ifdef MAN
 	folder += "0";
 #endif
@@ -54,11 +53,7 @@ void Traffic_v1::init_write () {
 	folder += "2";
 #endif
 #ifdef COMBO
-	folder += QString::number (R_0) + '+' + QString::number (R_1) + '+' + QString::number (R_2);
-#endif
-#endif
-#ifdef BAT
-	folder += QString::number (R_0) + '+' + QString::number (R_1) + '+' + QString::number (R_2);
+	folder += "combo";
 #endif
 	system (QString ("mkdir " + folder).toStdString ().data ());
 	_road = new QFile (folder + "\\road.csv");

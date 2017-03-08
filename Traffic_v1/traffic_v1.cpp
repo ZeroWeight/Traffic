@@ -53,12 +53,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	end->setFont (QFont ("TimesNewRoman", 12));
 	end->setGeometry (16.8 * size, 3.5*size, 1.5 * size, size);
 	timer = new QTimer (this);
-#ifndef BAT
 	timer->setInterval (10);
-#endif
-#ifdef BAT
-	timer->setInterval (1);
-#endif
 	timer->stop ();
 	end->setEnabled (false);
 	connect (start, &QPushButton::clicked, [=](void) {
@@ -92,19 +87,13 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		start->setEnabled (true); });
 	connect (timer, &QTimer::timeout, [=](void) {
 		++now_t;
-#ifdef BAT
-		if (now_t == 36000)
-			this->close ();
-#endif
 		if (!(now_t % 36000)) {
 			if (timer->isActive ())
 				end->click ();
 		}
-		qDebug () << "1";
 		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 		generate ();
 #ifdef MANUAL
-		qDebug () << "1";
 		following ();
 #endif
 #ifdef ST1
@@ -116,21 +105,11 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 #ifdef COMBO
 		combo ();
 #endif
-#ifdef BAT
-		combo ();
-#endif
-		qDebug () << "2";
 		_following ();
-		qDebug () << "3";
 		sim ();
-		qDebug () << "4";
-#ifndef BAT
-		qDebug () << "5";
 		this->update ();
-#endif
-		qDebug () << "6";
 		main_write ();
-		});
+	});
 	edit = new QPushButton (this);
 	edit->setText ("Edit the Traffic light");
 	edit->setGeometry (15 * size, 5 * size, 3.3 * size, size);
@@ -244,10 +223,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		lambda[3] = double (value) / 1000;
 		go[3] = expdf (lambda[3]);
 	});
-#ifdef BAT
-	fast->setChecked (true);
-#endif
-	}
+}
 Traffic_v1::~Traffic_v1 () {
 	_car->flush ();
 	_stop->flush ();
@@ -281,7 +257,7 @@ void Traffic_v1::sim () {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
 			}
-		}
+			}
 		//space: 4m
 		//max load: 1
 		//therefore
@@ -305,7 +281,6 @@ void Traffic_v1::sim () {
 			car_pass[i] = 0;
 			stop_time[i] += car_block[i].count ();
 		}
-		qDebug () << "D";
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
 			InNode temp;
 			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
@@ -318,7 +293,6 @@ void Traffic_v1::sim () {
 			c_write (car_in[i].first ());
 			car_in[i].removeFirst ();
 		}
-		qDebug () << "E";
 		while (!car_block[i].empty () && car_block[i].first ().pos >= 0.5) {
 			InNode temp;
 			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
@@ -332,11 +306,10 @@ void Traffic_v1::sim () {
 			car_block[i].removeFirst ();
 			++car_pass[i];
 		}
-		qDebug () << "F";
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
 			car_out[i].removeFirst ();
 		}
-}
+		}
 
 	QList<InNode>::iterator _n_;
 	if (!Node->empty ()) {
@@ -354,7 +327,7 @@ void Traffic_v1::sim () {
 		}
 	}
 	while (!Node->empty () && Node->first ().delay_time < 0) Node->removeFirst ();
-}
+	}
 void Traffic_v1::generate () {
 	for (int i = 0; i < DIR_NUM; i++) {
 #ifndef MAX_LOAD
@@ -396,9 +369,9 @@ void Traffic_v1::generate () {
 				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 #ifdef COMBO
 				double var = double (rand ()) / double (RAND_MAX);
-				if (0 <= var && var <= double (R_0) / double (SUM)) temp.type = Type::C_0;
-				else if (double (R_0) / double (SUM) <= var && var <= double (R_0 + R_1) /
-					double (SUM)) temp.type = Type::C_1;
+				if (0 <= var && var <= double (10) / double (30)) temp.type = Type::C_0;
+				else if (double (10) / double (30) <= var && var <= double (20) /
+					double (30)) temp.type = Type::C_1;
 				else temp.type = Type::C_2;
 #endif
 				car_in[i*TR_NUM + j] << temp;
@@ -445,9 +418,9 @@ void Traffic_v1::_following () {
 					if (itp->acc < -5) itp->acc = -5;
 					if (itp->acc > 5) itp->acc = 5;
 					if (itp->vec < 5)itp->acc = 0;
-	}
+			}
 				free (itp, i);
-}
 		}
 	}
-			}
+}
+}

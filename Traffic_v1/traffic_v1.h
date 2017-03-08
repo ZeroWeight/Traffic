@@ -1,7 +1,6 @@
 #ifndef TRAFFIC_V1_H
 #define TRAFFIC_V1_H
 #define FIN
-#define BAT
 
 #define MAX_LOAD
 
@@ -9,9 +8,9 @@
 #define ST1
 #define ST2
 #define COMBO
+
 #include "property.hpp"
-#define SUM (R_0+R_1+R_2)
-#ifndef BAT
+
 #pragma  region _PRE_DEF_
 #define __A__ 0
 #define __B__ 0
@@ -38,11 +37,7 @@
 #error Specific stategy need to be chosen
 #endif
 #endif
-#if __D__&&!(R_0>=0&&R_1>=0&&R_2>=0&&(R_0+R_1+R_2))
-#error Combo stategy ratio need to be corrected
-#endif
 #pragma  endregion
-#endif
 #include <QtWidgets/QMainWindow>
 #include <QDesktopWidget>
 #include <QApplication>
@@ -79,11 +74,6 @@ struct InNode {
 class Traffic_v1 : public QMainWindow {
 	Q_OBJECT
 public:
-#ifdef BAT
-	int R_0;
-	int R_1;
-	int R_2;
-#endif
 private:
 	int size;
 	double meter;
@@ -92,7 +82,6 @@ private:
 	int scale_t;
 	Settings* s;
 	QLabel* now;
-public:
 	QPushButton* start;
 private:
 	QPushButton* end;

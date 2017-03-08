@@ -10,7 +10,6 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 	dot_line->setDashPattern (dashes);
 	car = new QBrush (QColor ("Blue"));
 	period = 300;
-#ifndef COMBO
 #ifdef _60_B_
 	period = 60;
 #endif
@@ -22,7 +21,6 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 #endif
 #ifdef _150_B_
 	period = 150;
-#endif
 #endif
 
 	map = new Light[period];
