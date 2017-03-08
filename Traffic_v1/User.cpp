@@ -57,20 +57,24 @@ void Traffic_v1::following () {
 				}
 				else  free (itp, i);
 			}
-			for (it = car_in[i].begin (); it != car_in[i].end (); ++it) {
-				if (it->vec > V_max) {
-					it->vec = V_max;
-					it->acc = 0;
+			for (itp = car_in[i].begin (); itp != car_in[i].end (); ++itp) {
+				if (itp->vec + itp->acc*0.1 < 0) {
+					itp->vec = 0;
+					itp->acc = 1;
 				}
-				if (it->vec < 2) {
+				if (itp->vec + itp->acc*0.1 > V_max) {
+					itp->vec = V_max;
+					itp->acc = 0;
+				}
+				if (itp->vec < 2) {
 					++stop_time[i];
-					if (it->vec < 0) {
-						it->vec = 0;
-						it->acc = 0;
+					if (itp->vec < 0) {
+						itp->vec = 0;
+						itp->acc = 0;
 						++stop_num[i];
 					}
 				}
-				if (it->acc > A_max) it->acc = A_max;
+				if (itp->acc > A_max) itp->acc = A_max;
 			}
 		}
 #pragma endregion
@@ -82,7 +86,7 @@ void Traffic_v1::head (QList<Car>::iterator it, int i) {
 	case Green:
 		int j;
 		for (j = 1 + GetTime; WILL (j, i) == Green && (j - GetTime) < PERIOD; ++j);
-		if (it->pos < -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {//10 sec remains
+		if (it->pos < -30 + (car_block[i].empty () ? 0 : car_block[i].last ().pos)) {
 			if (it->vec < 5)  it->acc = ND_A_A (e);
 			else if (it->vec < 16) it->acc = ND_A (e);
 			else if (it->vec < 17) it->acc = ND_A_S (e);

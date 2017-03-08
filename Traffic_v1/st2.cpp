@@ -82,14 +82,14 @@ void Traffic_v1::st2 () {
 					_head.acc = 0;
 				}
 			}
-			QList<Car>::iterator it;
-			for (it = car_in[i].begin () + 1; it != car_in[i].end (); ++it) {
+			QList<Car>::iterator itp;
+			for (itp = car_in[i].begin () + 1; itp != car_in[i].end (); ++itp) {
 				//for the other vehicle
-				if (it->pos < -5) {
-					int MinT = int (CalMinTime (-it->pos, it->vec) + 1.5*car_block[i].count ());
-					int MaxT = int (CalMaxTime (-it->pos, it->vec) + 0.95*car_block[i].count ());
+				if (itp->pos < -5) {
+					int MinT = int (CalMinTime (-itp->pos, itp->vec) + 1.5*car_block[i].count ());
+					int MaxT = int (CalMaxTime (-itp->pos, itp->vec) + 0.95*car_block[i].count ());
 					int _rt;
-					for (_rt = max (MinT, (it - 1)->time_arr); _rt < MaxT; ++_rt) {
+					for (_rt = max (MinT, (itp - 1)->time_arr); _rt < MaxT; ++_rt) {
 						if (WILL (_rt + GetTime, i) == Color::Green&&
 							WILL (max (_rt - 1, 0) + GetTime, i) == Color::Green&&
 							WILL (max (_rt - 2, 0) + GetTime, i) == Color::Green&&
@@ -98,76 +98,71 @@ void Traffic_v1::st2 () {
 							break;
 					}
 					if (_rt < MaxT) {
-						if (-it->pos < it->vec*_rt*0.95) {
-							it->acc = -5;
-							if ((it - 1)->acc < it->acc && (it - 1)->pos - it->pos < 10)
-								if (it->vec < (it - 1)->vec) it->acc = ((it - 1)->acc + it->acc) / 2;
-								else it->acc = min ((it - 1)->acc - 10, -10);
-							else if ((it - 1)->pos - it->pos < 20) it->acc *= 1.1;
+						if (-itp->pos < itp->vec*_rt*0.95) {
+							itp->acc = -5;
+							if ((itp - 1)->acc < itp->acc && (itp - 1)->pos - itp->pos < 10)
+								if (itp->vec < (itp - 1)->vec) itp->acc = ((itp - 1)->acc + itp->acc) / 2;
+								else itp->acc = min ((itp - 1)->acc - 10, -10);
+							else if ((itp - 1)->pos - itp->pos < 20) itp->acc *= 1.1;
 						}
-						else if (-it->pos > it->vec*_rt*1.05) {
-							it->acc = 5;
-							if ((it - 1)->acc < 2 && (it - 1)->pos - it->pos < 15 && (it - 1)->pos < -20)
-								if (it->vec < (it - 1)->vec) it->acc = ((it - 1)->acc + it->acc) / 2;
-								else it->acc = (it - 1)->acc - 5;
+						else if (-itp->pos > itp->vec*_rt*1.05) {
+							itp->acc = 5;
+							if ((itp - 1)->acc < 2 && (itp - 1)->pos - itp->pos < 15 && (itp - 1)->pos < -20)
+								if (itp->vec < (itp - 1)->vec) itp->acc = ((itp - 1)->acc + itp->acc) / 2;
+								else itp->acc = (itp - 1)->acc - 5;
 						}
-						else it->acc = 0;
-						it->time_arr = GetTime + _rt;
-						if ((it - 1)->pos - it->pos < 7) it->acc = min (-10, (it - 1)->acc - 15);
+						else itp->acc = 0;
+						itp->time_arr = GetTime + _rt;
+						if ((itp - 1)->pos - itp->pos < 7) itp->acc = min (-10, (itp - 1)->acc - 15);
 					}
 					else {
-						if (it->pos > -20 + (car_block[i].empty () ? 0 :
-							(-4 + car_block[i].last ().pos)) + 4 * (car_in[i].begin () - it)) {
-							it->acc = it->vec*it->vec / 2.1 / (car_block[i].empty () ?
-								it->pos :
-								(it->pos + 4 - car_block[i].last ().pos) + 4 * (it - car_in[i].begin ()));
-							if (it->vec < 3) it->acc = 0;
+						if (itp->pos > -20 + (car_block[i].empty () ? 0 :
+							(-4 + car_block[i].last ().pos)) + 4 * (car_in[i].begin () - itp)) {
+							itp->acc = itp->vec*itp->vec / 2.1 / (car_block[i].empty () ?
+								itp->pos :
+								(itp->pos + 4 - car_block[i].last ().pos) + 4 * (itp - car_in[i].begin ()));
+							if (itp->vec < 3) itp->acc = 0;
 						}
 						else {
 							//just follow the car
-							if ((it - 1)->pos - it->pos < 7)it->acc = min ((it - 1)->acc - 10, -10);
-							else if (it->vec > (it - 1)->vec && (it - 1)->pos - it->pos < 15) it->acc = (it - 1)->acc - 5;
-							else if (it->vec < (it - 1)->vec && (it - 1)->pos - it->pos > 15) it->acc = (it - 1)->acc + 5;
-							else if (it->vec > (it - 1)->vec && (it - 1)->pos - it->pos > 15) it->acc = (it - 1)->acc - 1;
-							else if (it->vec < (it - 1)->vec && (it - 1)->pos - it->pos < 15) it->acc = (it - 1)->acc + 1;
+							if ((itp - 1)->pos - itp->pos < 7)itp->acc = min ((itp - 1)->acc - 10, -10);
+							else if (itp->vec > (itp - 1)->vec && (itp - 1)->pos - itp->pos < 15) itp->acc = (itp - 1)->acc - 5;
+							else if (itp->vec < (itp - 1)->vec && (itp - 1)->pos - itp->pos > 15) itp->acc = (itp - 1)->acc + 5;
+							else if (itp->vec > (itp - 1)->vec && (itp - 1)->pos - itp->pos > 15) itp->acc = (itp - 1)->acc - 1;
+							else if (itp->vec < (itp - 1)->vec && (itp - 1)->pos - itp->pos < 15) itp->acc = (itp - 1)->acc + 1;
 						}
-						it->time_arr = 0;
+						itp->time_arr = 0;
 					}
 				}
 				else {
-					if (WILL (int (-it->pos / it->vec) + GetTime, i) == Color::Green&&
-						WILL (int (-it->pos / it->vec) + GetTime + 1, i) == Color::Green) {
-						it->acc = 5;
-						it->time_arr = int (-it->pos / it->vec) + 1;
+					if (WILL (int (-itp->pos / itp->vec) + GetTime, i) == Color::Green&&
+						WILL (int (-itp->pos / itp->vec) + GetTime + 1, i) == Color::Green) {
+						itp->acc = 5;
+						itp->time_arr = int (-itp->pos / itp->vec) + 1;
 					}
 					else {
-						it->acc = it->vec*it->vec / 2.1 / (car_block[i].empty () ?
-							it->pos :
-							(it->pos + 4 - car_block[i].last ().pos) + 4 * (it - car_in[i].begin ()));
-						if (it->vec < 3) it->acc = 0;
-						it->time_arr = 0;
+						itp->acc = itp->vec*itp->vec / 2.1 / (car_block[i].empty () ?
+							itp->pos :
+							(itp->pos + 4 - car_block[i].last ().pos) + 4 * (itp - car_in[i].begin ()));
+						if (itp->vec < 3) itp->acc = 0;
+						itp->time_arr = 0;
 					}
 				}
 			}
-			for (it = car_in[i].begin (); it != car_in[i].end (); ++it)
-				if (it->vec + it->acc*0.1 < 0) {
-					it->vec = 0;
-					it->acc = 1;
+			for (itp = car_in[i].begin (); itp != car_in[i].end (); ++itp) {
+				if (itp->vec + itp->acc*0.1 > V_max) {
+					itp->vec = V_max;
+					itp->acc = 0;
 				}
-			for (it = car_in[i].begin (); it != car_in[i].end (); ++it) {
-				if (it->vec + it->acc*0.1 > V_max) {
-					it->vec = V_max;
-					it->acc = 0;
-				}
-				if (it->vec < 2) {
+				if (itp->vec < 2) {
 					++stop_time[i];
-					if (it->vec < 0) {
-						it->vec = 0;
-						it->acc = 0;
+					if (itp->vec < 0) {
+						itp->vec = 0;
+						itp->acc = 2;
 						++stop_num[i];
 					}
 				}
-				if (it->acc > A_max) it->acc = A_max;
+				if (itp->acc > A_max) itp->acc = A_max;
 			}
 		}
 	}

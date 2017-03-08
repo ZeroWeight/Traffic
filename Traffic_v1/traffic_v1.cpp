@@ -5,7 +5,7 @@
 #define tr(i) ((i)%3)
 #define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
 #define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
-#define COM1 //for debug
+#define COM2 //for debug
 static const int _S = 8;
 double expdf (double lambda) {
 	double pV = 1;
@@ -16,7 +16,7 @@ double expdf (double lambda) {
 }
 //designed speed limit:60kmh-1=16.67ms-1
 //gen speed 40-60kmh-1
-static double lambda[DIR_NUM] = { 3,3,3,3 };
+static double lambda[DIR_NUM] = { 1.0,1.0,1.0,1.0 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
 static std::normal_distribution<double> ND_V (13.8, 0.9);
@@ -157,23 +157,23 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	st[6]->setText ("CL");	st[7]->setText ("CR");	st[8]->setText ("CC");
 	st[9]->setText ("DL");	st[10]->setText ("DR");	st[11]->setText ("DC");
 	A_L = new QSlider (Qt::Horizontal, this);
-	A_L->setMaximum (3000);
-	A_L->setValue (3000);
+	A_L->setMaximum (1500);
+	A_L->setValue (1000);
 	A_L->setMinimum (1);
 	A_L->setGeometry (19.5 * size, 3.5 * size, 1.5*size, 0.5*size);
 	B_L = new QSlider (Qt::Horizontal, this);
-	B_L->setMaximum (3000);
-	B_L->setValue (3000);
+	B_L->setMaximum (1500);
+	B_L->setValue (1000);
 	B_L->setMinimum (1);
 	B_L->setGeometry (19.5 * size, 4.2 * size, 1.5*size, 0.5*size);
 	C_L = new QSlider (Qt::Horizontal, this);
-	C_L->setMaximum (3000);
-	C_L->setValue (3000);
+	C_L->setMaximum (1500);
+	C_L->setValue (1000);
 	C_L->setMinimum (1);
 	C_L->setGeometry (19.5 * size, 4.8 * size, 1.5*size, 0.5*size);
 	D_L = new QSlider (Qt::Horizontal, this);
-	D_L->setMaximum (3000);
-	D_L->setValue (3000);
+	D_L->setMaximum (1500);
+	D_L->setValue (1000);
 	D_L->setMinimum (1);
 	D_L->setGeometry (19.5 * size, 5.5 * size, 1.5*size, 0.5*size);
 	A_A = new QLabel ("A", this);
@@ -188,16 +188,16 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	D_A = new QLabel ("D", this);
 	D_A->setFont (QFont ("TimesNewRoman", 10));
 	D_A->setGeometry (19 * size, 5.5 * size, 0.5*size, 0.5*size);
-	A_B = new QLabel ("1", this);
+	A_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	A_B->setFont (QFont ("TimesNewRoman", 10));
 	A_B->setGeometry (21.5 * size, 3.5 * size, size, 0.5*size);
-	B_B = new QLabel ("1", this);
+	B_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	B_B->setFont (QFont ("TimesNewRoman", 10));
 	B_B->setGeometry (21.5 * size, 4.2 * size, size, 0.5*size);
-	C_B = new QLabel ("1", this);
+	C_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	C_B->setFont (QFont ("TimesNewRoman", 10));
 	C_B->setGeometry (21.5 * size, 4.8 * size, size, 0.5*size);
-	D_B = new QLabel ("1", this);
+	D_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	D_B->setFont (QFont ("TimesNewRoman", 10));
 	D_B->setGeometry (21.5 * size, 5.5 * size, size, 0.5*size);
 	connect (A_L, &QSlider::valueChanged,

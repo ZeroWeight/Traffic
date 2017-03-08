@@ -18,16 +18,15 @@ void Traffic_v1::combo () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
 	STAT:
 		if (!car_in[i].empty ()) {
-			if (_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 4) && ((Get (i) == Color::Red
-				|| (!(car_block[i].empty () || (WILL (GetTime, i) == Color::Green
-					&& WILL (GetTime - 1, i) == Color::Green
-					&&WILL (GetTime - 2, i) == Color::Green
-					&& WILL (GetTime - 3, i) == Color::Green
-					&& WILL (GetTime - 4, i) == Color::Green)))))) {
-				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 4);
+			if ((_head.pos > (car_block[i].empty () ? -0.3 : car_block[i].last ().pos - 5) && (Get (i) == Color::Red)) ||
+				(!car_block[i].empty () && _head.pos > car_block[i].last ().pos - 5)) {
+				_head.pos = (car_block[i].empty () ? 0 : car_block[i].last ().pos - 5);
 				car_block[i] << _head;
 				car_in[i].pop_front ();
-				++stop_num[i];
+				if (!(WILL (GetTime, i) == Color::Green &&
+					WILL (GetTime - 1, i) == Color::Green&&WILL (GetTime - 2, i) == Color::Green&&
+					WILL (GetTime - 3, i) == Color::Green&&WILL (GetTime - 4, i) == Color::Green))
+					++stop_num[i];
 				goto STAT;
 			}
 			else {
@@ -77,16 +76,15 @@ void Traffic_v1::combo () {
 								else _head.acc = 0;
 								_head.time_arr = GetTime + rt;
 								if (!car_block[i].empty () && _head.pos > -5 + car_block[i].last ().pos) {
-									_head.vec = 4;
-									_head.acc = 0;
+									_head.vec = 2;
 								}
 							}
 							else {
 								if (_head.pos > -20 + (car_block[i].empty () ? 0 : (-4 + car_block[i].last ().pos))) {
 									_head.acc = _head.vec*_head.vec / 2.1 / (car_block[i].empty () ?
 										_head.pos : (_head.pos + 4 - car_block[i].last ().pos));
-									if (_head.vec < 3 && !car_block[i].empty ()) _head.acc = 0;
-									if (_head.vec < 5) _head.acc = 5;
+									if (_head.vec < 3) _head.acc = 0;
+									if (_head.vec < 1) _head.acc = 2;
 								}
 								else _head.acc = 3;
 								_head.time_arr = 0;
@@ -146,11 +144,17 @@ void Traffic_v1::combo () {
 						if (itp->acc > 5) itp->acc = 5;
 						if (it->pos - itp->pos < d)
 							itp->acc = -10;
+						//stop
+						if (itp->vec + 0.1*itp->acc < 0) {
+							itp->acc = 0;
+							itp->vec = 0;
+						}
 					}
 					else  free (itp, i);
 					break;
 				case C_1:
 					if (it->pos - itp->pos < ((d + c*it->vec) * 4)) {
+#pragma region 2chose1
 						//slow down
 						if (it->pos - itp->pos < (d + c*it->vec))
 							itp->acc = -5;
@@ -176,12 +180,17 @@ void Traffic_v1::combo () {
 							else a_st1 = 0;
 						}
 						itp->acc = itp->acc < a_st1 ? itp->acc : a_st1;
+#pragma endregion
 						//sat.
 						if (itp->acc < -5) itp->acc = -5;
 						if (itp->acc > 5) itp->acc = 5;
 						if (it->pos - itp->pos < d)
 							itp->acc = -10;
 						//stop
+						if (itp->vec + 0.1*itp->acc < 0) {
+							itp->acc = 0;
+							itp->vec = 0;
+						}
 					}
 					else  st1_free (itp, i);
 					break;
@@ -201,9 +210,9 @@ void Traffic_v1::combo () {
 						if (_rt < MaxT) {
 							if (-itp->pos < itp->vec*_rt*0.95) {
 								itp->acc = -5;
-								if ((itp - 1)->acc < itp->acc && (itp - 1)->pos - itp->pos < 15)
+								if ((itp - 1)->acc < itp->acc && (itp - 1)->pos - itp->pos < 10)
 									if (itp->vec < (itp - 1)->vec) itp->acc = ((itp - 1)->acc + itp->acc) / 2;
-									else itp->acc = (itp - 1)->acc - 10;
+									else itp->acc = min ((itp - 1)->acc - 10, -10);
 								else if ((itp - 1)->pos - itp->pos < 20) itp->acc *= 1.1;
 							}
 							else if (-itp->pos > itp->vec*_rt*1.05) {
@@ -254,18 +263,20 @@ void Traffic_v1::combo () {
 					break;
 				}
 			}
-			for (it = car_in[i].begin (); it != car_in[i].end (); ++it) {
-				if (it->vec > V_max) {
-					it->vec = V_max;
-					it->acc = 0;
+			for (itp = car_in[i].begin (); itp != car_in[i].end (); ++itp) {
+				if (itp->vec + itp->acc*0.1 > V_max) {
+					itp->vec = V_max;
+					itp->acc = 0;
 				}
-				if (it->vec < 0) {
-					it->vec = 0;
-					it->acc = 3;
-					++stop_num[i];
+				if (itp->vec < 2) {
 					++stop_time[i];
+					if (itp->vec < 0) {
+						itp->vec = 0;
+						itp->acc = 2;
+						++stop_num[i];
+					}
 				}
-				if (it->acc > A_max) it->acc = A_max;
+				if (itp->acc > A_max) itp->acc = A_max;
 			}
 #pragma endregion
 		}
