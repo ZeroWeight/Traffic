@@ -5,7 +5,7 @@
 #define tr(i) ((i)%3)
 #define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
 #define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
-#define COM2 //for debug
+//#define COM2 //for debug
 static const int _S = 8;
 double expdf (double lambda) {
 	double pV = 1;
