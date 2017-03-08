@@ -84,7 +84,7 @@ DIST          =  ..\Traffic_v1\basic.h \
 QMAKE_TARGET  = Traffic_v1
 DESTDIR        = release\ #avoid trailing-slash linebreak
 TARGET         = 90_C2.exe
-DESTDIR_TARGET = release\90_C2exe
+DESTDIR_TARGET = release\90_C2.exe
 
 ####### Implicit rules
 
