@@ -5,7 +5,6 @@ int main (int argc, char *argv[]) {
 	srand (time (0));
 	QApplication a (argc, argv);
 	Traffic_v1 w;
-	w.init_write ();
 	w.show ();
 	return a.exec ();
 }

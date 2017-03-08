@@ -138,7 +138,6 @@ private:
 	void st1_head (QList<Car>::iterator i, int d);
 	void c_write (Car car);
 	void main_write ();
-public:
 	void init_write ();
 private:
 	void combo ();

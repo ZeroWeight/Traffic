@@ -24,6 +24,7 @@ static std::normal_distribution<double> ND (0, 0.5);
 static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
+	init_write ();
 	for (int i = 0; i < DIR_NUM*TR_NUM; ++i) {
 		stop_num[i] = 0; stop_time[i] = 0; car_pass[i] = 0;
 	}
@@ -257,7 +258,7 @@ void Traffic_v1::sim () {
 				_car_->pos += _car_->vec*0.1 + 0.5*_car_->acc*0.01;
 				_car_->vec += _car_->acc*0.1;
 			}
-			}
+		}
 		//space: 4m
 		//max load: 1
 		//therefore
@@ -309,7 +310,7 @@ void Traffic_v1::sim () {
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
 			car_out[i].removeFirst ();
 		}
-		}
+	}
 
 	QList<InNode>::iterator _n_;
 	if (!Node->empty ()) {
@@ -327,7 +328,7 @@ void Traffic_v1::sim () {
 		}
 	}
 	while (!Node->empty () && Node->first ().delay_time < 0) Node->removeFirst ();
-	}
+}
 void Traffic_v1::generate () {
 	for (int i = 0; i < DIR_NUM; i++) {
 #ifndef MAX_LOAD
@@ -393,9 +394,9 @@ void Traffic_v1::generate () {
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
 			}
-		}
-#endif
 	}
+#endif
+}
 }
 void Traffic_v1::_following () {
 	for (int i = 0; i < TR_NUM*DIR_NUM; ++i) {
@@ -418,9 +419,9 @@ void Traffic_v1::_following () {
 					if (itp->acc < -5) itp->acc = -5;
 					if (itp->acc > 5) itp->acc = 5;
 					if (itp->vec < 5)itp->acc = 0;
-			}
+				}
 				free (itp, i);
+			}
 		}
 	}
-}
 }
