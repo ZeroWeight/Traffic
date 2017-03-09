@@ -5,7 +5,7 @@
 #define tr(i) ((i)%3)
 #define Get(i) (s->map[GetTime%s->period][dir (i)][tr (i)])
 #define WILL(j,i) (s->map[(j)%s->period][dir (i)][tr (i)])
-
+//#define COM2 //for debug
 static const int _S = 8;
 double expdf (double lambda) {
 	double pV = 1;
@@ -16,7 +16,7 @@ double expdf (double lambda) {
 }
 //designed speed limit:60kmh-1=16.67ms-1
 //gen speed 40-60kmh-1
-static double lambda[DIR_NUM] = { 3,3,3,3 };
+static double lambda[DIR_NUM] = { 1.0,1.0,1.0,1.0 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
 static std::normal_distribution<double> ND_V (13.8, 0.9);
@@ -24,6 +24,7 @@ static std::normal_distribution<double> ND (0, 0.5);
 static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic_v1::Traffic_v1 (QWidget *parent)
 	: QMainWindow (parent) {
+	init_write ();
 	for (int i = 0; i < DIR_NUM*TR_NUM; ++i) {
 		stop_num[i] = 0; stop_time[i] = 0; car_pass[i] = 0;
 	}
@@ -38,23 +39,12 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	s->setFixedHeight (size*12.25);
 	s->setFixedWidth (size * 23);
 	s->hide ();
-	scale = new QLabel (this);
-	scale->setGeometry (15 * size, size, size, 0.7*size);
-	scale->setText ("Time\r\nScale");
-	scale->setFont (QFont ("TimesNewRoman", 10));
 	scale_t = 1;
-	scaleEdit = new QLineEdit (this);
-	scaleEdit->setText (QString::number (scale_t));
-	scaleEdit->setGeometry (16.5*size, size, size, 0.7*size);
-	scaleEdit->setFont (QFont ("TimesNewRoman", 10));
 	now = new QLabel (this);
 	now->setText ("Time:\t0 s");
 	now->setFont (QFont ("TimesNewRoman", 16));
 	now->setGeometry (15 * size, 2 * size, 5 * size, size);
 	now_t = 0;
-	_reset = new QPushButton (this);
-	_reset->setGeometry (19 * size, 0.9*size, 2 * size, size);
-	_reset->setText ("Reset\r\nSet time scale");
 	start = new QPushButton (this);
 	start->setText ("Start");
 	start->setFont (QFont ("TimesNewRoman", 12));
@@ -64,20 +54,12 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	end->setFont (QFont ("TimesNewRoman", 12));
 	end->setGeometry (16.8 * size, 3.5*size, 1.5 * size, size);
 	timer = new QTimer (this);
-#ifndef BAT
 	timer->setInterval (10);
-#endif
-#ifdef BAT
-	timer->setInterval (1);
-#endif
 	timer->stop ();
 	end->setEnabled (false);
 	connect (start, &QPushButton::clicked, [=](void) {
-		scaleEdit->setText (QString::number (scale_t));
-		scaleEdit->setEnabled (false);
 		end->setText ("Pause");
 		end->setEnabled (true);
-		_reset->setEnabled (false);
 		start->setEnabled (false);
 		timer->start ();
 	});
@@ -94,8 +76,6 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 			end->setEnabled (false);
 			this->now_t = 0;
 			now->setText ("Time:\t0 s");
-			_reset->setEnabled (true);
-			scaleEdit->setEnabled (true);
 			for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
 				car_in[i].clear ();
 				car_out[i].clear ();
@@ -108,19 +88,13 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		start->setEnabled (true); });
 	connect (timer, &QTimer::timeout, [=](void) {
 		++now_t;
-#ifdef BAT
-		if (now_t == 36000)
-			this->close ();
-#endif
 		if (!(now_t % 36000)) {
 			if (timer->isActive ())
 				end->click ();
 		}
-		qDebug () << "1";
 		now->setText ("Time:\t" + QString::number (now_t / 10.0) + " s");
 		generate ();
 #ifdef MANUAL
-		qDebug () << "1";
 		following ();
 #endif
 #ifdef ST1
@@ -132,38 +106,10 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 #ifdef COMBO
 		combo ();
 #endif
-#ifdef BAT
-		combo ();
-#endif
-		qDebug () << "2";
 		_following ();
-		qDebug () << "3";
 		sim ();
-		qDebug () << "4";
-#ifndef BAT
-		qDebug () << "5";
 		this->update ();
-#endif
-		qDebug () << "6";
 		main_write ();
-	});
-	connect (_reset, &QPushButton::clicked, [=](void) {
-		now_t = 0;
-		now->setText ("Time:\t0 s");
-		if (scaleEdit->text ().toInt () > 0)
-			scale_t = scaleEdit->text ().toInt ();
-		else {
-			QMessageBox temp;
-			temp.setText ("ILLEGAL INPUT");
-			temp.exec ();
-			scaleEdit->setText (QString::number (scale_t));
-		}
-		for (int i = 0; i < TR_NUM*DIR_NUM; i++) {
-			car_in[i].clear ();
-			car_out[i].clear ();
-		}
-		Node->clear ();
-		index = 0;
 	});
 	edit = new QPushButton (this);
 	edit->setText ("Edit the Traffic light");
@@ -211,23 +157,23 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	st[6]->setText ("CL");	st[7]->setText ("CR");	st[8]->setText ("CC");
 	st[9]->setText ("DL");	st[10]->setText ("DR");	st[11]->setText ("DC");
 	A_L = new QSlider (Qt::Horizontal, this);
-	A_L->setMaximum (3000);
-	A_L->setValue (3000);
+	A_L->setMaximum (1500);
+	A_L->setValue (1000);
 	A_L->setMinimum (1);
 	A_L->setGeometry (19.5 * size, 3.5 * size, 1.5*size, 0.5*size);
 	B_L = new QSlider (Qt::Horizontal, this);
-	B_L->setMaximum (3000);
-	B_L->setValue (3000);
+	B_L->setMaximum (1500);
+	B_L->setValue (1000);
 	B_L->setMinimum (1);
 	B_L->setGeometry (19.5 * size, 4.2 * size, 1.5*size, 0.5*size);
 	C_L = new QSlider (Qt::Horizontal, this);
-	C_L->setMaximum (3000);
-	C_L->setValue (3000);
+	C_L->setMaximum (1500);
+	C_L->setValue (1000);
 	C_L->setMinimum (1);
 	C_L->setGeometry (19.5 * size, 4.8 * size, 1.5*size, 0.5*size);
 	D_L = new QSlider (Qt::Horizontal, this);
-	D_L->setMaximum (3000);
-	D_L->setValue (3000);
+	D_L->setMaximum (1500);
+	D_L->setValue (1000);
 	D_L->setMinimum (1);
 	D_L->setGeometry (19.5 * size, 5.5 * size, 1.5*size, 0.5*size);
 	A_A = new QLabel ("A", this);
@@ -242,16 +188,16 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	D_A = new QLabel ("D", this);
 	D_A->setFont (QFont ("TimesNewRoman", 10));
 	D_A->setGeometry (19 * size, 5.5 * size, 0.5*size, 0.5*size);
-	A_B = new QLabel ("1", this);
+	A_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	A_B->setFont (QFont ("TimesNewRoman", 10));
 	A_B->setGeometry (21.5 * size, 3.5 * size, size, 0.5*size);
-	B_B = new QLabel ("1", this);
+	B_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	B_B->setFont (QFont ("TimesNewRoman", 10));
 	B_B->setGeometry (21.5 * size, 4.2 * size, size, 0.5*size);
-	C_B = new QLabel ("1", this);
+	C_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	C_B->setFont (QFont ("TimesNewRoman", 10));
 	C_B->setGeometry (21.5 * size, 4.8 * size, size, 0.5*size);
-	D_B = new QLabel ("1", this);
+	D_B = new QLabel (QString::number (1000.0 / 3000.0), this);
 	D_B->setFont (QFont ("TimesNewRoman", 10));
 	D_B->setGeometry (21.5 * size, 5.5 * size, size, 0.5*size);
 	connect (A_L, &QSlider::valueChanged,
@@ -278,9 +224,21 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		lambda[3] = double (value) / 1000;
 		go[3] = expdf (lambda[3]);
 	});
-#ifdef BAT
-	fast->setChecked (true);
-#endif
+	ratio = new QLabel (this);
+	ratio->setText ("Ratio controled");
+	ratio->setFont (QFont ("TimesNewRoman", 16));
+	ratio->setGeometry (15 * size, size, size * 3, size);
+	ratio_setting = new QSlider (Qt::Horizontal, this);
+	ratio_setting->setMaximum (1000);
+	ratio_setting->setMinimum (0);
+	ratio_setting->setGeometry (19 * size, 1.25*size, size * 3, 0.5*size);
+	ratio_shower = new QLabel (this);
+	ratio_shower->setFont (QFont ("TimesNewRoman", 16));
+	ratio_shower->setGeometry (19 * size, 2 * size, 3 * size, size);
+	ratio_shower->setText ("Ratio: 0.000");
+	connect (ratio_setting, &QSlider::valueChanged, [=](const int &value) {
+		ratio_shower->setText (QString ("Ratio: ") + QString::number (double (ratio_setting->value ()) / 1000));
+	});
 }
 Traffic_v1::~Traffic_v1 () {
 	_car->flush ();
@@ -339,7 +297,6 @@ void Traffic_v1::sim () {
 			car_pass[i] = 0;
 			stop_time[i] += car_block[i].count ();
 		}
-		qDebug () << "D";
 		while (!car_in[i].empty () && car_in[i].first ().pos >= 0.5) {
 			InNode temp;
 			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
@@ -352,7 +309,6 @@ void Traffic_v1::sim () {
 			c_write (car_in[i].first ());
 			car_in[i].removeFirst ();
 		}
-		qDebug () << "E";
 		while (!car_block[i].empty () && car_block[i].first ().pos >= 0.5) {
 			InNode temp;
 			_st[i]->setText (QString::number (_st[i]->text ().toInt () + 1));
@@ -366,7 +322,6 @@ void Traffic_v1::sim () {
 			car_block[i].removeFirst ();
 			++car_pass[i];
 		}
-		qDebug () << "F";
 		while (!car_out[i].empty () && car_out[i].first ().pos >= 150) {
 			car_out[i].removeFirst ();
 		}
@@ -430,10 +385,16 @@ void Traffic_v1::generate () {
 				while (temp.acc < 0.01 || temp.acc > 2.5)temp.acc = ND_A (e);
 #ifdef COMBO
 				double var = double (rand ()) / double (RAND_MAX);
-				if (0 <= var && var <= double (R_0) / double (SUM)) temp.type = Type::C_0;
-				else if (double (R_0) / double (SUM) <= var && var <= double (R_0 + R_1) /
-					double (SUM)) temp.type = Type::C_1;
-				else temp.type = Type::C_2;
+				double value = double (ratio_setting->value ()) / 1000.0;
+				if (var < value)
+
+#ifdef COM1
+					temp.type = C_1;
+#endif
+#ifdef COM2
+				temp.type = C_2;
+#endif
+				else temp.type = C_0;
 #endif
 				car_in[i*TR_NUM + j] << temp;
 			}
