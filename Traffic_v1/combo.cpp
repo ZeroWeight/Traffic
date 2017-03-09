@@ -84,7 +84,6 @@ void Traffic_v1::combo () {
 									_head.acc = _head.vec*_head.vec / 2.1 / (car_block[i].empty () ?
 										_head.pos : (_head.pos + 4 - car_block[i].last ().pos));
 									if (_head.vec < 3) _head.acc = 0;
-									if (_head.vec < 1) _head.acc = 2;
 								}
 								else _head.acc = 3;
 								_head.time_arr = 0;
@@ -263,6 +262,11 @@ void Traffic_v1::combo () {
 					break;
 				}
 			}
+			for (itp = car_in[i].begin (); itp != car_in[i].end (); ++itp)
+				if (itp->vec + itp->acc*0.1 < 0) {
+					itp->vec = 0;
+					itp->acc = 1;
+				}
 			for (itp = car_in[i].begin (); itp != car_in[i].end (); ++itp) {
 				if (itp->vec + itp->acc*0.1 > V_max) {
 					itp->vec = V_max;
@@ -272,7 +276,7 @@ void Traffic_v1::combo () {
 					++stop_time[i];
 					if (itp->vec < 0) {
 						itp->vec = 0;
-						itp->acc = 2;
+						itp->acc = 0;
 						++stop_num[i];
 					}
 				}

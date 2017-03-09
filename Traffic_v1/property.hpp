@@ -7,7 +7,6 @@
 //#undef ST2		//the second strategy
 #undef COMBO
 means switch on the second strategy*/
-#undef BAT
 #ifndef _A_0_
 #undef MANUAL		//means the non_control strategy
 #endif
@@ -17,7 +16,10 @@ means switch on the second strategy*/
 #ifndef _A_2_
 #undef ST2		//the second strategy
 #endif
-#undef COMBO		//the combo strategy
+#ifndef _A_C_
+#undef COMBO
+#endif
+//the combo strategy
 
 /*--------------------------------------------------------------------*/
 
@@ -26,15 +28,6 @@ means switch on the second strategy*/
 
 #undef MAX_LOAD
 /*--------------------------------------------------------------------*/
-/*----------------------  ratio setting  -----------------------------*/
-//if you choose the combo stratery, set a sequence of ratio for the cars
-#ifndef BAT
-#define R_0 10			//means the non_control strategy
-#define R_1 10			//the first strategy
-#define R_2 10			//the second strategy
-#endif
-/*--------------------------------------------------------------------*/
 
 /*------------------------- Advanced Usage --------------------------*/
-//#undef BAT
 //#undef FIN
