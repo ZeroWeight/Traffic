@@ -88,7 +88,7 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		start->setEnabled (true); });
 	connect (timer, &QTimer::timeout, [=](void) {
 		++now_t;
-		if (!(now_t % 36000)) {
+		if (!(now_t % 360000)) {
 			if (timer->isActive ())
 				end->click ();
 		}
