@@ -245,3 +245,12 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 *.zip
+
+# For reports and release package
+*.png
+*.jpg
+*.PNG
+*.JPG
+*.7z
+*.zip
+*.rar
