@@ -283,5 +283,6 @@ void Traffic_v1::combo () {
 				if (itp->acc > A_max) itp->acc = A_max;
 			}
 #pragma endregion
+		}
 	}
 }
