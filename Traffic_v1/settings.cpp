@@ -45,10 +45,10 @@ Settings::Settings (int _size, QWidget * parent) : QMainWindow (parent), size (_
 			label[i*TR_NUM + j]->setFont (QFont ("TimesNewsRoman", 10));
 			label[i*TR_NUM + j]->setGeometry (14 * size, 1.5*size + (TR_NUM*i + j)*0.5*size, size, 0.3*size);
 			switch (i) {
-			case A: label[i*TR_NUM + j]->setText ("A"); break;
-			case B: label[i*TR_NUM + j]->setText ("B"); break;
-			case C: label[i*TR_NUM + j]->setText ("C"); break;
-			case D: label[i*TR_NUM + j]->setText ("D"); break;
+			case A: label[i*TR_NUM + j]->setText ("W`"); break;
+			case B: label[i*TR_NUM + j]->setText ("S"); break;
+			case C: label[i*TR_NUM + j]->setText ("E"); break;
+			case D: label[i*TR_NUM + j]->setText ("N"); break;
 			}
 			switch (j) {
 			case Left:label[i*TR_NUM + j]->setText (label[i*TR_NUM + j]->text () + "L"); break;

@@ -34,8 +34,6 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	size = QApplication::desktop ()->height () / 15;
 	meter = size / 10.0;
 	s = new Settings (size, nullptr);
-	this->setFixedHeight (size*12.25);
-	this->setFixedWidth (size * 23);
 	s->setFixedHeight (size*12.25);
 	s->setFixedWidth (size * 23);
 	s->hide ();
@@ -152,10 +150,10 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 		_st[i]->setGeometry (16 * size + (i / 3) * 2 * size, 8 * size + (i % 3)*size, size, size);
 		st[i]->setGeometry (15 * size + (i / 3) * 2 * size, 8 * size + (i % 3)*size, size, size);
 	}
-	st[0]->setText ("AL");	st[1]->setText ("AR");	st[2]->setText ("AC");
-	st[3]->setText ("BL");	st[4]->setText ("BR");	st[5]->setText ("BC");
-	st[6]->setText ("CL");	st[7]->setText ("CR");	st[8]->setText ("CC");
-	st[9]->setText ("DL");	st[10]->setText ("DR");	st[11]->setText ("DC");
+	st[0]->setText ("WL");	st[1]->setText ("WR");	st[2]->setText ("WC");
+	st[3]->setText ("SL");	st[4]->setText ("SR");	st[5]->setText ("SC");
+	st[6]->setText ("EL");	st[7]->setText ("ER");	st[8]->setText ("EC");
+	st[9]->setText ("NL");	st[10]->setText ("NR");	st[11]->setText ("NC");
 	A_L = new QSlider (Qt::Horizontal, this);
 	A_L->setMaximum (1500);
 	A_L->setValue (1000);
@@ -176,16 +174,16 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	D_L->setValue (1000);
 	D_L->setMinimum (1);
 	D_L->setGeometry (19.5 * size, 5.5 * size, 1.5*size, 0.5*size);
-	A_A = new QLabel ("A", this);
+	A_A = new QLabel ("W", this);
 	A_A->setFont (QFont ("TimesNewRoman", 10));
 	A_A->setGeometry (19 * size, 3.5 * size, 0.5*size, 0.5*size);
-	B_A = new QLabel ("B", this);
+	B_A = new QLabel ("S", this);
 	B_A->setFont (QFont ("TimesNewRoman", 10));
 	B_A->setGeometry (19 * size, 4.2 * size, 0.5*size, 0.5*size);
-	C_A = new QLabel ("C", this);
+	C_A = new QLabel ("E", this);
 	C_A->setFont (QFont ("TimesNewRoman", 10));
 	C_A->setGeometry (19 * size, 4.8 * size, 0.5*size, 0.5*size);
-	D_A = new QLabel ("D", this);
+	D_A = new QLabel ("N", this);
 	D_A->setFont (QFont ("TimesNewRoman", 10));
 	D_A->setGeometry (19 * size, 5.5 * size, 0.5*size, 0.5*size);
 	A_B = new QLabel (QString::number (1000.0 / 3000.0), this);
@@ -202,25 +200,25 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	D_B->setGeometry (21.5 * size, 5.5 * size, size, 0.5*size);
 	connect (A_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		A_B->setText (QString::number (double (value) / 3000));
+		A_B->setText (QString::number (double (value) / 3000 * 3600));
 		lambda[0] = double (value) / 1000;
 		go[0] = expdf (lambda[0]);
 	});
 	connect (B_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		B_B->setText (QString::number (double (value) / 3000));
+		B_B->setText (QString::number (double (value) / 3000 * 3600));
 		lambda[1] = double (value) / 1000;
 		go[1] = expdf (lambda[1]);
 	});
 	connect (C_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		C_B->setText (QString::number (double (value) / 3000));
+		C_B->setText (QString::number (double (value) / 3000 * 3600));
 		lambda[2] = double (value) / 1000;
 		go[2] = expdf (lambda[2]);
 	});
 	connect (D_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		D_B->setText (QString::number (double (value) / 3000));
+		D_B->setText (QString::number (double (value) / 3000 * 3600));
 		lambda[3] = double (value) / 1000;
 		go[3] = expdf (lambda[3]);
 	});
