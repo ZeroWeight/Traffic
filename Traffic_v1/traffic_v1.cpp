@@ -33,6 +33,8 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	}
 	size = QApplication::desktop ()->height () / 15;
 	meter = size / 10.0;
+	this->setFixedHeight (size*12.25);
+	this->setFixedWidth (size * 23);
 	s = new Settings (size, nullptr);
 	s->setFixedHeight (size*12.25);
 	s->setFixedWidth (size * 23);
@@ -412,8 +414,8 @@ void Traffic_v1::generate () {
 				if (car_in[i*TR_NUM + j].empty ()) temp.vec = ND_V (e);
 				else temp.vec = car_in[i*TR_NUM + j].last ().vec;
 				car_in[i*TR_NUM + j] << temp;
-			}
-		}
+	}
+}
 #endif
 	}
 }
