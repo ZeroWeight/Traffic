@@ -202,25 +202,25 @@ Traffic_v1::Traffic_v1 (QWidget *parent)
 	D_B->setGeometry (21.5 * size, 5.5 * size, size, 0.5*size);
 	connect (A_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		A_B->setText (QString::number (double (value) / 3000 * 3600));
+		A_B->setText (QString::number (double (value) / 3000 * 3600 * 3));
 		lambda[0] = double (value) / 1000;
 		go[0] = expdf (lambda[0]);
 	});
 	connect (B_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		B_B->setText (QString::number (double (value) / 3000 * 3600));
+		B_B->setText (QString::number (double (value) / 3000 * 3600 * 3));
 		lambda[1] = double (value) / 1000;
 		go[1] = expdf (lambda[1]);
 	});
 	connect (C_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		C_B->setText (QString::number (double (value) / 3000 * 3600));
+		C_B->setText (QString::number (double (value) / 3000 * 3600 * 3));
 		lambda[2] = double (value) / 1000;
 		go[2] = expdf (lambda[2]);
 	});
 	connect (D_L, &QSlider::valueChanged,
 		[=](const int &value) {
-		D_B->setText (QString::number (double (value) / 3000 * 3600));
+		D_B->setText (QString::number (double (value) / 3000 * 3600 * 3));
 		lambda[3] = double (value) / 1000;
 		go[3] = expdf (lambda[3]);
 	});
