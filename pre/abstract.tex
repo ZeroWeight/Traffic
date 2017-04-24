@@ -1,0 +1,22 @@
+\documentclass[UTF8,a4paper]{ctexart}
+\usepackage{pdfpages}
+\begin {document}
+\abstract{
+车路协同技术代表了未来智能交通的发展方向，而主动控制则是在传统控制策略基础上增加了对车辆速度的引导的新的控制策略。基于主动交通控制的思想，本项目首先开发了新的车路协同仿真平台。仿真平台着眼于单一的交叉路口，采用新的数据结构对路口的模型进行优化，同时从软件工程角度尽可能地提高程序运行效率。这些使得此平台相比于常用成熟平台在细粒度仿真和执行效率上更出色。
+
+为满足车路协同方面关于车间通信的需求，新的车路协同仿真平台提供了车间通信的接口。同时，在信号配时方面，程序通过用户界面提供给用户最大的自由度进行调整。
+
+基于这个平台，本项目完成了有关主动控制算法的设计。根据路口的实际情况，对传统的跟驰模型进行了优化和边界处理，并进行了合理的实现。除了完成人工驾驶模型之外，同时完成了一个没有车间通信的车路协同控制策略以及一个存在车间通信的车路协同策略。
+
+本项目通过平均延误时间等常用的效率考察参数对三个模型的运行状况进行评估，并得到了良好的效果。同时，项目也充分考虑到交通引导系统装车时可能存在的自主驾驶和自由驾驶策略混行的情况，设计了混合驾驶模块对各个比例混行状态的通行效率及其变化趋势进行了考察，得到了较好的结论。}
+\clearpage
+\abstract{
+VEHICLE ROUTING TECHNOLOGY represents the future direction of development of the INTELLIGENT TRAFFIC. Based on the traditional control strategy, ACTIVE CONTROL is a new kind of control strategy with the guidance of the velocity of the vehicle. Based on the idea of ​​active traffic control, the project firstly developed a new traffic simulation platform. Focusing on a single intersection, using the new data structure to optimize the intersection model, and improving the efficiency of the program as much as possible from the point of view of software engineering makes this platform better than the commonly used platform in fine-grained simulation and implementation efficiency.
+
+In order to meet the demand for the communication between the vehicles in the VEHICLE ROAD COORDINATION, the new simulation platform provides the interface for this kind of communication. As for the SIGNAL TIMING, the platform provide users with the greatest degree of freedom to adjust the PHASE OF THE SIGNAL by the user interface.
+
+Based on this platform, the project has completed the design of the ACTIVE CONTROL ALGORITHM. According to the actual situation of the intersection, the traditional car-following model is optimized and the boundary is processed, and a reasonable realization is carried out. In addition to the completion of the manual driving model, the project has also completed a VEHICLE COORDINATION control strategy without the INTER-VEHICLE COMMUNICATION and another one with this.
+
+The project evaluates the operation status of the three models through the common efficiency parameters such as the average delay time, and has obtained good results. At the same time, the project also takes full account of the situation that the autonomous driving and the free driving strategy may be mixed together when the traffic guidance system is newly introduced to the society. The hybrid driving module is designed to investigate the flow efficiency and the changing trend of the mixed state. And a good conclusion has been drawed.
+}
+\end{document}
