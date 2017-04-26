@@ -13,15 +13,22 @@
 \begin{document}
 \section{A brief description of the algorithm}
 \subsection{basic assumption and parameters}
-The platform considers the maximum acceleration of the vehicle is $a_{max}$, which is generally used in the acceleration process and tbe braking process. Also, the maximum speed limit is set to $v_{max}$, while the minimum speed limit is set to $v_{min}$.
+Firstly, it is assumed that the physical quantity which is under control directly is the acceleration of the vehicle, while other physical quantities are set because of the theorem given by kinematics, such as 
+$$v(t+\delta_t)=v(t)+a\Delta_t$$
+$$x(t+\delta_t)=x(t)+v(t)\Delta_t+0.5a\Delta_t^2$$ 
 
-No matter which strategy is chosen, if the acceleration given by the strategy is greater than the maximum acceleration $a_{max}$, or the calculated speed is greater than the maximum speed or less than the minimum speed, the program will automatically set these values to the boundary value. When the vehicle has to stop because of the red light, the minimum speed of the vehicle is set to 0, describing the parking behavior which may exist, however, the behavior of reversing is never allowed.
+However, the acceleration of the vehicle can not be controled precisely, a random noise distributed by normal dirtribution is added into the result given by all of the strategies, especially the ones may operated by human.
 
-Also, we assume the expected speed of the vehicle is set to 80\% of the maximum speed limit.
+As for the speed limit,the platform considers the maximum absolute value of the acceleration of the vehicle is $a_{max}$, which is generally used in the acceleration process and tbe braking process. Also, the maximum speed limit is set to $v_{max}$, while the minimum speed limit is set to $v_{min}$.
+
+No matter which strategy is chosen, if the acceleration given by the strategy is greater than the maximum acceleration $a_{max}$ or less than $-a_{max}$, or the calculated speed is greater than the maximum speed or less than the minimum speed, the program will automatically set these values to the boundary value. When the vehicle has to stop because of the red light, the minimum speed of the vehicle is set to 0, describing the parking behavior which may exist, however, the behavior of reversing is never allowed.
+
+Also, we assume the expected speed of the vehicle, $v_{exp}$, is set to 80\% of the maximum speed limit.
 
 In order to simpliy the simulation process, we assume that during the process of driving, there is no lane changing behavior. This hypothesis is also acceptable in the real life, because of the restrictions imposed by driving habits and traffic laws \& regulations, the vehicle should finish changing lane before enter the traffic junction. Therefore this assumption is reasonable. What's more, just from the perspective of traffic efficiency, lane-changing can only reduce the average efficiency of the traffic, therefore, as the primary inspection of the platform is efficiency, lane-changing situation is not taken into consideration.
 
 Therefore, the car driving in the lane can be described as a queue, e.g. $Q_{in}$
+
 \subsection{The Generation of the vehicles}
 It is assumed that the arrival process of the vehicle is approximately a Poisson process, which is limited and adjusted by the following algorithm
 
@@ -79,11 +86,28 @@ And the method above can be described as the fake code below\\
 All above describe the formation and evacuation of the queue in the intersection and its interaction with other models. The differences caused by the assumption can be ignored. Thanks to this model, it is easy for us to decouple the driving model and the queuing model, which makes it much easier to implement the other algorithm
 \subsection{Basic models}
 In the description of manual driving and automatic driving vehicle models, the car-following model and free driving model are frequently used models. Therefore, we will describe these models before discussing the control strategies.
-\subsubsection{The implementation of the car-following method}
-
-HERE IS THE BRIEF INTRO OF FOLLOWING MODEL
 
 \subsubsection{The implementation of the free-driving method}
+
+When there is no speed guidance, a vehicle's driving behavior can be roughly classified into free-driving and car-following, which will be described in this section and the next section. $S_{control}$ is defined as the distance of interaction between vehicles. Thus, the two driving models are chosen according to the rules below.
+
+\begin{enumerate}
+\item When the distance to the front vehicle from the vehicle which we are concerned about is less than $S_{control}$, the driving choose the car-following strategy.
+
+\item When the distance is greater than $S_{control}$, the driver choose the free-driving strategy, which means trying to reach the expected speed, $v_{exp}$, during this period, a smaller acceleration may be chosen if the current speed of vehicle is almost the same as $v_{exp}$, while a greater acceleration should be chosen if the current speed is too low, such as the vehicle is stopped.
+
+Also, because some random noise may be introduced to the system, if the speed of the vehicle is higher than $v_{max}$, a minor deceleration should be taken.
+\end{enumerate}
+\subsubsection{The implementation of the car-following method}
+
+As mentioned above, when the vehicles is close enough to each other, the car-following method is chosen. In the strategy we used, the commonly used driving psycho-physical model—Wiedemann model is adopted, that is,
+$$a_n(t+\Delta_t)=\frac{[\Delta v_{n,n-1}(t)]^2}{2[\Delta x_{n,n-1}(t)-S_{exp}]}+a_{n-1}(t)$$
+
+In the above equation, $S_{exp}$ represents the expected minimum safe-following distance. Since the speed of the vehicle in the intersection may have a big range, $S_{exp}$ should not be a constant. Therefore, according to the regulations on safe distance in Regulation on the Implementation of the Road Traffic Safety Law of the People's Republic of China, we use the linear correlation model of the minimum safe following distance and the speed of the front vehicle, therefore, the $S_{exp}$ can be described like this,
+$$S_n(t)=\alpha v_{n-1}(t)+S_{safe}$$
+While the $S_{safe}$is the same as the distance between the vehicles in \ref{section:feq}, and the constant $\alpha$ may be set by according to the experience.
+
+Once the distance between the vehicles is less than $S_{exp}$, which means the distance between the vehicles is too short, an emergency brake is taken owing to the specific situation. In most cases, the acceleration of the vehicle is set to $0.5a_{max}$
 \subsection{Manual driving model}
 The plantform provides three models to verify the effectiveness of the platform, and the first model is manual driving model.
 
@@ -120,8 +144,7 @@ Taking all of the situations into consideration. the manual driving model can be
 
 The plantform will traverse the queue $Q_{in}$, and during each iteration, the acceleration of the vehicle in processing will be set according to the model given above.
 
-\subsection{Connected-vehicle control strategy without the inter-vehicle communication model}
-\section{YOU KNOW WHAT}
-\subsection{the name of 1.6 should be changed}
-\subsection{give a implementation of car-following method} 
+\subsection{The single-vehicle cooperative speed guidance model}
+
+\subsection{The multi-vehicle cooperative speed guidance model}
 \end{document}
