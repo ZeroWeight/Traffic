@@ -1,0 +1,26 @@
+\noindent
+\ttfamily
+\hlstd{}\hllin{01\ }\hlkwa{if\ }\hlstd{}\hlopt{(}\hlstd{light\ }\hlopt{==\ }\hlstd{green}\hlopt{)\{}\\
+\hllin{02\ }\hlstd{\ Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{all\textunderscore move\textunderscore forward}\hlstd{}\hlopt{(}\hlstd{v\textunderscore dis}\hlopt{)}\\
+\hllin{03\ }\hlstd{}\hlopt{\}}\\
+\hllin{04\ }\hlstd{}\hlkwa{else}\hlstd{}\hlopt{\{}\\
+\hllin{05\ }\hlstd{\ }\hlkwa{if}\hlstd{}\hlopt{(!}\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{empty}\hlstd{}\hlopt{())\{}\\
+\hllin{06\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{last}\hlstd{}\hlopt{().}\hlstd{pos}\hlopt{{-}}\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{first}\hlstd{}\hlopt{().}\hlstd{pos\\
+\hllin{07\ }}\hlstd{\ \ \ }\hlstd{}\hlopt{$<$\ }\hlstd{S\textunderscore stop}\hlopt{)\{}\\
+\hllin{08\ }\hlstd{}\hlstd{\ \ \ }\hlstd{Vehicle\ v}\hlopt{;}\\
+\hllin{09\ }\hlstd{}\hlstd{\ \ \ }\hlstd{v}\hlopt{=}\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{getfirst}\hlstd{}\hlopt{();}\\
+\hllin{10\ }\hlstd{}\hlstd{\ \ \ }\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{push}\hlstd{}\hlopt{(}\hlstd{v}\hlopt{);}\\
+\hllin{11\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlopt{\}}\\
+\hllin{12\ }\hlstd{\ }\hlopt{\}}\\
+\hllin{13\ }\hlstd{\ }\hlkwa{else}\hlstd{}\hlopt{\{}\\
+\hllin{14\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{S\textunderscore end}\hlopt{{-}}\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{first}\hlstd{}\hlopt{().}\hlstd{pos}\hlopt{$<$\ }\hlstd{S\textunderscore stop}\hlopt{)\{}\\
+\hllin{15\ }\hlstd{}\hlstd{\ \ \ }\hlstd{Vehicle\ v}\hlopt{;}\\
+\hllin{16\ }\hlstd{}\hlstd{\ \ \ }\hlstd{v}\hlopt{=}\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{getfirst}\hlstd{}\hlopt{();}\\
+\hllin{17\ }\hlstd{}\hlstd{\ \ \ }\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{push}\hlstd{}\hlopt{(}\hlstd{v}\hlopt{);}\\
+\hllin{18\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlopt{\}}\\
+\hllin{19\ }\hlstd{\ }\hlopt{\}}\\
+\hllin{20\ }\hlstd{\ }\\
+\hllin{21\ }\hlopt{\}}\hlstd{}\\
+\mbox{}
+\normalfont
+\normalsize

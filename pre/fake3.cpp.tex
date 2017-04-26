@@ -1,0 +1,38 @@
+\noindent
+\ttfamily
+\hlstd{}\hllin{01\ }\hlslc{//the\ code\ below\ just\ consider\ the\ vehicle\ v}\\
+\hllin{02\ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{S\textunderscore end}\hlopt{{-}}\hlstd{v}\hlopt{.}\hlstd{pos}\hlopt{$>$}\hlstd{S\textunderscore inter}\hlopt{)}\hlstd{}\hlslc{//far\ from\ intersection}\\
+\hllin{03\ }\hlstd{}\hlopt{\{}\\
+\hllin{04\ }\hlstd{\ }\hlslc{//code\ block\ 1}\\
+\hllin{05\ }\hlstd{\ }\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{car}\hlopt{{-}}\hlstd{}\hlkwd{following\textunderscore requirement\textunderscore met}\hlstd{}\hlopt{())}\\
+\hllin{06\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlslc{//the\ car{-}following\ requirement\ is}\hlstd{\ \ }\hlslc{met}\\
+\hllin{07\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlkwd{car\textunderscore following}\hlstd{}\hlopt{();}\\
+\hllin{08\ }\hlstd{\ }\hlkwa{else}\\
+\hllin{09\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlslc{//the\ head\ car\ of\ the\ queue\ or}\\
+\hllin{10\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlslc{//the\ car{-}following\ requirement\ isn't\ met}\\
+\hllin{11\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlkwd{free\textunderscore driving}\hlstd{}\hlopt{();}\\
+\hllin{12\ }\hlstd{}\hlopt{\}}\\
+\hllin{13\ }\hlstd{}\hlkwa{else\ }\hlstd{}\hlslc{//close\ to\ the\ intersection}\\
+\hllin{14\ }\hlstd{}\hlopt{\{\ }\\
+\hllin{15\ }\hlstd{\ }\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{light}\hlopt{==}\hlstd{red}\hlopt{)}\\
+\hllin{16\ }\hlstd{}\hlstd{\ \ }\hlstd{method1}\hlopt{.}\hlstd{}\hlkwd{3}\hlstd{}\hlopt{();}\hlstd{}\hlslc{//the\ method\ mentioned\ in\ 1.3}\\
+\hllin{17\ }\hlstd{\ }\hlkwa{else}\\
+\hllin{18\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{empty}\hlstd{}\hlopt{())\{}\\
+\hllin{19\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{time\textunderscore remain}\hlopt{$>$}\hlstd{T\textunderscore safe}\hlopt{)}\\
+\hllin{20\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlslc{//same\ as\ the\ code\ block\ 1}\\
+\hllin{21\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlkwa{else\ }\\
+\hllin{22\ }\hlstd{}\hlstd{\ \ \ \ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(!}\hlstd{}\hlkwd{pass\textunderscore check}\hlstd{}\hlopt{())}\\
+\hllin{23\ }\hlstd{}\hlstd{\ \ \ \ }\hlstd{}\hlslc{//same\ as\ the\ red\ light\ case}\\
+\hllin{24\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlopt{\}}\\
+\hllin{25\ }\hlstd{}\hlstd{\ \ }\hlstd{}\hlkwa{else}\\
+\hllin{26\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{time\textunderscore remain}\hlopt{$>$}\hlstd{T\textunderscore safe}\hlopt{)}\\
+\hllin{27\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlkwd{acc\textunderscore to\textunderscore speed}\hlstd{}\hlopt{(}\hlstd{v\textunderscore dis}\hlopt{);}\\
+\hllin{28\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlkwa{else\ }\\
+\hllin{29\ }\hlstd{}\hlstd{\ \ \ \ }\hlstd{}\hlkwa{if}\hlstd{}\hlopt{(!}\hlstd{}\hlkwd{pass\textunderscore check}\hlstd{}\hlopt{())}\\
+\hllin{30\ }\hlstd{}\hlstd{\ \ \ \ }\hlstd{}\hlslc{//same\ as\ the\ red\ light\ case}\\
+\hllin{31\ }\hlstd{}\hlstd{\ \ \ }\hlstd{}\hlopt{\}}\\
+\hllin{32\ }\hlstd{}\hlstd{\ \ }\hlstd{}\\
+\hllin{33\ }\hlopt{\}}\hlstd{}\\
+\mbox{}
+\normalfont
+\normalsize

@@ -1,0 +1,18 @@
+\noindent
+\ttfamily
+\hlstd{}\hllin{01\ }\hlkwa{if\ }\hlstd{}\hlopt{(}\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{empty}\hlstd{}\hlopt{())\{}\\
+\hllin{02\ }\hlstd{\ }\hlkwa{if\ }\hlstd{}\hlopt{(}\hlstd{Light\ }\hlopt{==\ }\hlstd{Green}\hlopt{)}\\
+\hllin{03\ }\hlstd{}\hlstd{\ \ }\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{first}\hlstd{}\hlopt{().}\hlstd{}\hlkwd{drive\textunderscore freely}\hlstd{}\hlopt{();}\\
+\hllin{04\ }\hlstd{\ }\hlkwa{else}\\
+\hllin{05\ }\hlstd{}\hlstd{\ \ }\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{first}\hlstd{}\hlopt{().}\hlstd{}\hlkwd{brake\textunderscore to}\hlstd{}\hlopt{(}\hlstd{S\textunderscore end}\hlopt{);}\\
+\hllin{06\ }\hlstd{}\hlopt{\}}\\
+\hllin{07\ }\hlstd{}\hlkwa{else}\hlstd{}\hlopt{\{}\\
+\hllin{08\ }\hlstd{\ }\hlkwa{if}\hlstd{}\hlopt{(}\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{last}\hlstd{}\hlopt{().}\hlstd{pos}\hlopt{{-}}\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{first}\hlstd{}\hlopt{().}\hlstd{pos}\hlopt{$<$\ }\hlstd{S\textunderscore control}\hlopt{)}\\
+\hllin{09\ }\hlstd{}\hlstd{\ \ }\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{first}\hlstd{}\hlopt{().}\hlstd{brake\textunderscore to\\
+\hllin{10\ }}\hlstd{\ \ }\hlstd{}\hlopt{(}\hlstd{Q\textunderscore block}\hlopt{.}\hlstd{}\hlkwd{last}\hlstd{}\hlopt{().}\hlstd{pos}\hlopt{{-}}\hlstd{S\textunderscore stop}\hlopt{);\ }\\
+\hllin{11\ }\hlstd{\ }\hlkwa{else}\\
+\hllin{12\ }\hlstd{}\hlstd{\ \ }\hlstd{Q\textunderscore in}\hlopt{.}\hlstd{}\hlkwd{first}\hlstd{}\hlopt{().}\hlstd{}\hlkwd{drive\textunderscore freely}\hlstd{}\hlopt{();}\\
+\hllin{13\ }\hlstd{}\hlopt{\}}\hlstd{}\\
+\mbox{}
+\normalfont
+\normalsize
