@@ -14,8 +14,8 @@
 \section{A brief description of the algorithm}
 \subsection{basic assumption and parameters}
 Firstly, it is assumed that the physical quantity which is under control directly is the acceleration of the vehicle, while other physical quantities are set because of the theorem given by kinematics, such as 
-$$v(t+\delta_t)=v(t)+a\Delta_t$$
-$$x(t+\delta_t)=x(t)+v(t)\Delta_t+0.5a\Delta_t^2$$ 
+$$v(t+\Delta_t)=v(t)+a\Delta_t$$
+$$x(t+\Delta_t)=x(t)+v(t)\Delta_t+0.5a\Delta_t^2$$ 
 
 However, the acceleration of the vehicle can not be controled precisely, a random noise distributed by normal dirtribution is added into the result given by all of the strategies, especially the ones may operated by human.
 
@@ -27,12 +27,12 @@ Also, we assume the expected speed of the vehicle, $v_{exp}$, is set to 80\% of 
 
 In order to simpliy the simulation process, we assume that during the process of driving, there is no lane changing behavior. This hypothesis is also acceptable in the real life, because of the restrictions imposed by driving habits and traffic laws \& regulations, the vehicle should finish changing lane before enter the traffic junction. Therefore this assumption is reasonable. What's more, just from the perspective of traffic efficiency, lane-changing can only reduce the average efficiency of the traffic, therefore, as the primary inspection of the platform is efficiency, lane-changing situation is not taken into consideration.
 
-Therefore, the car driving in the lane can be described as a queue, e.g. $Q_{in}$
+Therefore, the car driving in the lane can be described as a queue, i.e. $Q_{in}$
 
 \subsection{The Generation of the vehicles}
 It is assumed that the arrival process of the vehicle is approximately a Poisson process, which is limited and adjusted by the following algorithm
 
-Assuming that the intensity of the Poisson process is$\lambda$, the arrival time interval of the vehicle $S_n,S_{n-1}$can be expressed as 
+Assuming that the intensity of the Poisson process is $\lambda$, the arrival time interval of the vehicle $S_n,S_{n-1}$ can be expressed as 
 $$P((S_n-S_{n-1}\le t) = 1 - e^{-\lambda t}$$
 Because the simulation time scale is set to 0.1s, the average hourly traffic flow is $$\bar{F}=36000\lambda$$
 
@@ -99,6 +99,7 @@ When there is no speed guidance, a vehicle's driving behavior can be roughly cla
 Also, because some random noise may be introduced to the system, if the speed of the vehicle is higher than $v_{max}$, a minor deceleration should be taken.
 \end{enumerate}
 \subsubsection{The implementation of the car-following method}
+\label{cf}
 
 As mentioned above, when the vehicles is close enough to each other, the car-following method is chosen. In the strategy we used, the commonly used driving psycho-physical model—Wiedemann model is adopted, that is,
 $$a_n(t+\Delta_t)=\frac{[\Delta v_{n,n-1}(t)]^2}{2[\Delta x_{n,n-1}(t)-S_{exp}]}+a_{n-1}(t)$$
@@ -145,6 +146,40 @@ Taking all of the situations into consideration. the manual driving model can be
 The plantform will traverse the queue $Q_{in}$, and during each iteration, the acceleration of the vehicle in processing will be set according to the model given above.
 
 \subsection{The single-vehicle cooperative speed guidance model}
+Applied some changes on the car-following strategy, we designed a cooperative speed guidance model which only takes the influence of the traffic light into consideration.
+\subsubsection{Modification about the car-following method}
+Firstly, when the distance to the front vehicle from the vehicle which we are concerned about is less than $S_{control}$, the car-following model in chosen. In addition to the basic car-following method, it is changed to the following form when $\Delta x_{n,n-1}(t)\le S_{exp}$ 
+$$a_n(t+\Delta_t)=-sgn(\Delta v_{n,n-1}(t))\frac{[\Delta v_{n,n-1}(t)]^2}{2[\Delta x_{n,n-1}(t)-S_{exp}]}+a_{n-1}(t)$$
+which means, if the speed of the following vehicle is lower, the strategy will suggest that this vehicle should accelerate.
 
+With this minor modification, some experimental researches show that the changed car-following method works well and can keep a stable distance between the vehicles.
+
+As the fig.\ref{carf} shows, the vehicle following takes the modified car-following method and the front vehicle decelerate with a large random noise. From the figure it can be found that the distance between these two vehicles will be stable near $S_{exp}$, no matter what initial situation is chosen.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{NearlyGoDie_2.pdf}
+\caption{The position of the vehicles and the distance between them}
+\label{carf}
+\end{figure}
+\subsubsection{The cooperative vehicle strategies}
+\label{section:tgs}
+Besides the chaning on car-following method, the free-driving model is also replaced by the following cooperative vehicle strategy. 
+
+First of all, we define two parameters, the maximum time cost $T_{max}$ is defined as the time cost if the vehicle firstly decelerates at the acceleration of $-a_{max}$ and maintain a uniform linear motion at the speed of $v_{min}$ until it reaches the intersection. Also, the minimum time cost $T_{min}$ is defined as the time cost if the vehicle firstly accelerates at the acceleration of $a_{max}$ and maintain a uniform linear motion at the speed of $v_{max}$ until it reaches the intersection. It is obvious that the actual time cost of a vehicle is less than $T_{max}$ and greater than $T_{min}$, and both the $T_{max}$ and the $T_{min}$ depengs only on the initial speed $v_{init}$ of the vehicle starting from the start line.
+
+Then, the strategy determines the earliest green time $T_G$ in the interval $(T_{min},T_{max}]$ with the accuracy in second. If there is no green time during this interval, a free-driving strategy is applied to the vehicle.
+
+If a proper $T_G$ could be set, an acceleration or a deceleration may be applied to the vehicle to adjust its motion at the aim of reaching the stopping line at the time of $T_G$. During this period, if the vehicle is affected by the preceding vehicle, the car-following model may be applied to the vehicle again.
+
+Meanwhile, the behavior the vehicle takes is similar to the one in the manual driving method.
+
+Generally speaking, this strategy is the optimize version of the car-following model with the consideration of the influence of the traffic light.
 \subsection{The multi-vehicle cooperative speed guidance model}
+This is a simple connect-vehicle strategy with the communication between the vehicles.
+
+The strategy is operated from the first vehicle in $Q_{in}$ to the last vehicle in $Q_{in}$
+
+First of all, the first vehicle in $Q_{in}$ determine its arrival time $T_G$ according to the method mentioned in section \ref{section:tgs}, and we set the $T_G$ determined by the n-th vehicle in $Q_{in}$ is $T_G^{[n]}$, e.g. the first vehicle determines $T_G^{[1]}$
+\subsection{The processing of the strategies and the combination of the strategies}
+
 \end{document}
