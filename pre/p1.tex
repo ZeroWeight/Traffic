@@ -110,6 +110,7 @@ While the $S_{safe}$is the same as the distance between the vehicles in \ref{sec
 
 Once the distance between the vehicles is less than $S_{exp}$, which means the distance between the vehicles is too short, an emergency brake is taken owing to the specific situation. In most cases, the acceleration of the vehicle is set to $0.5a_{max}$
 \subsection{Manual driving model}
+\label{section:man}
 The plantform provides three models to verify the effectiveness of the platform, and the first model is manual driving model.
 
 As the name of the model indicates, manual driving model is used to describe the behavior of a vehicle driving by human. This model is often used to provide a 'basic' traffic efficiency, while other control strategies are expected to behave better than this simple model.
@@ -146,6 +147,7 @@ Taking all of the situations into consideration. the manual driving model can be
 The plantform will traverse the queue $Q_{in}$, and during each iteration, the acceleration of the vehicle in processing will be set according to the model given above.
 
 \subsection{The single-vehicle cooperative speed guidance model}
+\label{section:st1}
 Applied some changes on the car-following strategy, we designed a cooperative speed guidance model which only takes the influence of the traffic light into consideration.
 \subsubsection{Modification about the car-following method}
 Firstly, when the distance to the front vehicle from the vehicle which we are concerned about is less than $S_{control}$, the car-following model in chosen. In addition to the basic car-following method, it is changed to the following form when $\Delta x_{n,n-1}(t)\le S_{exp}$ 
@@ -175,6 +177,7 @@ Meanwhile, the behavior the vehicle takes is similar to the one in the manual dr
 
 Generally speaking, this strategy is the optimize version of the car-following model with the consideration of the influence of the traffic light.
 \subsection{The multi-vehicle cooperative speed guidance model}
+\label{section:st2}
 This is a simple connect-vehicle strategy with the communication between the vehicles.
 
 The strategy is operated from the first vehicle in $Q_{in}$ to the last vehicle in $Q_{in}$
@@ -199,5 +202,12 @@ The plantform treats the strategies as an iteration from the last vehicle in the
 Therefore, if only a specific strategy is chosen, the program behaves like a loop from the last to the first of $Q_{in}$.
 
 \subsubsection{Combination of the strategies}
+Only the combination of the manual driving vehicle and the speed guidance models are concerned about, therefore, the plantform only include two kinds of combination simulation, which is the combination between the manual driving vehicle(mentioned in \ref{section:man}) and the single-vehicle cooperative speed guidance model (mentioned in \ref{section:st1}); and the combination between the manual driving vehicle and the multi-vehicle cooperative speed guidence model (mentioned in \ref{section:st2})
 
+During the vehicle generating step, the control strategy of the vehicle is set by random method according to the type of combination and the ratio set by user.
+
+After generate the type of the control strategy, the user-strategy step of the simulation set the acceleration of the vehicle using the strategy it has. It is assmued that if a vehicle using multi-vehicle cooperative speed guidence model is following a manual driving vehicle, the expected arrival time of the manual driving vehicle $T_G$ does not exist, therefore, the speed guidence model could set its expected arrival time $T_G$ freely.
+
+\subsection{Add on algorithms}
+Besides this, some add on algorithm is added to treat some accidents may happen accidentally. And the implementations of these specific algorithms may be found in the code of the plantform.
 \end{document}
