@@ -180,6 +180,24 @@ This is a simple connect-vehicle strategy with the communication between the veh
 The strategy is operated from the first vehicle in $Q_{in}$ to the last vehicle in $Q_{in}$
 
 First of all, the first vehicle in $Q_{in}$ determine its arrival time $T_G$ according to the method mentioned in section \ref{section:tgs}, and we set the $T_G$ determined by the n-th vehicle in $Q_{in}$ is $T_G^{[n]}$, e.g. the first vehicle determines $T_G^{[1]}$
+
+After chosing the $T_G^{[1]}$, an acceleration or a deceleration may be applied to the vehicle to adjust its motion at the aim of reaching the stopping line at the time of $T_G^{[1]}$, if the $T_G{^[1]}$ does not exist, the vehicle takes an acceleration and then stops at the stopping line.
+
+Then, it is assumed that the [n+1]-th vehicle in $Q_{in}$ can acquire the $T_G^{[n]}$ of the n-th vehicle in $Q_{in}$, including whether it exists.
+
+The [n+1]-th vehicle determins its $T_G^{[n+1]}$according to its $T_{min}$ and $T_{max}$ and make sure that the $T_G^{[n+1]}-T_G^{[n]} \ge 1 \mathrm{second}$, owing to the fact that the following vehicle is supposed to arrive later than the preceding vehicle.
+
+If the $T_G^{[n]}$ does not exist, $T_G^{[n]+1}$ should be set freely, only depends on the $T_{max}$ and the $T_{min}$ of the vehicle.
+
+Then the acceleration of the [n+1]-th vehicle is set according to the expected time of arrival. The strategy then goes for the following vehicles.
+
+Since the expected time of arrival is carefully designed to make sure that the following vehicle always arrives the stopping line later than the preceding vehicle, even the vehicles which do not have an expected arrival time will take an acceleration, the probability of the rear-ending is minor, a rear-ending will be solve by some simple emergency settings. 
 \subsection{The processing of the strategies and the combination of the strategies}
+\subsubsection{Single strategy simulation}
+The plantform treats the strategies as an iteration from the last vehicle in the $Q_{in}$ to the first one in that, for the reason that the following vehicles may acquire the acceleration of the preceding car which should be fixed until the acceleration is set according to the strategy chosen by user. 
+
+Therefore, if only a specific strategy is chosen, the program behaves like a loop from the last to the first of $Q_{in}$.
+
+\subsubsection{Combination of the strategies}
 
 \end{document}
