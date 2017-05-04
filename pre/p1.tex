@@ -11,6 +11,8 @@
 \input {highlight.sty}
 \newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
 \begin{document}
+\tableofcontents
+\clearpage
 \section{Program architecture}
 We use C++/Qt to develop the current plantform, the core of the plantform is a Traffic\_v1 object, which can be described as fig.\ref{UML}
 
@@ -94,6 +96,27 @@ This table records the total time of each lane stop at each moment and the total
 Generally speaking, road.csv is used to observe whether the entire simulation process behaves well and the other 3 tables are used to evaluate the merits of the entire strategy.
 
 In addition, the number of stops is determined by whether the speed of the vehicle is below a certain threshold and the stoping time is continuously accumulated as the vehicls stops, besides, the number of stops does not increase during the vehicle's long-term parking.
+
+\subsection{Signal timing module}
+The signal timing module meets the user requirements for setting the traffic lights freely. 3 push buttons 'set red behind'; 'set green behind'; 'set yellow behind' are used to set the phase of signal selected behind the black timeline. 
+
+Meanwhile, this interface can be used to set the cycle of the signals. Therefore, by moving the timeline or specify the timeline position, repeatedly selecting the lane to be changed, setting the signal phase. etc, users can set the traffic signals freely.
+
+At the same time, the left interface will prompt the trajectory may exists in the intersection currently (i.e the timeline shows), to prompt the user to avoid the overlap of trajectory, and help users to more reasonable signal timing work.
+\subsection{The interface of the plantform}
+The interface of the simulation module and the signal timing module are shown as fig.\ref{cap1} and the fig.\ref{cap2}.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{cap1.jpg}
+\caption{The interface of the simulation module}
+\label{cap1}
+\includegraphics[width=\textwidth]{cap2.jpg}
+\caption{The interface of the signal timing module}
+\label{cap2}
+\end{figure} 
+
+The interface of the signal timing module is activated if the user click the 'Edit Traffic Light' Push button. And if the user close the the interface of the signal timing module, the changes made by user will be saved and the interface of the simulation module will be activated.
+\clearpage
 \section{A brief description of the algorithm}
 \subsection{basic assumption and parameters}
 Firstly, it is assumed that the physical quantity which is under control directly is the acceleration of the vehicle, while other physical quantities are set because of the theorem given by kinematics, such as 
