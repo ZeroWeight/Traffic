@@ -272,67 +272,67 @@ void Settings::paintEvent (QPaintEvent *) {
 			break;
 		}
 	}
-	painter.setPen (QPen (QColor ("Blue"), 5));
+	//painter.setPen (QPen (QColor ("Blue"), 5));
 	// don't change the code below
-	if (map[slider->value ()][A][Left] == Green)
-		painter.drawArc (3.6875 * size, 3.6875 * size, 2.625*size, 2.625*size, -90 * 16, 90 * 16);
-	if (map[slider->value ()][A][Right] == Green)
-		painter.drawArc (4.8125 * size, 7.0625 * size, 0.375*size, 0.375*size, 0, 90 * 16);
-	if (map[slider->value ()][A][Center] == Green)
-		painter.drawLine (5 * size, 6.6875 * size, 7.25*size, 6.6875*size);
+	//if (map[slider->value ()][A][Left] == Green)
+	//	painter.drawArc (3.6875 * size, 3.6875 * size, 2.625*size, 2.625*size, -90 * 16, 90 * 16);
+	//if (map[slider->value ()][A][Right] == Green)
+	//	painter.drawArc (4.8125 * size, 7.0625 * size, 0.375*size, 0.375*size, 0, 90 * 16);
+	//if (map[slider->value ()][A][Center] == Green)
+	//	painter.drawLine (5 * size, 6.6875 * size, 7.25*size, 6.6875*size);
 
-	if (map[slider->value ()][B][Left] == Green)
-		painter.drawArc (3.6875 * size, 5.9375 * size, 2.625*size, 2.625*size, 0, 90 * 16);
-	if (map[slider->value ()][B][Right] == Green)
-		painter.drawArc (7.0625 * size, 7.0625 * size, 0.375*size, 0.375*size, 90 * 16, 90 * 16);
-	if (map[slider->value ()][B][Center] == Green)
-		painter.drawLine (6.6875 * size, 5 * size, 6.6875*size, 7.25*size);
+	//if (map[slider->value ()][B][Left] == Green)
+	//	painter.drawArc (3.6875 * size, 5.9375 * size, 2.625*size, 2.625*size, 0, 90 * 16);
+	//if (map[slider->value ()][B][Right] == Green)
+	//	painter.drawArc (7.0625 * size, 7.0625 * size, 0.375*size, 0.375*size, 90 * 16, 90 * 16);
+	//if (map[slider->value ()][B][Center] == Green)
+	//	painter.drawLine (6.6875 * size, 5 * size, 6.6875*size, 7.25*size);
 
-	if (map[slider->value ()][C][Left] == Green)
-		painter.drawArc (5.9375 * size, 5.9375 * size, 2.625*size, 2.625*size, 90 * 16, 90 * 16);
-	if (map[slider->value ()][C][Right] == Green)
-		painter.drawArc (7.0625 * size, 4.8125 * size, 0.375*size, 0.375*size, 180 * 16, 90 * 16);
-	if (map[slider->value ()][C][Center] == Green)
-		painter.drawLine (5 * size, 5.5625 * size, 7.25*size, 5.5625*size);
+	//if (map[slider->value ()][C][Left] == Green)
+	//	painter.drawArc (5.9375 * size, 5.9375 * size, 2.625*size, 2.625*size, 90 * 16, 90 * 16);
+	//if (map[slider->value ()][C][Right] == Green)
+	//	painter.drawArc (7.0625 * size, 4.8125 * size, 0.375*size, 0.375*size, 180 * 16, 90 * 16);
+	//if (map[slider->value ()][C][Center] == Green)
+	//	painter.drawLine (5 * size, 5.5625 * size, 7.25*size, 5.5625*size);
 
-	if (map[slider->value ()][D][Left] == Green)
-		painter.drawArc (5.9375 * size, 3.6875 * size, 2.625*size, 2.625*size, 180 * 16, 90 * 16);
-	if (map[slider->value ()][D][Right] == Green)
-		painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
-	if (map[slider->value ()][D][Center] == Green)
-		painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
+	//if (map[slider->value ()][D][Left] == Green)
+	//	painter.drawArc (5.9375 * size, 3.6875 * size, 2.625*size, 2.625*size, 180 * 16, 90 * 16);
+	//if (map[slider->value ()][D][Right] == Green)
+	//	painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
+	//if (map[slider->value ()][D][Center] == Green)
+	//	painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
 
-	QPen* pen = new QPen (*dot_line);
-	pen->setColor (QColor ("Blue"));
-	painter.setPen (*pen);
-	// don't change the code below
-	if (map[slider->value ()][A][Left] == Yellow)
-		painter.drawArc (3.6875 * size, 3.6875 * size, 2.625*size, 2.625*size, -90 * 16, 90 * 16);
-	if (map[slider->value ()][A][Right] == Yellow)
-		painter.drawArc (4.8125 * size, 7.0625 * size, 0.375*size, 0.375*size, 0, 90 * 16);
-	if (map[slider->value ()][A][Center] == Yellow)
-		painter.drawLine (5 * size, 6.6875 * size, 7.25*size, 6.6875*size);
+	//QPen* pen = new QPen (*dot_line);
+	//pen->setColor (QColor ("Blue"));
+	//painter.setPen (*pen);
+	//// don't change the code below
+	//if (map[slider->value ()][A][Left] == Yellow)
+	//	painter.drawArc (3.6875 * size, 3.6875 * size, 2.625*size, 2.625*size, -90 * 16, 90 * 16);
+	//if (map[slider->value ()][A][Right] == Yellow)
+	//	painter.drawArc (4.8125 * size, 7.0625 * size, 0.375*size, 0.375*size, 0, 90 * 16);
+	//if (map[slider->value ()][A][Center] == Yellow)
+	//	painter.drawLine (5 * size, 6.6875 * size, 7.25*size, 6.6875*size);
 
-	if (map[slider->value ()][B][Left] == Yellow)
-		painter.drawArc (3.6875 * size, 5.9375 * size, 2.625*size, 2.625*size, 0, 90 * 16);
-	if (map[slider->value ()][B][Right] == Yellow)
-		painter.drawArc (7.0625 * size, 7.0625 * size, 0.375*size, 0.375*size, 90 * 16, 90 * 16);
-	if (map[slider->value ()][B][Center] == Yellow)
-		painter.drawLine (6.6875 * size, 5 * size, 6.6875*size, 7.25*size);
+	//if (map[slider->value ()][B][Left] == Yellow)
+	//	painter.drawArc (3.6875 * size, 5.9375 * size, 2.625*size, 2.625*size, 0, 90 * 16);
+	//if (map[slider->value ()][B][Right] == Yellow)
+	//	painter.drawArc (7.0625 * size, 7.0625 * size, 0.375*size, 0.375*size, 90 * 16, 90 * 16);
+	//if (map[slider->value ()][B][Center] == Yellow)
+	//	painter.drawLine (6.6875 * size, 5 * size, 6.6875*size, 7.25*size);
 
-	if (map[slider->value ()][C][Left] == Yellow)
-		painter.drawArc (5.9375 * size, 5.9375 * size, 2.625*size, 2.625*size, 90 * 16, 90 * 16);
-	if (map[slider->value ()][C][Right] == Yellow)
-		painter.drawArc (7.0625 * size, 4.8125 * size, 0.375*size, 0.375*size, 180 * 16, 90 * 16);
-	if (map[slider->value ()][C][Center] == Yellow)
-		painter.drawLine (5 * size, 5.5625 * size, 7.25*size, 5.5625*size);
+	//if (map[slider->value ()][C][Left] == Yellow)
+	//	painter.drawArc (5.9375 * size, 5.9375 * size, 2.625*size, 2.625*size, 90 * 16, 90 * 16);
+	//if (map[slider->value ()][C][Right] == Yellow)
+	//	painter.drawArc (7.0625 * size, 4.8125 * size, 0.375*size, 0.375*size, 180 * 16, 90 * 16);
+	//if (map[slider->value ()][C][Center] == Yellow)
+	//	painter.drawLine (5 * size, 5.5625 * size, 7.25*size, 5.5625*size);
 
-	if (map[slider->value ()][D][Left] == Yellow)
-		painter.drawArc (5.9375 * size, 3.6875 * size, 2.625*size, 2.625*size, 180 * 16, 90 * 16);
-	if (map[slider->value ()][D][Right] == Yellow)
-		painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
-	if (map[slider->value ()][D][Center] == Yellow)
-		painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
+	//if (map[slider->value ()][D][Left] == Yellow)
+	//	painter.drawArc (5.9375 * size, 3.6875 * size, 2.625*size, 2.625*size, 180 * 16, 90 * 16);
+	//if (map[slider->value ()][D][Right] == Yellow)
+	//	painter.drawArc (4.8125 * size, 4.8175 * size, 0.375*size, 0.375*size, 0, -90 * 16);
+	//if (map[slider->value ()][D][Center] == Yellow)
+	//	painter.drawLine (5.5625 * size, 7.25 * size, 5.5625*size, 5 * size);
 }
 void Settings::closeEvent (QCloseEvent *event) {
 	save->click ();
