@@ -69,7 +69,7 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 			}
 		}
 	}
-	painter.setPen (QPen (QColor ("Blue"), 5));
+	/*painter.setPen (QPen (QColor ("Blue"), 5));
 	foreach (InNode _n_, *Node) {
 		if (_n_.delay_time >= 0) {
 			switch (_n_.dir) {
@@ -127,7 +127,7 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 				break;
 			}
 		}
-	}
+	}*/
 	painter.setPen (QPen (QColor ("Blue"))); painter.setBrush (*s->car);
 	foreach (Car _c_, car_out[A*TR_NUM + Left]) {
 		if (_c_.pos < 50) {
@@ -211,68 +211,68 @@ void Traffic_v1::paintEvent (QPaintEvent *event) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[A][i] * size, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[A][i] * size, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[A][i] * size, r, r);
+			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[A][i] * size, r, r);
 			break;
 		}
 		switch (s->map[(now_t / 10) % s->period][B][i]) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[B][i] * size, near_side[B] * size - 1.2 * r, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[B][i] * size, near_side[B] * size - 1.2 * r, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (lane_in[B][i] * size, near_side[D] * size + 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[B][i] * size, near_side[B] * size - 1.2 * r, r, r);
 			break;
 		}
 		switch (s->map[(now_t / 10) % s->period][C][i]) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[C][i] * size, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[C][i] * size, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (near_side[A] * size + 1.2 * r, lane_in[C][i] * size, r, r);
+			painter.drawEllipse (near_side[C] * size - 1.2 * r, lane_in[C][i] * size, r, r);
 			break;
 		}
 		switch (s->map[(now_t / 10) % s->period][D][i]) {
 		case Red:
 			painter.setBrush ((QColor ("Red")));
 			painter.setPen ((QColor ("Red")));
-			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[D][i] * size, near_side[D] * size + 1.2 * r, r, r);
 			break;
 		case Green:
 			painter.setBrush ((QColor ("Green")));
 			painter.setPen ((QColor ("Green")));
-			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[D][i] * size, near_side[D] * size + 1.2 * r, r, r);
 			break;
 		case Yellow:
 			painter.setBrush ((QColor ("Yellow")));
 			painter.setPen ((QColor ("Yellow")));
-			painter.drawEllipse (lane_in[D][i] * size, near_side[B] * size - 1.2 * r, r, r);
+			painter.drawEllipse (lane_in[D][i] * size, near_side[D] * size + 1.2 * r, r, r);
 			break;
 		}
 	}
