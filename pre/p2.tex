@@ -147,24 +147,22 @@ $$x(t+\Delta_t)=x(t)+v(t)\Delta_t+0.5a\Delta_t^2$$
 $$P((S_n-S_{n-1}\le t) = 1 - e^{-\lambda t}$$
 因为仿真过程的时间间隔被设定为0.1s，每小时的平均车流量即为$$\bar{F}=36000\lambda$$
 
+对于一个方向的车辆，车辆的小时流量被仿真界面上的交通流控制滑块设定之后，这个方向的车流量将按照特定的泊松过程进行生成$\lambda=\displaystyle{\frac{\bar{F}}{3600}}$, 并且被压入每个方向上的等待队列$Q_{pending}$。
 
-For the traffic flow in one direction, after the average hourly traffic flow is set by the traffic flow adjustment slider described above, The vehicles in this direction will be generated according to the Poisson process with a specified intensity of $\lambda=\displaystyle{\frac{\bar{F}}{3600}}$, and will be pushed into the pending queue $Q_{pending}$in each direction.
+在生成车辆之后，下一步是考虑车辆应当放入那个车道，我们认为车辆放入合理车道的可能性是相同的，合理车道被定义为车辆放入之后仍能安全行驶的车道。其具体定义可以被定义为，车辆生成位置（$S_{start}$）和最后一个车辆的距离$X_{-1}$之间的距离大于安全行驶距离$S_{safe}$即，$$X_{-1}-S_{start}\le S_{safe}$$
 
-After generating the vehicle, the next step is to consider which lane the vehicle belongs to, and it is assumed that the possibility of the vehicle appearing in each safe lane is same. Firstly, the condition to determine a safe lane is that the distance of last vehicle in the lane and line which the vehicles are generated ($S_{start}$) is greater than the safe distance $S_{safe}$, that is,
-$$X_{-1}-S_{start}\le S_{safe}$$
+遍历所有符合条件的合理车道，并且将$Q_{pending}$中的车辆等可能的放入其中的一条车道上。新生成的车辆的位置为$S_{start}$，即车辆生成线的位置。
 
-Screening all lanes that meet the situation above in this direction, and place the vehicle in $Q_{pending}$ into one of these lanes randomly, while the position of the vehicle newly generated is set to $S_{start}$.
+如果目前没有合适的放入车辆的车道，车辆将被保留在$Q_{pending}$队列中并等待下一个仿真循环。
 
-If there is no lanes suitable for placing the vehicle currently, the vehicles will remain in $Q_{pending}$ and wait for the next simulation session.
-
-The generation of the vehicle is done in the second step of the simulation cycle, just following the process control model.
-\subsection{The formation and evacuation of the queue in the intersection}
+车辆生成的算法在整个仿真流程的第二步进行，紧随仿真流程控制模块。
+\subsection{路口车辆排队的产生和消散}
 \label{section:feq}
-To describe the phenomenon of queuing aat the intersection, a queue $Q_{block}$ is introduced to each lane towards the intersection. And according to the current signal phase and the length of the queue, all of the control strategies mentioned take these simple algorithm below.
+为了描述路口车辆排队的产生和消散过程，我们对每个驶入交通路口的车道引入队列$Q_{block}$。同时，根据现行信号相位和队列的长度，我们采用的所有控制策略几乎均采用如下提到的简单算法
 \begin{enumerate}
-\item Red Light
+\item 红灯
 
-If the distance between the first vehicle in $Q_{in}$ and the last vehicle in $Q_{block}$ is less than the control range $S_{control}$, the first vehicle in $Q_{in}$ brake and is expected to stop just behind the last vehicle in $Q_{block}$. The expected distance between these two vehicles is defined as $S_{stop}$, describing the distance between the vehicles in the $Q_{block}$. 
+如果队列$Q_{in}$中的第一辆车辆和队列$Q_{block}$中的最后一辆车辆之间的距离小于控制距离$S_{control}$，队列$Q_{in}$中的第一个车辆将刹车并期望停在队列$Q_{block}$最后一辆车的期望距离之后。这个两车之间的期望距离被定义为$S_{stop}$，用来描述在队列$Q_{block}$中的车辆间距。 
 
 If the $Q_{block}$ is empty and the distance between the first vehicle in $Q_{in}$ and the stopping line is less than $S_{control}$, the first vehicle in $Q_{in}$ brake and is expected to stop just on the stopping line$S_{end}$.
 
