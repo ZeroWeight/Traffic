@@ -79,69 +79,74 @@
 \begin{enumerate}
 \item car.csv
 
-This table keeps a record of the initial speed of the vehicle (init\_velocity), the thoritical time of arrival (thoritical\_time) and the actual time of arriving (act\_time), the thoritical time of arrival is defined as the arrival time when ths vehicle accelerates to maximum speed with maximum acceleration, and maintain a uniform linear motion till enters the intersection. The difference between the thoritical\_time and the act\_time can be described as the time waste driving through this area.
+这张表保存记录了车辆的初始速度（init\_velocity），理论到达时间（thoritical\_time） 和实际到达时间（act\_time）， 理论到达时间被定义为车辆以最大加速度加速到最大速度之后进行匀速直线运动到达路口所花的时间。 理论到达时间 thoritical\_time 和实际到达时间 act\_time之间的差异可以描述车辆经过这段区域所浪费的时间。
 
 \item stop.csv
 
-This table records the total number of stops per lane at each time and the total number of stops in the system, and the proportion of the total number of vehicles.
+这张表保存记录了每个车道上车辆的总停车次数和总共路口车辆的停车次数以及停车次数占整个车辆数量的比例。
 
 \item road.csv
 
-This table records the total number of vehicles leaving a certain lane at each moment and the total number of vehicles leaving the system, and their average
+这张表记录了每个时刻驶离某一车道的车辆数量和离开系统的车辆数量，和相对应的平均值，这张表往往被用来检查仿真的合理性。
 
 \item stop\_time.csv
 
-This table records the total time of each lane stop at each moment and the total time of parking within the system, as well as the parking time allocated to each vehicle.
+这张表记录了每个车道上的总共的停车时间和整个系统内的通车时间以及分担到每个车辆上的停车时间。
 \end{enumerate}
 
-Generally speaking, road.csv is used to observe whether the entire simulation process behaves well and the other 3 tables are used to evaluate the merits of the entire strategy.
+总的来说，road.csv 被用来观察 仿真过程是否正常执行而其他三个表用来评价整个所采用的驾驶策略的效率
 
-In addition, the number of stops is determined by whether the speed of the vehicle is below a certain threshold and the stoping time is continuously accumulated as the vehicls stops, besides, the number of stops does not increase during the vehicle's long-term parking.
+另外，停车行为由车辆速度低于某个阈值决定，同时，当车辆停下时，停车时间不断累加，而停车次数不发生变化。这一点在长期停车时尤其明显。
 
-\subsection{Signal timing module}
-The signal timing module meets the user requirements for setting the traffic lights freely. 3 push buttons 'set red behind'; 'set green behind'; 'set yellow behind' are used to set the phase of signal selected behind the black timeline. 
+\subsection{信号配时模块}
 
-Meanwhile, this interface can be used to set the cycle of the signals. Therefore, by moving the timeline or specify the timeline position, repeatedly selecting the lane to be changed, setting the signal phase. etc, users can set the traffic signals freely.
+信号配时模块满足了用户自主设置信号周期和相位的要求，三个按键'set red behind'、 'set green behind'、 'set yellow behind' 被用来设置黑色时间线之后的信号相位。
 
-At the same time, the left interface will prompt the trajectory may exists in the intersection currently (i.e the timeline shows), to prompt the user to avoid the overlap of trajectory, and help users to more reasonable signal timing work.
-\subsection{The interface of the plantform}
-The interface of the simulation module and the signal timing module are shown as fig.\ref{cap1} and the fig.\ref{cap2}.
+同时，这个界面可以用来调整信号的周期。因此，通过调整黑色时间线或指定确定的调整时间，不断重复设置时间线之后的信号相位等工作，用户可以完全自主的完成信号的配时工作。
+
+同时，左侧的界面将显示当前交通路口车辆的轨迹线，当前时间是黑色轨迹线所指示的时间。通过交通轨迹线的显示和对交叉情况的判断，系统可以在一定程度上辅助用户完成更好更合理的交通信号配时工作。
+\subsection{平台界面}
+
+仿真模块的界面和信号配时的界面如图\ref{cap1} 和图\ref{cap2}所示。
+
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{cap1.jpg}
-\caption{The interface of the simulation module}
+\caption{仿真模块界面}
 \label{cap1}
 \includegraphics[width=\textwidth]{cap2.jpg}
-\caption{The interface of the signal timing module}
+\caption{信号配时模块的界面}
 \label{cap2}
 \end{figure} 
 
-The interface of the signal timing module is activated if the user click the 'Edit Traffic Light' Push button. And if the user close the the interface of the signal timing module, the changes made by user will be saved and the interface of the simulation module will be activated.
+在仿真模块界面上点击'Edit Traffic Light'按钮可以激活信号配时模块的界面，如果用户关闭信号配时模块界面，他所作的变更将被保存同时仿真模块界面将被再次激活。
+
 \clearpage
-\section{A brief description of the algorithm}
-\subsection{basic assumption and parameters}
-Firstly, it is assumed that the physical quantity which is under control directly is the acceleration of the vehicle, while other physical quantities are set because of the theorem given by kinematics, such as 
+\section{算法简介}
+\subsection{基础假设和参数}
+首先，我们认为对车辆而言，车辆的加速度是可控的物理量，同时，其他的物理量（如速度和位置）由车辆的加速度和当前时刻的速度根据如下运动学公式确定： 
 $$v(t+\Delta_t)=v(t)+a\Delta_t$$
 $$x(t+\Delta_t)=x(t)+v(t)\Delta_t+0.5a\Delta_t^2$$ 
 
-However, the acceleration of the vehicle can not be controled precisely, a random noise distributed by normal dirtribution is added into the result given by all of the strategies, especially the ones may operated by human.
+另外，由于车辆的加速度也不能被准确的控制，我们在策略给出加速度的准确值之后加入了一个正态分布的随机噪声，尤其是后文提到的人工驾驶的车辆模型，引入的正态分布随机噪声更大。
 
-As for the speed limit,the platform considers the maximum absolute value of the acceleration of the vehicle is $a_{max}$, which is generally used in the acceleration process and tbe braking process. Also, the maximum speed limit is set to $v_{max}$, while the minimum speed limit is set to $v_{min}$.
+同时，平台对车辆的加速度和速度也有着限制，我们认为车辆加速度的绝对值的最大值是$a_{max}$，被用来限制车辆的加速过程和刹车过程。另外，车辆的最大速度被限制为$v_{max}$，车辆的最低速度被限制为$v_{min}$。
 
-No matter which strategy is chosen, if the acceleration given by the strategy is greater than the maximum acceleration $a_{max}$ or less than $-a_{max}$, or the calculated speed is greater than the maximum speed or less than the minimum speed, the program will automatically set these values to the boundary value. When the vehicle has to stop because of the red light, the minimum speed of the vehicle is set to 0, describing the parking behavior which may exist, however, the behavior of reversing is never allowed.
+不论选择了那种驾驶策略，如果策略给出的加速度值大于最大加速度$a_{max}$或者小于$-a_{max}$，抑或是计算得到的速度大于最大速度或小于最小速度，程序将自动将这些值设定为对应的边界值。如果车辆受到红灯影响而被迫刹车停车，最小速度限制将被设定为0来描述可能的停车行为。但不论如何，倒车行为是永远不可接受的。
 
-Also, we assume the expected speed of the vehicle, $v_{exp}$, is set to 80\% of the maximum speed limit.
+同时我们假设车辆期望的速度，$v_{exp}$，被设定为车辆最高限速的80\%。
 
-In order to simpliy the simulation process, we assume that during the process of driving, there is no lane changing behavior. This hypothesis is also acceptable in the real life, because of the restrictions imposed by driving habits and traffic laws \& regulations, the vehicle should finish changing lane before enter the traffic junction. Therefore this assumption is reasonable. What's more, just from the perspective of traffic efficiency, lane-changing can only reduce the average efficiency of the traffic, therefore, as the primary inspection of the platform is efficiency, lane-changing situation is not taken into consideration.
+为了简化模型，我们认为在所研究路段进行驾驶的过程中，车辆不进行变道行为。这个假设在现实情况中也是可以被接受的，因为受到交通法规和规则的限制，车辆在交通路口前的变道行为往往是被禁止或限制的。车辆需要在进入交通路口之前完成相关的变道工作，因此我们的假设是合理的，同时仅仅从交通效率的角度来看，换道行为也只能降低交通效率，不利于对驾驶策略进行评估。因此，因为平台的评估主要以策略为主，就不考虑车辆的换道行为了。
 
-Therefore, the car driving in the lane can be described as a queue, i.e. $Q_{in}$
+因此，在一个车道进行驾驶的车辆可以被描述成一个队列结构，即$Q_{in}$。
 
-\subsection{The Generation of the vehicles}
-It is assumed that the arrival process of the vehicle is approximately a Poisson process, which is limited and adjusted by the following algorithm
+\subsection{车辆产生算法}
+我们假设车辆的到达过程是一个泊松过程，这个到达过程受到下面算法的限制。
 
-Assuming that the intensity of the Poisson process is $\lambda$, the arrival time interval of the vehicle $S_n,S_{n-1}$ can be expressed as 
+我们假设泊松过程的强度是$\lambda$到达车辆而定时间间隔$S_n,S_{n-1}$可以被表述为 
 $$P((S_n-S_{n-1}\le t) = 1 - e^{-\lambda t}$$
-Because the simulation time scale is set to 0.1s, the average hourly traffic flow is $$\bar{F}=36000\lambda$$
+因为仿真过程的时间间隔被设定为0.1s，每小时的平均车流量即为$$\bar{F}=36000\lambda$$
+
 
 For the traffic flow in one direction, after the average hourly traffic flow is set by the traffic flow adjustment slider described above, The vehicles in this direction will be generated according to the Poisson process with a specified intensity of $\lambda=\displaystyle{\frac{\bar{F}}{3600}}$, and will be pushed into the pending queue $Q_{pending}$in each direction.
 
