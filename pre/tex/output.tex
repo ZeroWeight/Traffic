@@ -1,0 +1,925 @@
+\protect\hypertarget{ux5fToc470790476}{}{}\textbf{A Simulation System
+and Speed Guidance Algorithms for Intersection Traffic Control Using
+Connected Vehicle Technology}
+
+\textbf{Abstract:} In the connected vehicle environment, it is possible
+to obtain real-time vehicle-state data through vehicle-to-infrastructure
+communication, and significantly increase the prediction accuracy of
+urban traffic conditions. This study uses the C++/Qt programming
+language and framework to build a simulation platform. A two-way
+six-lane intersection was set up on the simulation platform. In
+addition, two speed guidance algorithms basing on optimizing the travel
+time of a single vehicle or multi vehicles respectively are proposed.
+The goal of optimization is to minimize the travel time, with the common
+indicators such as average delay of vehicles, average number of stops,
+and average stop time chosen as indexes of traffic efficiency. The
+simulation results show that when the traffic flow is not saturated,
+compared with the case of no speed guidance, single-vehicle speed
+guidance can improve the traffic efficiency by 20\%, whereas
+multi-vehicle speed guidance can improve the traffic efficiency by 50\%.
+When the traffic flow is saturated, the speed guidance algorithms have
+performances that are more outstanding. With the increase of penetration
+rate, the effect of speed guidance gradually enhances, with the most
+obvious gains obtained when the penetration rate increases from 10\% to
+40\%. Thus, this study has shown that speed guidance in the connected
+vehicle environment can significantly improve the traffic efficiency of
+intersections, and compared with the single-vehicle speed guidance
+strategy, the multi-vehicle speed guidance strategy is more effective.
+
+\textbf{Keywords:} connected vehicle; intersection traffic control;
+simulation system; speed guidance
+
+\textsc{INTRODUCTION}
+
+The concept of cooperative driving was first introduced in the early
+1990s. A cooperative driving vehicle can control its velocity and
+trajectory to optimize objectives of traffic efficiency, e.g. average
+delay and average stop time. In 2006, Li et al. proposed the concept of
+``safety driving patterns'' to obtain the allowable movement schedules
+of all vehicles which entered the intersection via traffic lights and
+Vehicle-to-Infrastructure (V2I) communication \textsuperscript{{[}1{]}
+{[}2{]}}. The connected vehicle technology has become one of the
+cutting-edge technologies in the field of intelligent transportation
+today. It is an effective way to improve traffic efficiency, increase
+road safety, and reduce traffic pollution \textsuperscript{{[}3{]}}. The
+connected-vehicle system has obvious positive effects on improving the
+efficiency of traffic networks. When vehicles are connected to each
+other, the drivers' reaction time can be shortened, and the headway
+between vehicles can also be shortened, thus leading to higher road
+occupancy and higher road capacity \textsuperscript{{[}4{]}}. Under the
+connected-vehicle environment, the full-time acquisition of vehicle
+state data can effectively improve the prediction accuracy of urban
+traffic conditions \textsuperscript{{[}5{]}}. Using real-time V2I
+communication instead of traditional detectors can improve the timely
+response ability of the road traffic signal controller
+\textsuperscript{{[}6{]}}. In addition, monitoring the states of
+platoons can make the control and coordination of traffic signals more
+accurate \textsuperscript{{[}6{]}}.
+
+Nowadays, researchers have conducted several studies on speed guidance
+under the connected-vehicle environment. Nekoui explored the issue of
+road traffic safety by mathematical models and field experiments. They
+revealed that introducing speed guidance under the connected-vehicle
+environment could effectively relieve the problems of vehicle emergency
+avoidance and collision avoidance under different conditions
+\textsuperscript{{[}7{]}}. Malakorn and Park examined a cooperative
+transportation system, which allowed vehicles to accept trajectory
+instructions from an intelligent traffic signal using the two-phase
+signal-timing plan, and found that it was highly beneficial in terms of
+both mobility and fuel consumption \textsuperscript{{[}8{]}}. Abu-Lebdeh
+analyzed the feasibility of dynamic speed control in his paper, and
+discussed its potential benefits in the field of traffic control
+\textsuperscript{{[}9{]}}.
+
+Yang et al. studied main rural roads \textsuperscript{{[}10{]}}. They
+proposed a speed guidance strategy considering factors such as the
+location of vehicles, the status of signal controls, the acceleration
+and deceleration time of vehicles, drivers' acceptance, and etc. They
+further used the VISSIM software, a microscopic simulator, to simulate
+the connected-vehicle environment in order to validate their speed
+guidance strategy. Chen et al. used roadside variable message signs as
+display terminals for speed guidance \textsuperscript{{[}11{]}}.
+Considering the locations of roadside speed guidance equipment and
+signal timing, they put forward a strategy which combines dynamic speed
+guidance and dynamic signal control to optimize the arterial coordinated
+signal control system. He used the real-time traffic data from V2V
+(Vehicle-to-Vehicle) and V2I communication to establish a platoon
+recognition algorithm basing on headways \textsuperscript{{[}12{]}}. In
+addition, an optimized signal-control model named PAMSCOD (Platoon-based
+arterial multi-modal signal control with online data) was proposed using
+mixed integer linear programming for the coordination between several
+arterial intersections \textsuperscript{{[}12{]}}. Lee and Park proposed
+a cooperative vehicle control algorithm which minimized the total length
+of overlapped trajectories to avoid potential collisions in the
+intersection \textsuperscript{{[}13{]}}. Jackline and Andreas proposed a
+close-form solution in a centralized fashion for cooperative-driving
+vehicles to merge at expressway on-ramps \textsuperscript{{[}14{]}}.
+
+Given the limited deployment of Cooperative Vehicle Infrastructure
+Systems (CVIS), simulation study is a very important research method.
+Currently, mature commercial traffic simulation software such as VISSIM,
+Paramics, and TransModeler are widely used \textsuperscript{{[}15{]}}.
+However, they cannot realize V2V or V2I communication, neither can they
+realize real-time intervention of the running status of vehicles.
+
+The smart CVIS of China is named as i-VICS (Intelligent
+Vehicle-Infrastructure Cooperation Systems), which is the research
+result of related studies in the recent ten years
+\textsuperscript{{[}16-18{]}}. Basing on the technical characteristics
+of i-VICS, this study designed an intersection simulation system in the
+CVIS environment which realizes V2V and V2I communication and real-time
+intervention of the running status of vehicles. In addition, two speed
+guidance algorithms were proposed and tested in the self-developed
+simulation system.
+
+The remaining of this paper is organized as follows. Section 2 describes
+the methodologies including the vehicle dynamics description and
+speed-guidance algorithms. Section 3 introduces the simulation system we
+designed in this research. A simulation-based case study and the
+corresponding results are presented in Section 4. Finally, concluding
+remarks are presented in Section 5.
+
+METHODOLOGY
+
+In this section, we use mathematical language to model the intersection
+traffic control problem in the connected vehicle environment. Firstly,
+the vehicle dynamics model is provided. Then, the way vehicles move
+without speed guidance is described. Next, the two speed-guidance
+algorithms we designed, named the single-vehicle speed guidance
+algorithm and the multi-vehicle cooperative speed guidance algorithm,
+are introduced. Finally yet importantly, the constraints of the system
+are listed.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Vehicle Dynamics Description and Assumption}
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  \begin{quote}
+  Definition of variables
+  \end{quote}
+\end{enumerate}
+
+For the convenience of expression, the main variables to be used are
+defined in Table 1.
+
+Table 1 The definition of main variables
+
+\begin{longtable}[c]{@{}ll@{}}
+\toprule
+Variable & Definition\tabularnewline
+\midrule
+\endhead
+& System state, including the traffic condition and the controlled
+variables\tabularnewline
+& Traffic condition, including the states of all the vehicles in the
+current system\tabularnewline
+& Functional parameters\tabularnewline
+& Controlled variables, including the guided speed and the information
+of the traffic light (Boolean variable, with 0 representing red light,
+and 1 representing green light)\tabularnewline
+& Vector of the vehicle state, including three dimensions of current
+speed, location, and waiting time\tabularnewline
+& Acceleration (assumed constant, positive when speeding up, and
+negative when slowing down)\tabularnewline
+& Distance from the current position to the stop-line\tabularnewline
+& Travel time (the time interval between the current moment and the
+moment leaving the stop-line)\tabularnewline
+& Guided speed\tabularnewline
+& Current speed\tabularnewline
+& Total waiting time in the waiting area\tabularnewline
+& Discount factor\tabularnewline
+& Real value of the optimization function\tabularnewline
+& One-step cost function\tabularnewline
+\bottomrule
+\end{longtable}
+
+From the above definition, the system state can be expressed as , with
+and defined as:
+
+In the above equations, \emph{N} is the current total number of vehicles
+in the system.
+
+The vehicle state (vector) can be expressed as:
+
+Whereas the controlled variable can be denoted as:
+
+with
+
+The simple dynamic equation of a vehicle passing the stop-line can be
+expressed as:
+
+For a constant acceleration , the above equation can be written as:
+
+Thus, we obtain
+
+\begin{quote}
+For a vehicle which is in the stop state, the travel time can be
+calculated through the following equation:
+\end{quote}
+
+With .
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  \begin{quote}
+  Basic assumptions
+  \end{quote}
+\end{enumerate}
+
+In order to simplify the research process, we made the following basic
+assumptions in this research:
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  The studied region is a single intersection, i.e. the influence of
+  other intersections does not need to be considered.
+\item
+  The length of guiding region is 100m away from the stopping line in
+  every direction.
+\item
+  \begin{quote}
+  The signal at the intersection is controlled using fixed-cycle
+  strategies.
+  \end{quote}
+\item
+  \begin{quote}
+  The vehicles have changed lanes before entering the controlled region,
+  i.e. the vehicles will not change lanes in the controlled region.
+  \end{quote}
+\item
+  The vehicles with on-board equipment will follow the speed-guidance
+  strategies.
+\item
+  When the vehicles pass the stop-line and enter the intersection, they
+  will return to the state of autonomous driving.
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Driving Behavior without speed guidance}
+\end{enumerate}
+
+When there is no speed guidance, a vehicle's straight driving behavior
+can be classified into free driving and car following. We define 150
+meters as the distance of interaction between vehicles, the same as that
+of the VISSIM simulation system. Thus, the two driving behaviors are as
+follows:
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  When the distance to the front vehicle is equal to or greater than 150
+  meters, the driver chooses the free driving strategy, and tries to
+  reach the maximum speed (defined as 90\% of the speed limit of the
+  road) as soon as possible.
+\item
+  When the distance to the front vehicle is less than 150 meters, the
+  driver chooses the car following strategy. The commonly used driving
+  psycho-physical model---Wiedemann model \textsuperscript{{[}19{]}} is
+  adopted in this study.
+\end{enumerate}
+
+\begin{quote}
+In the above equation, represents the expected minimum safe-following
+distance. According to the regulations on safe distance in
+\emph{Regulation on the Implementation of the Road Traffic Safety Law of
+the People's Republic of China} \textsuperscript{{[}20{]}}, the linear
+correlation model of the minimum safe following distance and the speed
+of the front vehicle is used:
+\end{quote}
+
+In the above equation, is a linear coefficient, is the minimum headway
+when stopped. For instance, when the speed of the front vehicle is 50
+km/h, the minimum safe-following distance of the vehicle behind is 40 m.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Speed-guidance algorithms}
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  The single-vehicle speed guidance algorithm
+\end{enumerate}
+
+Currently, in the driving process, most vehicles cannot acquire the
+signal control information of the front intersection in real-time,
+neither can the drivers judge in advance whether they can pass the
+stop-line in the current signal cycle or not. Therefore, the drivers can
+only rely on experience and driving habits to decide the speed of the
+vehicle. With the emergence of connected-vehicle technology, vehicles
+can acquire the real-time information of traffic conditions and signal
+information, therefore it is possible to adjust vehicle speed through
+speed guidance and to increase the traffic efficiency. If we chose a
+vehicle as the object of speed guidance and set its minimum travel time
+as the optimization objective, the speed-guidance process can be
+described as:
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  When the vehicle enters the guiding region, the signal is green, and
+  there is no vehicle in the queue.
+\end{enumerate}
+
+At this time, our goal is to make the vehicle pass the stop-line as soon
+as possible before the green light ends. Thus, the optimize function is:
+
+and
+
+is the moment that the green light was turned on, and is the duration of
+the green light.
+
+If there is no feasible solution (i.e.), it means that this vehicle
+cannot pass the stop-line through speed guidance and have to enter the
+queue, which can be classified into the next situation.
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  When the vehicle enters the guided region, the signal is red; or the
+  signal is green, but the queue has not dissipated.
+\end{enumerate}
+
+At this time, our goal is to make the vehicle arrive at the intersection
+when the queue has just dissipated. Thus, the optimize function is:
+
+and
+
+\begin{quote}
+is the loss of the first vehicle's boot time, is the current number of
+vehicles in the queue, and is the saturation flow rate of this lane.
+
+By solving the above objective function, we can obtain the speed control
+strategy to be taken right now, that is, the acceleration that should be
+accepted by the current vehicle.
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  The multi-vehicle cooperative speed guidance algorithm
+\end{enumerate}
+
+According to the above description, the time that each vehicle needs to
+pass the stop-line can be expressed by mathematical functions. Basing on
+this, we can build the optimization function with the objective of
+minimizing the total time needed by all vehicles to pass the stop-line.
+
+First of all, the one-step cost function is defined as follows:
+
+Its physical meaning is the difference of total time that all vehicles
+needed to pass the stop-line between the two calculation moments.
+
+Thereby, we can define the cost function as:
+
+In the above equation, is the discount factor, which can help to obtain
+the best effect as much as possible at the first step of optimization.
+
+The optimization function of this optimization problem is:
+
+\begin{quote}
+Similarly, we can obtain the control strategy to be taken right now,
+that is, the acceleration to be accepted by the current guided vehicle.
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Constraints}
+\end{enumerate}
+
+The constraints of the system are listed as follows:
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\item
+  The time constraint of the `head vehicle' (the first vehicle in the
+  queue) to pass the stop-line. After the green signal lights up, the
+  time of the first vehicle behind the stop-line to pass the stop-line
+  should be equal to or larger than the time that the green signal
+  lights up:
+\item
+  The time constraint between the stop state and the booting process.
+  After the green signal lights up, if the first vehicle behind the
+  stop-line is in the stop state, the time it passes the stop-line
+  should be equal to or larger than the sum of the time that the green
+  light is turned on () and the loss of the first car's boot time ():
+\item
+  The time constraint for two consecutive vehicles to pass the
+  stop-line. The time for the latter vehicle to pass the stop-line
+  should be equal to or larger than the sum of the time that the vehicle
+  before it passes the stop-line and the minimum headway ():
+\item
+  The constraint of optimized speed. The optimized speed calculated by
+  the model should lie between the low and high thresholds of speed. If
+  the optimized speed is not in this range, it means the vehicle has to
+  stop and wait:
+\item
+  The constraint of the number of vehicles passing the stop-line. The
+  number of vehicles passing the stop-line in one signal cycle should be
+  smaller than or equal to the volume under saturated state:
+\end{enumerate}
+
+In the above equation, is the number of lanes in the studied direction,
+and is the effective green time.
+
+SIMULATION SYSTEM DESIGN
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{The Framework and Design of the Simulation System}
+\end{enumerate}
+
+We used the C++/Qt programming language and framework to build the
+simulation system. As shown in Figure 1, the simulation system mainly
+consists of three modules, i.e. the signal control module, the user
+strategy module, and the core simulation module.
+
+Figure 1 The framework of the traffic control simulation system under
+the connected-vehicle environment
+
+In the signal control module, an interface which can adjust the signal
+cycle and the states of the 12 traffic lights in four directions (as
+shown in Figure 2) is provided. The signal cycle and each light's state
+change process can be preset before the simulation runs, thus providing
+a traffic signal control plan for the whole simulation process.
+
+In the user strategy module, users can have access to system information
+such as the location, velocity, acceleration, etc. of a vehicle. As long
+as the control strategy of vehicle acceleration is transmitted to the
+simulation system, the control of vehicles in the simulation system can
+be realized.
+
+In the simulation module, a graphical interface of the operation program
+(as shown in Figure 3) is provided. The current phase of each signal at
+the intersection, and both the number and real-time position of each
+vehicle are clearly displayed on the interface. The main parameters of
+the simulation control module can be adjusted on the interface,
+including the proportion of vehicles that are equipped with on-board
+equipment, the traffic volume at each direction, the simulation speed,
+and etc. The preliminary statistics data provided by the data analysis
+module are also presented on the interface, e.g. the operation time of
+the program and the number of vehicles in each lane that have passed the
+stop-line. Whereas the processed data such as vehicle delay, number of
+stops, etc. are directly exported into Excel files.
+
+It should be specially explained that the simulation speed is the
+running speed of the simulation system, i.e. the ratio between the time
+in the simulation system and the time in real-life. There are four
+simulation speeds in our simulation system: fast, medium, slow, and very
+slow. When the simulation speed is `fast', the simulation system's run
+speed is 100 times of that in the real world, which means that when the
+system runs for one second, a vehicle in the simulation system has
+already run for 100 seconds, thus greatly accelerating the speed of the
+simulation experiment. When the simulation speed is `medium', the
+simulation system's run speed is 10 times of that in the real world,
+which is suitable for a rough observation of the system operation
+status. `Slow' means that the simulation system has the same running
+speed as that in the real world, which can most truly reflect the
+vehicles' running states. `Very slow' means that the running speed in
+the simulation system is 1/10 of that in the real world, which is
+helpful for detailed observation of a certain vehicle's running status.
+Therefore, the different simulation speeds can meet the needs of the
+different studies. In addition, the simulation speeds can be
+interchanged freely in continuous operation, which is very convenient.
+
+The simulation system has good expandability. It can increase modules by
+compile instructions, and provide batch compiles.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Software Interfaces and Operation Examples}
+\end{enumerate}
+
+A two-way six-lane intersection is built in this research, whose signal
+cycle and phase can be adjusted as needed. The setting in Figure 2
+represents a signal phase setting of a 90s cycle, with each phase having
+45s of green time (green ratio = 50\%). In the interface, we use `E',
+`W', `N' and `S' to represent east, west, north, and south respectively,
+and use `L', `R' and `C' to represent the three lanes of left, right,
+and center respectively (e.g., `WL' represents the left-turn lane from
+west to east).
+
+\includegraphics{media/image56.png}
+
+Figure 2 The signal preset interface of the intersection traffic control
+simulation system\\
+in the connected-vehicle environment
+
+Before simulation, the traffic volume from each direction and the
+penetration rate (i.e. the ratio of vehicles that install the speed
+guidance equipment) can be preset. The simulation speed can be chosen
+from the interface: fast, medium, slow and very slow. In addition, both
+the running time and the number of vehicles through each direction can
+be monitored. Figure 3 shows that the traffic volume from each direction
+is 1080 veh/h, the penetration ratio is 0.3, the simulation speed is
+`medium', and the simulation has run for 319.4 seconds.
+
+\includegraphics[width=5.75198in,height=3.06716in]{media/image57.png}
+
+Figure 3 The operation interface of the intersection traffic control
+simulation system\\
+in the connected-vehicle environment
+
+EXPERIMENTAL RESULTS
+
+We conducted a simulation-based case study using the simulation system
+introduced above. The results obtained from the simulation experiments
+are presented in this section. Furthermore, we have a discussion on the
+differences between the two speed guidance strategies.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{The Effect of Speed Guidance Algorithm on Traffic Efficiency
+  under Different Traffic Volumes}
+\end{enumerate}
+
+We chose three common measures as indexes of traffic efficiency, i.e.
+average delay of vehicles, average number of stops, and average stop
+time. To test the effectiveness of the algorithm, the signal cycle is
+preset to be 90 s, with a green ratio of 50\% (i.e. each direction has a
+green time for 45 s), and the traffic volume from each direction is
+preset to be the same, which ranges from 300 to 2700 veh/h (for 300
+veh/h intervals) so that the traffic saturation states of low, medium
+and high can all be covered.
+
+According to the data we measured at an intersection, when the light
+turns to green, the queue clearance speed is about 2.5 s/veh (i.e. 0.4
+veh/s). According to this, the saturation traffic volume of three lanes
+is calculated as: 3600 s/h ÷ 2 ÷ 2.5 s/veh × 3 = 2160 veh/h.
+
+It should be noted that when the traffic volume is higher than the
+saturation volume, vehicles would gradually accumulate in line. As a
+results, the collapse of the system will be inevitable. The run time of
+the simulation experiment is set to be 3600 s. The aim is to ensure
+enough time for the system to operate stably and to avoid the collapse
+of the system. Therefore, in the following experiment results, when the
+traffic flow is lower than 2160 veh/h, the test results will converge to
+a corresponding numerical test result, whereas when the traffic flow is
+higher than 2160 veh/h, the test results will be divergent. We only
+recorded the run results within 3600 s.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  Analysis of average delay
+\end{enumerate}
+
+As stated above, the purpose of speed guidance is to reduce the time to
+pass the stop-line. Therefore, the average delay of vehicles is chosen
+as the main index to measure the effectiveness of the algorithms. The
+delay of a vehicle is defined as the actual time it used to pass the
+stop-line minus the virtual time it needs, which is calculated as the
+distance divided by the initial velocity.
+
+As shown in Table 2, in the case of no speed guidance, the average delay
+increases slowly with the increase in traffic volume when unsaturated;
+however, when over saturated (e.g. traffic volume is 2400 veh/h), the
+average delay increases sharply as most vehicles have to wait for at
+least one signal cycle before they can pass the stop-line (refer to
+Figure 4). In the case of single-vehicle speed guidance, when the
+traffic volume is lower than 2100 veh/h, the average delay is about 80\%
+of that without speed guidance; when the traffic volume is larger than
+2400 veh/h, the average delay is about 60\% or even lower of that
+without speed guidance; when the traffic volume reaches 2700 veh/h, most
+vehicles also have to wait for at least one signal cycle. In the case of
+multi-vehicle cooperative speed guidance, the average delay increases
+steadily, with no oversaturation. When the traffic volume is lower than
+2100 veh/h, the average delay is about 70\% of that without speed
+guidance; when the traffic volume is large than 2400 veh/h, the average
+delay is only about 20\% or even lower of that without speed guidance.
+Therefore, it can be concluded that speed guidance in the
+connected-vehicle environment can significantly reduce the average delay
+of vehicles. Besides, compared with the strategy of single-vehicle speed
+guidance, multi-vehicle cooperative speed guidance is more effective.
+
+Table 2 The average delay of three speed guidance strategies under
+different traffic volumes
+
+\begin{longtable}[c]{@{}llllllllll@{}}
+\toprule
+Traffic volume (veh/h) & 300 & 600 & 900 & 1200 & 1500 & 1800 & 2100 &
+2400 & 2700\tabularnewline
+\midrule
+\endhead
+Average delay of vehicles (s) & Without speed guidance & 18.13 & 20.08 &
+21.73 & 24.12 & 25.81 & 28.56 & 34.36 & 106.01\tabularnewline
+& single-vehicle speed guidance & 14.56 & 16.39 & 18.07 & 19.85 & 21.21
+& 23.60 & 28.13 & 40.17\tabularnewline
+& multi-vehicle cooperative speed guidance & 12.60 & 14.55 & 16.05 &
+17.38 & 18.78 & 20.23 & 21.87 & 23.48\tabularnewline
+\bottomrule
+\end{longtable}
+
+Figure 4 Comparison of the average delay of three speed guidance
+strategies\\
+under different traffic volumes
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  Analysis of average number of stops
+\end{enumerate}
+
+The number of stops can directly affect the average delay of vehicles.
+It can also reflect the traffic efficiency. Basing on the analysis
+results, we found that the variation pattern of average number of stops
+under different traffic volumes (as shown in Table 3 and Figure 5) is
+similar to the variation pattern of average delay. In the case of no
+speed guidance, the average number of stops rises with the increase in
+traffic volume, and remains smaller than 1 when the traffic volume is
+unsaturated; however, when traffic volume reaches 2400 veh/h, the
+average number of stops rises sharply and becomes larger than 1,
+therefore, there is saturation. In the case of single-vehicle speed
+guidance, when the traffic volume is lower than 2100 veh/h, the average
+number of stops is about 70\% of that without speed guidance; when the
+traffic volume is larger than 2400 veh/h, the average number of stops is
+only about 40\% or even lower of that without speed guidance. In the
+case of multi-vehicle cooperative speed guidance, the average number of
+stops is always around 0.2, and it is only about 30\% or even lower of
+that without speed guidance.
+
+Table 3 The average number of stops of three speed guidance strategies\\
+under different traffic volumes
+
+\begin{longtable}[c]{@{}llllllllll@{}}
+\toprule
+Traffic volume (veh/h) & 300 & 600 & 900 & 1200 & 1500 & 1800 & 2100 &
+2400 & 2700\tabularnewline
+\midrule
+\endhead
+Average number of stops & Without speed guidance & 0.54 & 0.55 & 0.56 &
+0.58 & 0.57 & 0.58 & 0.63 & 1.49\tabularnewline
+& single-vehicle speed guidance & 0.35 & 0.36 & 0.37 & 0.38 & 0.39 &
+0.39 & 0.44 & 0.55\tabularnewline
+& multi-vehicle cooperative speed guidance & 0.18 & 0.19 & 0.21 & 0.21 &
+0.19 & 0.19 & 0.19 & 0.20\tabularnewline
+\bottomrule
+\end{longtable}
+
+Figure 5 Comparison of the average number of delays of three speed
+guidance strategies\\
+under different traffic volumes
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  Analysis of average stop time
+\end{enumerate}
+
+The average stop time of vehicles is also a common measure of traffic
+efficiency at intersections. As shown in Table 4 and Figure 6, through
+speed guidance, the average stop time of vehicles decreases. When the
+traffic volume is lower than the saturation volume, the optimization
+effects of single-vehicle speed guidance and multi-vehicle cooperative
+speed guidance are about 20\% and 50\% respectively. When the traffic
+volume is higher than the saturation volume (e.g. 2400 veh/h), the
+optimization effects of single-vehicle speed guidance and multi-vehicle
+cooperative speed guidance are about 50\% and 90\% respectively.
+
+Table 4 The average stop time of three speed guidance strategies\\
+under different traffic volumes
+
+\begin{longtable}[c]{@{}llllllllll@{}}
+\toprule
+Traffic volume (veh/h) & 300 & 600 & 900 & 1200 & 1500 & 1800 & 2100 &
+2400 & 2700\tabularnewline
+\midrule
+\endhead
+Average stop time (s) & Without speed guidance & 10.45 & 11.17 & 11.69 &
+12.09 & 12.35 & 13.10 & 15.66 & 54.61\tabularnewline
+& single-vehicle speed guidance & 8.21 & 8.63 & 9.12 & 9.75 & 10.17 &
+11.02 & 13.14 & 20.49\tabularnewline
+& multi-vehicle cooperative speed guidance & 5.80 & 5.88 & 5.99 & 6.07 &
+6.05 & 6.07 & 6.20 & 6.74\tabularnewline
+\bottomrule
+\end{longtable}
+
+Figure 6 Comparison of the average stop time of three speed guidance
+strategies\\
+under different traffic volumes
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{The Effect of Penetration Rate on Traffic Efficiency under
+  Different Traffic Volumes}
+\end{enumerate}
+
+To understand the value of using information from connected vehicles,
+simulation tests were conducted by varying the assumed penetration rate
+between 0\% and 100\% with 10\% intervals. For these tests, the signal
+cycle was set to 90 seconds, with a green ratio of 50\%, and the traffic
+volume from each direction being 2160 veh/h. Simulation tests were run
+to check the average delay of the two speed guidance strategies under
+different penetration rates, with the results shown in Table 5.
+
+The average delay of vehicles resulting from different penetration rates
+are shown in Figure 7. For both the single-vehicle speed guidance and
+the multi-vehicle cooperative speed guidance algorithms, as the
+penetration rate increases, the average delay of vehicles significantly
+decreases. However, the marginal benefit obtained from more vehicles
+using this technology becomes relatively small after a penetration rate
+of 40\% (for both speed guidance strategies). This implies that when the
+technology is in the early stage of development (i.e., when the
+penetration rate is low), even a few more equipped vehicles can have a
+significant effect on reducing the delays of all the vehicles at an
+intersection. At these low penetration rates, the information obtained
+from each vehicle is very valuable. However, at high penetration rates,
+the additional information becomes less and less valuable. Guler,
+Menendez and Meier \textsuperscript{{[}21{]}} found similar effects of
+penetration rate.
+
+Table 5 The average delay of two speed guidance strategies under
+different penetration rates
+
+\begin{longtable}[c]{@{}llllllllllll@{}}
+\toprule
+Penetration rate & 0\% & 10\% & 20\% & 30\% & 40\% & 50\% & 60\% & 70\%
+& 80\% & 90\% & 100\%\tabularnewline
+\midrule
+\endhead
+Average delay of vehicles (s) & single-vehicle speed guidance & 42.50 &
+39.87 & 36.01 & 34.69 & 32.16 & 31.46 & 31.31 & 31.32 & 30.28 &
+29.69\tabularnewline
+& multi-vehicle cooperative speed guidance & 42.64 & 39.83 & 34.94 &
+31.40 & 26.39 & 25.87 & 24.72 & 24.39 & 23.83 & 23.08\tabularnewline
+\bottomrule
+\end{longtable}
+
+Figure 7 The effect of penetration rates on average delay (a volume of
+1080 veh/h per direction)
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Comparison of Two Speed Guidance Strategies}
+\end{enumerate}
+
+Through the above comparison, we can conclude that speed guidance under
+the connected-vehicle environment can significantly improve the
+intersection efficiency, and that compared with single-vehicle speed
+guidance, multi-vehicle cooperative speed guidance is more effective.
+
+Further analysis implies that the two speed guidance strategies both
+reduce the average delay of most vehicles, as Figure 8 shows. As the
+traffic volume grows, the multi-vehicle cooperative speed guidance can
+significantly move the overall distribution of vehicle delay to the left
+(i.e. significantly reduce the delay of most vehicles), thus
+significantly lowering the average delay of vehicles at the
+intersection.
+
+\includegraphics[width=3.71181in,height=3.10347in]{media/image58.png}
+
+Figure 8 The boxplot of the average delay of three speed guidance
+strategies
+
+The reason behind such difference mainly lies in that when
+single-vehicle speed guidance is applied, the states of other vehicles
+around are unknown, therefore the objective of speed guidance might not
+be realized. For example, if the single-vehicle speed guidance algorithm
+guides a certain vehicle to run at the speed of 60 km/h in order to
+arrive at the intersection before the green light turns to red. However,
+the car before it runs at a speed lower than 60 km/h, thus the
+speed-guided vehicle has to lower down in order to avoid collision. This
+might result in the speed-guided vehicle failing to arrive at the
+intersection before the green light turns to red, and having to stop and
+wait. As for the multi-vehicle cooperative speed guidance algorithm, it
+optimizes all vehicles' time to pass the stop-line, thereby calculating
+each vehicle's guided speed, improving both the green time efficiency
+and the traffic efficiency.
+
+CONCLUSION
+
+In this study, we have built an intersection traffic-control simulation
+platform in the connected vehicle environment, and proposed two speed
+guidance algorithms by optimizing the travel time of individual vehicle
+and multi vehicles respectively. The goal of optimization is to minimize
+the travel time, and common indicators such as average delay of
+vehicles, average number of stops, and average stop time are chosen as
+indexes of traffic efficiency in simulation experiments.
+
+The simulation results show that compared with the case of no speed
+guidance, when the traffic flow is unsaturated (lower than 2160 veh/h),
+the single-vehicle speed guidance algorithm can decrease the average
+delay by 20\%, the number of stops by 30\%, and the average stop time by
+20\%; whereas the multi-vehicle speed guidance algorithm can decrease
+the average delay by 30\%, the number of stops by 70\%, and the average
+stop time by 50\%. When the traffic flow is saturated (higher than 2160
+veh/h), the speed guidance algorithms perform much more outstandingly.
+Compared with the case of no speed guidance, the single-vehicle speed
+guidance algorithm can decrease the average delay by 40\%, the number of
+stops by 60\%, and the average stop time by 50\%; whereas the
+multi-vehicle speed guidance algorithm can decrease the average delay by
+80\%, the number of stops by 70\%, and the average stop time by 90\%.
+With the increase of penetration rate, the effect of speed guidance
+gradually enhances, with the most obvious gains obtained when the
+penetration rate increases from 10\% to 40\%. However, when the
+penetration rate is higher than 60\%, further increase in the
+penetration rate has little benefits on the effect of speed guidance
+algorithms.
+
+The experimental results indicate that speed guidance in the connected
+vehicle environment can significantly improve the traffic efficiency of
+intersections, and compared with the single-vehicle speed guidance
+strategy, the multi-vehicle speed guidance strategy is more effective.
+
+In the future, we will introduce vehicle-to-vehicle communication into
+the simulation system, and realize cooperative driving. In addition, we
+will optimize the speed guidance algorithms accordingly for a better
+result.
+
+ACKNOWLEDGEMENT
+
+This work was supported in part by the National Natural Science
+Foundation of China under Grant 61673233 and 71671100.
+
+REFERENCES
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  L. Li and F.Y. Wang, Cooperative Driving at Blind Crossings using
+  Intervehicle Communication, IEEE Transaction on Vehicular Technology,
+  Vol. 55, No.6, November 2006.
+\item
+  L. Li and D.Y. Yao, A Survey of Traffic Control With Vehicular
+  Communications, IEEE Transaction on Intelligent Transportation
+  Systems, Vol. 15, No.1, November 2014.
+\item
+  U.S. Department of Transportation.
+  https://www.its.dot.gov/cv\_basics/index.htm.
+\item
+  N. Mohammad and P. Hossein. The effect of VII market penetration on
+  safety and efficiency of transportation networks. Proceedings of
+  International Conference on Communications Workshops. Dresden: IEEE,
+  2009.
+\item
+  J. Yao, H.Y. Fan, Y. Han, L. Cui. Adaptive Control at Intersection in
+  Urban Area Based on Probe Data. Journal of University of Shanghai for
+  Science and Technology, 2014, 36(3): 239-244.
+\item
+  A. H. Booz. Vehicle infrastructure integration (VII) proof-of-concept
+  (POC) test---an overview. 2008 ITS VA Annual Conference. Charlottes
+  Ville, 2008.
+\item
+  M. Nekoui. Development of a VII-enabled prototype intersection
+  collision warning system. International Journal of Internet Protocol
+  Technology, 2009(4):173-181.
+\item
+  K. J. Malakorn and B. B. Park. Assessment of mobility, energy, and
+  environment impacts of intellidrive-based cooperative adaptive cruise
+  control and intelligent traffic signal control. Proceedings of the
+  2010 IEEE International Symposium on Sustainable Systems and
+  Technology, Hilton crystal city: IEEE Xplore, 2010(1):1-6.
+\item
+  G. Abu-Lebdeh. Exploring the potential benefits of
+  intellidrive-enabled dynamic speed control in signalized networks. TRB
+  2010 Annual Meeting CD-ROM.
+\item
+  Y. Yang, S. Chen and J. Sun. Modeling and evaluation of speed guidance
+  strategy in VII system. 3th International IEEE Annual Conference on
+  Intelligent Transportation Systems, Portugal: IEEE Xplore,
+  2010:1045-1050.
+\item
+  S. Chen, J. Sun and J. Yao. Development and simulation application of
+  a dynamic speed dynamic signal strategy for arterial traffic
+  management. 4th International IEEE Annual Conference on Intelligent
+  Transportation Systems, Washington, D. C., IEEE Xplore,
+  2011:1349-1354.
+\item
+  Q. He. Robust-intelligent traffic signal control within a
+  vehicle-to-infrastructure and vehicle-to-vehicle communication
+  environment. Tucson: The University of Arizona, 2010.
+\item
+  J. Lee and B. Park. Development and evaluation of a cooperative
+  vehicle intersection control algorithm under the connected vehicles
+  environment, IEEE Transactions on Intelligent Transportation Systems,
+  13(1): 8190, 2012.
+\item
+  R.T. Jackline and A.M. Andreas. Automated and Cooperative Vehicle
+  Merging at Highway On-Ramps, IEEE Transactions on Intelligent
+  Transportation Systems, 2016.
+\item
+  J.G. Taylor. Hierarchy-of-Models Approach for Aggregation-Force
+  Attrition. Proceedings of the Winter Simulation Conference, 2000:
+  924-929.
+\item
+  X. Chen and D. Yao. An empirically comparative analysis of 802.11 n
+  and 802.11 p performances in CVIS, ITS Telecommunications (ITST), 2012
+  12th International Conference on. IEEE, 2012: 848-851.
+\item
+  X. Chen, H. Li, C. Yang, et al. An Empirical Analysis of V2I
+  Communication in Vehicular Ad-Hoc Network Based on IEEE 802.11n, 19th
+  ITS World Congress. 2012.
+\item
+  X. Chen, D. Yao, Y. Zhang, et al. Design and Implementation of
+  Cooperative Vehicle and Infrastructure System Based on IEEE 802.11n.
+  Transportation Research Record: Journal of the Transportation Research
+  Board, 2011, 2243(1): 158-166.
+\item
+  W. Leutzbach and R.Wiedemann. Development and applications of traffic
+  simulation models at the Karlsruhe Institut für Verkehrswesen. Traffic
+  engineering and control, vol. 27, no. 5, pp. 270-278, 1986.
+\item
+  Regulation on the Implementation of the Road Traffic Safety Law of the
+  People's Republic of China. 2004.
+\item
+  S. I. Guler, M. Menendez and L. Meier. Using connected vehicle
+  technology to improve the efficiency of intersections. Transportation
+  Research Part C: Emerging Technologies, 2014, 46: 121-131.
+\end{enumerate}
