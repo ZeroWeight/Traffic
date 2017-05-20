@@ -262,45 +262,51 @@ $$S_n(t)=\alpha v_{n-1}(t)+S_{safe}$$
 
 \subsection{单车车路协同模型}
 \label{section:st1}
-Applied some changes on the car-following strategy, we designed a cooperative speed guidance model which only takes the influence of the traffic light into consideration.
-\subsubsection{Modification about the car-following method}
-Firstly, when the distance to the front vehicle from the vehicle which we are concerned about is less than $S_{control}$, the car-following model in chosen. In addition to the basic car-following method, it is changed to the following form when $\Delta x_{n,n-1}(t)\le S_{exp}$ 
+
+通过对跟驰模型进行一定改进，我们设计了只考虑车辆和信号灯之间互动的单车车路协同模型。在这个模型中，我们考虑了交通信号对车辆的影响
+
+\subsubsection{对跟驰模型的修改}
+首先，当车辆和前车的距离小于控制距离$S_{control}$时，我们仍然选择跟驰模型。作为对现有生理-心理跟驰模型的修改，我们设计了如下表述形式来作为自主驾驶车辆的策略控制函数
+
+当$\Delta x_{n,n-1}(t)\le S_{exp}$成立时， 
 $$a_n(t+\Delta_t)=-sgn(\Delta v_{n,n-1}(t))\frac{[\Delta v_{n,n-1}(t)]^2}{2[\Delta x_{n,n-1}(t)-S_{exp}]}+a_{n-1}(t)$$
-which means, if the speed of the following vehicle is lower, the strategy will suggest that this vehicle should accelerate.
+这表明，当后车速度低于前车速度时，控制策略会引导后车加速跟上前车的运动。
 
-With this minor modification, some experimental researches show that the changed car-following method works well and can keep a stable distance between the vehicles.
+应用了这个小改动之后，我们通过一些实验研究得到修改过的跟驰模型工作良好并且能保持前后车辆之间的合理车距。
 
-As the fig.\ref{carf} shows, the vehicle following takes the modified car-following method and the front vehicle decelerate with a large random noise. From the figure it can be found that the distance between these two vehicles will be stable near $S_{exp}$, no matter what initial situation is chosen.
+如图\ref{carf}所示，跟随的后车采用了经过修改的跟驰模型，而前车采取了一个急剧并且随机性很大的刹车，从图中我们可以看到两个车辆之间的间距最后会稳定在$S_{exp}$，并且基本不受到初始状态的影响。从另外的一些实验结果也可以看出随着前车的加速，后车也会加速并稳定在几乎同样的跟随距离中。
+
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{NearlyGoDie_2.pdf}
 \caption{The position of the vehicles and the distance between them}
 \label{carf}
 \end{figure}
-\subsubsection{The cooperative vehicle strategies}
+
+\subsubsection{车路协同驾驶策略}
 \label{section:tgs}
-Besides the chaning on car-following method, the free-driving model is also replaced by the following cooperative vehicle strategy. 
 
-First of all, we define two parameters, the maximum time cost $T_{max}$ is defined as the time cost if the vehicle firstly decelerates at the acceleration of $-a_{max}$ and maintain a uniform linear motion at the speed of $v_{min}$ until it reaches the intersection. Also, the minimum time cost $T_{min}$ is defined as the time cost if the vehicle firstly accelerates at the acceleration of $a_{max}$ and maintain a uniform linear motion at the speed of $v_{max}$ until it reaches the intersection. It is obvious that the actual time cost of a vehicle is less than $T_{max}$ and greater than $T_{min}$, and both the $T_{max}$ and the $T_{min}$ depengs only on the initial speed $v_{init}$ of the vehicle starting from the start line.
+除了对车辆的跟驰策略进行了修改，我们也将车辆的自由驾驶模型修正为车路协同的驾驶策略。
 
-Then, the strategy determines the earliest green time $T_G$ in the interval $(T_{min},T_{max}]$ with the accuracy in second. If there is no green time during this interval, a free-driving strategy is applied to the vehicle.
+为方便后文叙述，我们先定义两个时间参数，最大时间花费$T_{max}$被定义为车辆按照可行的最大加速度$a_{max}$进行减速到最低限速$v_{min}$之后保持匀速直线运动到路口的时间，而最小时间花费$T_{min}$被定义为车辆以最大加速度$a_{max}$进行加速到最高限速$v_{max}$后进行匀速直线运动直到路口所花费的时间。显然，车辆在路中的实际运行时间在$T_{min}$和$T_{max}$之间，并且这两个时间参数之和车辆进入控制路段的初始速度和初始加速度有关。
 
-If a proper $T_G$ could be set, an acceleration or a deceleration may be applied to the vehicle to adjust its motion at the aim of reaching the stopping line at the time of $T_G$. During this period, if the vehicle is affected by the preceding vehicle, the car-following model may be applied to the vehicle again.
+之后，策略将为车辆在$(T_{min},T_{max}]$区间内为车辆计算定出一个最早的绿灯时间$T_G$。如果上述区间内没有合理的$T_G$绿灯时间，车辆将采取自由驾驶策略。
 
-Meanwhile, the behavior the vehicle takes is similar to the one in the manual driving method.
+如果在上述过程中可以定出一个合理的$T_G$，策略将指导车辆按照这个到达时间为目标调整自己的加速度，在这段时间中，如果车辆被前车影响，车辆可能需要重新进入跟驰模型
 
-Generally speaking, this strategy is the optimize version of the car-following model with the consideration of the influence of the traffic light.
-\subsection{The multi-vehicle cooperative speed guidance model}
+同时，车辆在交通路口前的表象和之前提到的人工驾驶模型等相同。
+
+总的来说，这个策略是车辆跟驰模型版本的优化版，同时考虑了信号灯相位对于整个路段车辆的影响。
+
+\subsection{多车车路协同模型}
 \label{section:st2}
-This is a simple connect-vehicle strategy with the communication between the vehicles.
+这是一个简单的有车间通信的车路协同主动控制策略。整个策略中队列$Q_{in}$的第一辆车进行处理直到队列的$Q_{in}$的最后一辆车。
 
-The strategy is operated from the first vehicle in $Q_{in}$ to the last vehicle in $Q_{in}$
+首先，对于队列中的$Q_{in}$中的第一辆车，策略使用\ref{section:tgs}中的方法确定一个合适的到达时间$T_G$，为了方便后文表述，我们设定队列$Q_{in}$中的第$n$辆车辆的合理到达时间$T_G$是$T_G^{[n]}$，例如，第一辆车的到达时间就是$T_G^{[1]}$。
 
-First of all, the first vehicle in $Q_{in}$ determine its arrival time $T_G$ according to the method mentioned in section \ref{section:tgs}, and we set the $T_G$ determined by the n-th vehicle in $Q_{in}$ is $T_G^{[n]}$, e.g. the first vehicle determines $T_G^{[1]}$
+在上面确定了$T_G^{[1]}$之后，第一辆车辆将按照设定的合理到达时间$T_G^{[1]}$进行加速或者减速。如果$T_G^{[1]}$不存在，车辆将首先加速到期望速度$v_{exp}$，之后减速到停车线刹车。
 
-After chosing the $T_G^{[1]}$, an acceleration or a deceleration may be applied to the vehicle to adjust its motion at the aim of reaching the stopping line at the time of $T_G^{[1]}$, if the $T_G{^[1]}$ does not exist, the vehicle takes an acceleration and then stops at the stopping line.
-
-Then, it is assumed that the [n+1]-th vehicle in $Q_{in}$ can acquire the $T_G^{[n]}$ of the n-th vehicle in $Q_{in}$, including whether it exists.
+之后，我们假定队列$Q_{in}$中的第$n+1$辆车辆能够获得队列$Q_{in}$中的第$n$辆车的合理到达时间$T_G^{[n]}$，包括其是否存在。
 
 The [n+1]-th vehicle determins its $T_G^{[n+1]}$according to its $T_{min}$ and $T_{max}$ and make sure that the $T_G^{[n+1]}-T_G^{[n]} \ge 1 \mathrm{second}$, owing to the fact that the following vehicle is supposed to arrive later than the preceding vehicle.
 
@@ -309,6 +315,7 @@ If the $T_G^{[n]}$ does not exist, $T_G^{[n]+1}$ should be set freely, only depe
 Then the acceleration of the [n+1]-th vehicle is set according to the expected time of arrival. The strategy then goes for the following vehicles.
 
 Since the expected time of arrival is carefully designed to make sure that the following vehicle always arrives the stopping line later than the preceding vehicle, even the vehicles which do not have an expected arrival time will take an acceleration, the probability of the rear-ending is minor, a rear-ending will be solve by some simple emergency settings. 
+
 \subsection{The processing of the strategies and the combination of the strategies}
 \subsubsection{Single strategy simulation}
 The plantform treats the strategies as an iteration from the last vehicle in the $Q_{in}$ to the first one in that, for the reason that the following vehicles may acquire the acceleration of the preceding car which should be fixed until the acceleration is set according to the strategy chosen by user. 
@@ -322,6 +329,4 @@ During the vehicle generating step, the control strategy of the vehicle is set b
 
 After generate the type of the control strategy, the user-strategy step of the simulation set the acceleration of the vehicle using the strategy it has. It is assmued that if a vehicle using multi-vehicle cooperative speed guidence model is following a manual driving vehicle, the expected arrival time of the manual driving vehicle $T_G$ does not exist, therefore, the speed guidence model could set its expected arrival time $T_G$ freely.
 
-\subsection{Add on algorithms}
-Besides this, some add on algorithm is added to treat some accidents may happen accidentally. And the implementations of these specific algorithms may be found in the code of the plantform.
 \end{document}
