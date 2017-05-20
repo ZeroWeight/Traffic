@@ -188,8 +188,8 @@ trajectory to optimize objectives of traffic efficiency, e.g. average
 delay and average stop time. In 2006, Li et al. proposed the concept of
 ``safety driving patterns'' to obtain the allowable movement schedules
 of all vehicles which entered the intersection via traffic lights and
-Vehicle-to-Infrastructure (V2I) communication \upcite{1}
-\upcite{2}. The connected vehicle technology has become one of the
+Vehicle-to-Infrastructure (V2I) communication \upcite{1,2}. 
+The connected vehicle technology has become one of the
 cutting-edge technologies in the field of intelligent transportation
 today. It is an effective way to improve traffic efficiency, increase
 road safety, and reduce traffic pollution \upcite{3}. The
@@ -323,28 +323,35 @@ $g(\cdot)$&\tabincell{c}{One-step cost function}\tabularnewline
 For the convenience of expression, the main variables to be used are
 defined in Table \ref{Table 1}.
 
-From the above definition, the system state can be expressed as $\mathbf{i\{q,s\}}$ , with
-and defined as:
+From the above definition, the system state can be expressed as $i\{q,s\}$ , with $q$
+and  $s$ defined as:
+$$q=\begin{bmatrix} z(1) \\ \vdots \\ z(N)\end{bmatrix},s=\begin{bmatrix} s(1) \\ \vdots \\ s(N) \end{bmatrix} $$
 
 In the above equations, $N$ is the current total number of vehicles
 in the system.
 
-The vehicle state (vector) can be expressed as:
+The vehicle state (vector) $z$ can be expressed as:
+$$ z(n)=\begin{bmatrix} v_0 \\ l \\ w \end{bmatrix} , n=1, 2, \hdots, N$$
 
-Whereas the controlled variable can be denoted as:
+Whereas the controlled variable $s$ can be denoted as:
+$$s(n)=\begin{bmatrix} r(n) & v(n)\end{bmatrix} n = 1, 2, \hdots, N$$ 
 
-with
+with $r(n)=\begin{cases} 1 \ \ \ \ \text{the signal for vehicle $n$ is green} \\ 
+0\ \ \ \  \text{the signal for vehicle $n$ is red}\end{cases}$
 
 The simple dynamic equation of a vehicle passing the stop-line can be
 expressed as:
+$$l=\int_0^x(v_0+at)\mathrm{d}t$$
 
-For a constant acceleration , the above equation can be written as:
+For a constant acceleration $a=\mathrm{const.}$ , the above equation can be written as:
+$$l=\frac{1}{2}ax^2+v_0x$$
 
 Thus, we obtain
+$$x=\frac{-v_0+\sqrt{v_0+2al}}{a}$$
 
-For a vehicle which is in the stop state, the travel time can be
+For a vehicle which is in the stop state, the travel time $x$ can be
 calculated through the following equation:
-
+$$x=\frac{-v_0+\sqrt{v_0+2al}}{a}+w$$
 with $v_0=0$.
 
 \subsubsection{Basic assumptions}
@@ -393,18 +400,19 @@ follows:
   driver chooses the car following strategy. The commonly used driving
   psycho-physical model---Wiedemann model \upcite{19} is
   adopted in this study.
+$$ a_n(t+T)=\frac{[\Delta v_{n,n-1}(t)]^2}{2[\Delta x_{n,n-1}(t)-S]}+a_{n-1}(T)$$
 \end{enumerate}
 
 
-In the above equation, represents the expected minimum safe-following
+In the above equation, $S$ represents the expected minimum safe-following
 distance. According to the regulations on safe distance in
 \emph{Regulation on the Implementation of the Road Traffic Safety Law of
 the People's Republic of China} \upcite{20}, the linear
 correlation model of the minimum safe following distance and the speed
 of the front vehicle is used:
+$$S_n(t)=\lambda v_{n-1}(t)+\beta$$
 
-In the above equation, is a linear coefficient, is the minimum headway
-when stopped. For instance, when the speed of the front vehicle is 50
+In the above equation, $\lambda = 0.7 \mathrm{m\cdot h/km}$ is a linear coefficient, $\beta = 5\mathrm{m}$ is the minimum headway when stopped. For instance, when the speed of the front vehicle is 50
 km/h, the minimum safe-following distance of the vehicle behind is 40 m.
 
 \subsection{Speed-guidance algorithms}
@@ -432,28 +440,26 @@ described as:
 
 At this time, our goal is to make the vehicle pass the stop-line as soon
 as possible before the green light ends. Thus, the optimize function is:
+$$f=\min(x-T_g-t_g) \ \ \ \ \text{and}\ \ \ \ f \le 0$$
 
-and
-
-is the moment that the green light was turned on, and is the duration of
+$T_g$ is the moment that the green light was turned on, and $t_g$ is the duration of
 the green light.
 
-If there is no feasible solution (i.e.), it means that this vehicle
+If there is no feasible solution (i.e. $f \ge 0$), it means that this vehicle
 cannot pass the stop-line through speed guidance and have to enter the
 queue, which can be classified into the next situation.
 \item
   When the vehicle enters the guided region, the signal is red; or the
   signal is green, but the queue has not dissipated.
-\end{enumerate}
+
 
 At this time, our goal is to make the vehicle arrive at the intersection
 when the queue has just dissipated. Thus, the optimize function is:
+$$f'=\min(x-T_g-e-\frac{d}{s}) \ \ \ \ \text{and}\ \ \ \ f' \ge 0$$
 
-and
-
-$e$ is the loss of the first vehicle's boot time, is the current number of
-vehicles in the queue, and is the saturation flow rate of this lane.
-
+$e$ is the loss of the first vehicle's boot time, $d$ is the current number of
+vehicles in the queue, and $s$ is the saturation flow rate of this lane.
+\end{enumerate}
 By solving the above objective function, we can obtain the speed control
 strategy to be taken right now, that is, the acceleration that should be
 accepted by the current vehicle.
@@ -467,17 +473,18 @@ this, we can build the optimization function with the objective of
 minimizing the total time needed by all vehicles to pass the stop-line.
 
 First of all, the one-step cost function is defined as follows:
+$$g(i_t)=\sum_{n=1}^Nx_n(t)$$
 
 Its physical meaning is the difference of total time that all vehicles
 needed to pass the stop-line between the two calculation moments.
 
-Thereby, we can define the cost function as:
-
+Thereby, we can define the cost function $J(\cdot)$ as:
+$$J(i_t)=\min[g(i_t)+\alpha J(i_{t+1})], i \in I$$
 In the above equation, is the discount factor, which can help to obtain
 the best effect as much as possible at the first step of optimization.
 
 The optimization function of this optimization problem is:
-
+$$\min\limits_{u_t\in U_t}\sum_{t=0}^\infty \alpha^tg(i_t)$$
 Similarly, we can obtain the control strategy to be taken right now,
 that is, the acceleration to be accepted by the current guided vehicle.
 
@@ -494,29 +501,35 @@ The constraints of the system are listed as follows:
   time of the first vehicle behind the stop-line to pass the stop-line
   should be equal to or larger than the time that the green signal
   lights up:
+$$x_1 \ge T_g$$
 \item
   The time constraint between the stop state and the booting process.
   After the green signal lights up, if the first vehicle behind the
   stop-line is in the stop state, the time it passes the stop-line
   should be equal to or larger than the sum of the time that the green
-  light is turned on () and the loss of the first car's boot time ():
+  light is turned on $(T_g)$ and the loss of the first car's boot time $(e)$:
+$$x_1 \ge T_g +e$$
+
 \item
   The time constraint for two consecutive vehicles to pass the
   stop-line. The time for the latter vehicle to pass the stop-line
   should be equal to or larger than the sum of the time that the vehicle
-  before it passes the stop-line and the minimum headway ():
+  before it passes the stop-line and the minimum headway $(t_s)$:
+$$x_i \ge x_{i-1} + t_s$$
 \item
   The constraint of optimized speed. The optimized speed calculated by
   the model should lie between the low and high thresholds of speed. If
   the optimized speed is not in this range, it means the vehicle has to
   stop and wait:
+$$ v_{\min} \le v \ge v_{\max}$$
 \item
   The constraint of the number of vehicles passing the stop-line. The
   number of vehicles passing the stop-line in one signal cycle should be
   smaller than or equal to the volume under saturated state:
+$$ \frac{s\cdot n_l \cdot g_e}{3600} \ge N$$
 \end{enumerate}
 
-In the above equation, is the number of lanes in the studied direction,
+In the above equation, $n_l$ is the number of lanes in the studied direction,
 and is the effective green time.
 
 \section{SIMULATION SYSTEM DESIGN}
@@ -547,6 +560,25 @@ as the control strategy of vehicle acceleration is transmitted to the
 simulation system, the control of vehicles in the simulation system can
 be realized.
 
+\begin{strip}
+\centering
+\begin{figurehere}
+\centering
+\includegraphics[width=\textwidth]{Figure/2.png}
+\caption{The signal preset interface of the intersection traffic control
+simulation system in the connected-vehicle environment}
+\label{Figure 2}
+\end{figurehere}
+\vspace{2em}
+\begin{figurehere}
+\centering
+\includegraphics[width=\textwidth]{Figure/3.png}
+\caption{The operation interface of the intersection traffic control
+simulation system in the connected-vehicle environment}
+\label{Figure 3}
+\end{figurehere}
+\end{strip}
+\noindent
 In the simulation module, a graphical interface of the operation program
 (as shown in Figure \ref{Figure 3}) is provided. The current phase of each signal at
 the intersection, and both the number and real-time position of each
@@ -582,26 +614,6 @@ interchanged freely in continuous operation, which is very convenient.
 
 The simulation system has good expandability. It can increase modules by
 compile instructions, and provide batch compiles.
-\begin{strip}
-\centering
-\begin{figurehere}
-\centering
-\includegraphics[width=\textwidth]{Figure/2.png}
-\caption{The signal preset interface of the intersection traffic control
-simulation system in the connected-vehicle environment}
-\label{Figure 2 }
-\end{figurehere}
-\end{strip}
-\begin{strip}
-\begin{figurehere}
-\centering
-\includegraphics[width=\textwidth]{Figure/3.png}
-\caption{The operation interface of the intersection traffic control
-simulation system in the connected-vehicle environment}
-\label{Figure 3 }
-\end{figurehere}
-\end{strip}
-\vspace{-2em}
 \subsection{Software Interfaces and Operation Examples}
 \noindent
 A two-way six-lane intersection is built in this research, whose signal
@@ -645,7 +657,8 @@ and high can all be covered.
 According to the data we measured at an intersection, when the light
 turns to green, the queue clearance speed is about 2.5 s/veh (i.e. 0.4
 veh/s). According to this, the saturation traffic volume of three lanes
-is calculated as: 3600 s/h ÷ 2 ÷ 2.5 s/veh × 3 = 2160 veh/h.
+is calculated as: 
+$$\frac{3600 \mathrm{s/h}}{2 \cdot 2.5 \mathrm{s/veh}} \cdot 3 = 2160 \mathrm{veh/h}$$.
 
 It should be noted that when the traffic volume is higher than the
 saturation volume, vehicles would gradually accumulate in line. As a
@@ -659,7 +672,7 @@ higher than 2160 veh/h, the test results will be divergent. We only
 recorded the run results within 3600 s.
 
 \subsection{Analysis of average delay}
-
+\noindent
 As stated above, the purpose of speed guidance is to reduce the time to
 pass the stop-line. Therefore, the average delay of vehicles is chosen
 as the main index to measure the effectiveness of the algorithms. The
@@ -687,7 +700,7 @@ Therefore, it can be concluded that speed guidance in the
 connected-vehicle environment can significantly reduce the average delay
 of vehicles. Besides, compared with the strategy of single-vehicle speed
 guidance, multi-vehicle cooperative speed guidance is more effective.
-
+\noindent
 \begin{strip}
 \centering
 \begin{tablehere}
@@ -750,7 +763,9 @@ single-vehicle speed guidance & 8.21 & 8.63 & 9.12 & 9.75 & 10.17 &
 \end{tabular}
 \end{tablehere}
 \end{strip}
+\noindent
 \subsection{Analysis of average number of stops}
+\noindent
 The number of stops can directly affect the average delay of vehicles.
 It can also reflect the traffic efficiency. Basing on the analysis
 results, we found that the variation pattern of average number of stops
@@ -770,6 +785,7 @@ stops is always around 0.2, and it is only about 30\% or even lower of
 that without speed guidance.
 
 \subsection{Analysis of average stop time}
+\noindent
 The average stop time of vehicles is also a common measure of traffic
 efficiency at intersections. As shown in Table \ref{Table 4} and Figure \ref{Figure 6}, through
 speed guidance, the average stop time of vehicles decreases. When the
@@ -785,20 +801,21 @@ cooperative speed guidance are about 50\% and 90\% respectively.
 \caption{Comparison of the average delay of three speed guidance
 strategies under different traffic volumes}
 \label{Figure 4}
-\vspace{2em}
+\end{figure}\begin{figure}\centering
 \includegraphics[width=\columnwidth]{Figure/5.png}
 \caption{Comparison of the average number of delays of three speed
 guidance strategies under different traffic volumes}
 \label{Figure 5}
-\vspace{2em}
+\end{figure}\begin{figure}\centering
 \includegraphics[width=\columnwidth]{Figure/6.png}
 \caption{Comparison of the average stop time of three speed guidance
 strategies under different traffic volumes}
 \label{Figure 6}
 \end{figure} 
-
+\noindent
 \subsection{The Effect of Penetration Rate on Traffic Efficiency under
   Different Traffic Volumes}
+\noindent
 To understand the value of using information from connected vehicles,
 simulation tests were conducted by varying the assumed penetration rate
 between 0\% and 100\% with 10\% intervals. For these tests, the signal
@@ -823,7 +840,7 @@ the additional information becomes less and less valuable. Guler,
 Menendez and Meier \upcite{21} found similar effects of
 penetration rate.
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[width=\columnwidth]{Figure/7.png}
 \caption{The effect of penetration rates on average delay (a volume of
@@ -858,7 +875,7 @@ the connected-vehicle environment can significantly improve the
 intersection efficiency, and that compared with single-vehicle speed
 guidance, multi-vehicle cooperative speed guidance is more effective.
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[width=\columnwidth]{Figure/8.png}
 \caption{The boxplot of the average delay of three speed guidance
