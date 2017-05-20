@@ -308,25 +308,26 @@ $$a_n(t+\Delta_t)=-sgn(\Delta v_{n,n-1}(t))\frac{[\Delta v_{n,n-1}(t)]^2}{2[\Del
 
 之后，我们假定队列$Q_{in}$中的第$n+1$辆车辆能够获得队列$Q_{in}$中的第$n$辆车的合理到达时间$T_G^{[n]}$，包括其是否存在。
 
-The [n+1]-th vehicle determins its $T_G^{[n+1]}$according to its $T_{min}$ and $T_{max}$ and make sure that the $T_G^{[n+1]}-T_G^{[n]} \ge 1 \mathrm{second}$, owing to the fact that the following vehicle is supposed to arrive later than the preceding vehicle.
+之后，队列中第$n+1$个车辆来根据他的最短到达时间$T_{min}$，最长到达时间$T_{max}$来确定一个合理到达时间$T_G^{[n+1]}$，并且确保式子$T_G^{[n+1]}-T_G^{[n]} \ge 1 \mathrm{second}$成立，这是因为后车的到达时间总是晚于前车。
 
-If the $T_G^{[n]}$ does not exist, $T_G^{[n]+1}$ should be set freely, only depends on the $T_{max}$ and the $T_{min}$ of the vehicle.
+如果前车的合理到达时间$T_G^{[n]}$不存在，则当前车辆的到达时间$T_G^{[n]+1}$可以相对自由的设置，只需要考虑最大到达时间$T_{max}$和最小到达时间$T_{min}$的限制即可。
 
-Then the acceleration of the [n+1]-th vehicle is set according to the expected time of arrival. The strategy then goes for the following vehicles.
+之后和前面相同，第$n+1$个车辆根据设定的合理到达时间设置自己的加速度，之后策略开始处理后面的车辆。
 
-Since the expected time of arrival is carefully designed to make sure that the following vehicle always arrives the stopping line later than the preceding vehicle, even the vehicles which do not have an expected arrival time will take an acceleration, the probability of the rear-ending is minor, a rear-ending will be solve by some simple emergency settings. 
+由于车辆的合理到达时间是严格设计过的，保证了前车一定在后车之前到达路口，即使是不存在合理到达时间的车辆也存在一个加速过程，尽可能的拉远与后车之间的距离。因此车辆之间发生车距过近的概率将显著降低，因此相关的避撞策略可以相对的简化，在本策略中，仅采用了比较简单的紧急情况（车辆间距过小的紧急刹车行为）加以处理。
 
-\subsection{The processing of the strategies and the combination of the strategies}
-\subsubsection{Single strategy simulation}
-The plantform treats the strategies as an iteration from the last vehicle in the $Q_{in}$ to the first one in that, for the reason that the following vehicles may acquire the acceleration of the preceding car which should be fixed until the acceleration is set according to the strategy chosen by user. 
+\subsection{策略执行顺序和混合驾驶策略}
+\subsubsection{单控制策略仿真}
 
-Therefore, if only a specific strategy is chosen, the program behaves like a loop from the last to the first of $Q_{in}$.
+平台将策略的执行过程处理为对车辆队列$Q_{in}$的迭代。整个迭代过程从队列$Q_{in}$的最后一辆车开始直到第一辆车，这是因为我们的策略主要以获得前车的速度和加速度为主，这种迭代方式能够更好的处理数据，对于对迭代有要求的多车车路协同策略，将按照策略的迭代方式进行处理
 
-\subsubsection{Combination of the strategies}
-Only the combination of the manual driving vehicle and the speed guidance models are concerned about, therefore, the plantform only include two kinds of combination simulation, which is the combination between the manual driving vehicle(mentioned in \ref{section:man}) and the single-vehicle cooperative speed guidance model (mentioned in \ref{section:st1}); and the combination between the manual driving vehicle and the multi-vehicle cooperative speed guidence model (mentioned in \ref{section:st2})
+因此，如果仅选用了一个策略，程序的处理方式相当于是一个从后向前的对于队列$Q_{in}$的循环过程。
 
-During the vehicle generating step, the control strategy of the vehicle is set by random method according to the type of combination and the ratio set by user.
+\subsubsection{混合驾驶策略的实现}
+我们仅关心人工驾驶策略和自主驾驶——速度引导策略的混合结果，因此，平台提供了两种仿真方式，人工驾驶（在\ref{section:man}中提到）和单车车路协同策略（在\ref{section:st1}中提到）的混合以及人工驾驶策略和多车车路协同策略（在\ref{section:st2}中提到）的混合。
 
-After generate the type of the control strategy, the user-strategy step of the simulation set the acceleration of the vehicle using the strategy it has. It is assmued that if a vehicle using multi-vehicle cooperative speed guidence model is following a manual driving vehicle, the expected arrival time of the manual driving vehicle $T_G$ does not exist, therefore, the speed guidence model could set its expected arrival time $T_G$ freely.
+在车辆的产生过程中，车辆的不同控制策略类型被按照在交互界面上用户设定的比例随机分配到每一个车辆上。
+
+在生成了不同车辆的不同策略类型属性的之后，在策略的执行环节，平台按照车辆所采用的固定策略来处理车辆并设置车辆合理的加速度。我们假设当一个多车车路协同车辆跟随一个单车车路协同或人工驾驶车辆时，前面车辆的合理到达时间$T_G$被设置为不存在。因此，采用多车车路协同策略的车辆可以自由的设定自己的合理到达时间$T_G$。
 
 \end{document}
