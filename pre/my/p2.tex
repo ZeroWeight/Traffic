@@ -164,99 +164,103 @@ $$P((S_n-S_{n-1}\le t) = 1 - e^{-\lambda t}$$
 
 如果队列$Q_{in}$中的第一辆车辆和队列$Q_{block}$中的最后一辆车辆之间的距离小于控制距离$S_{control}$，队列$Q_{in}$中的第一个车辆将刹车并期望停在队列$Q_{block}$最后一辆车的期望距离之后。这个两车之间的期望距离被定义为$S_{stop}$，用来描述在队列$Q_{block}$中的车辆间距。 
 
-If the $Q_{block}$ is empty and the distance between the first vehicle in $Q_{in}$ and the stopping line is less than $S_{control}$, the first vehicle in $Q_{in}$ brake and is expected to stop just on the stopping line$S_{end}$.
+如果$Q_{block}$为空并且$Q_{in}$中的第一辆车辆和停车线之间的距离小于$S_{control}$，$Q_{in}$中的头车以停车线$S_{end}$为目标进行刹车。
 
-If the first vehicle in the $Q_{in}$is too far that neither of the two above are satisfied, the first vehicle in the $Q_{in}$ is supposed to drive freely.
+如果$Q_{in}$中的头车距离路口太远以至于上述两条均不满足，$Q_{in}$中的头车将自由驾驶。
 
-Also, the vehicles in the $Q_{block}$ should stop and wait until the light truns green.
-\item Green Light
-distance between the first vehicle in $Q_{in}$ and the last vehicle in $Q_{block}$ (if it exists) should not be less than $S_{safe}$. And a braking is taken if the distance mentioned above is too short.
+同时，$Q_{block}$中的车辆应当停车等待直到信号灯变绿。
+\item 绿灯
+在车辆驾驶策略的设计中，队列$Q_{in}$的第一辆车辆和队列$Q_{block}$中的最后一个车辆（如果他存在）之间的距离不应当小于安全距离$S_{safe}$。 如果两车之间距离小于安全距离，后车将采取刹车行为。
 \end{enumerate}
-Therefore, the brief idea of the algorithm above can be described as the fake code below\\ 
+综上所示，整个算法的简明思路可以用如下的伪代码表述\\ 
 
 \input{fake1.cpp}
 
-Where the brake\_to(desired\_pos) method means braking to a desired position.
+代码中brake\_to(desired\_pos) 函数的意义是设置车辆的加速度使得车辆能够刹车到期望的位置上
 
-Meanwhile, the growth and the dissipation of the queue $Q_{block}$ follow the method below.
+另外，队列$Q_{block}$的产生和消散将遵循如下的模型。
 
 \begin{enumerate}
-\item Increase
+\item 产生/增长
 
-If the first vehicle in $Q_{in}$ is closer than $S_{stop}$ from the last vehicle in $Q_{block}$ (it is set to $S_{end}$ if the $Q_{block}$ is empty), it is removed from the $Q_{in}$ and pushed into the $Q_{block}$
+当队列$Q_{in}$中的第一辆车辆距离距离$Q_{block}$中的最后一辆车辆（如果不存在，则设为停车线$S_{end}$）的距离小于停车距离$S_{stop}$时，这辆车将从$Q_{in}$中移除并被加入到$Q_{block}$中。
 
-\item Dissipation
+\item 消散
 
-When the traffic light is green, all of the vehicles in the $Q_{block}$ is moving forward at the speed of $v_{dis}$, since the speed is relatively low, the acceleration process and any other phenomenon can be ignored. When the vehicle moves over the stopping lane and enters the intersection, it is removed from the $Q_{block}$
+当信号灯为绿灯时，队列$Q_{block}$中的所有车辆将按照消散速度$v_{dis}$向前移动，由于这个速度值设定得很小，使得加速过程和其他的相关过程可以忽略笔记。当车辆越过停车线时，将被从队列$Q_{block}$中移除。
+
 \end{enumerate}
-And the method above can be described as the fake code below\\
+
+以上所述均可以用下面的伪代码表示
 
 \input{fake2.cpp}
 
-All above describe the formation and evacuation of the queue in the intersection and its interaction with other models. The differences caused by the assumption can be ignored. Thanks to this model, it is easy for us to decouple the driving model and the queuing model, which makes it much easier to implement the other algorithm
-\subsection{Basic models}
-In the description of manual driving and automatic driving vehicle models, the car-following model and free driving model are frequently used models. Therefore, we will describe these models before discussing the control strategies.
+以上描述了路口队列的产生和消散过程和这个模型和其他道路要素的联动。经过仿真实验，由于模型设定的假设导致的差别是可以忽略的。由于这个模型的引入，我们可以简单的将车辆的驾驶和排队模型解耦，使得我们能够更简单的实现其他的驾驶模型。
 
-\subsubsection{The implementation of the free-driving method}
+\section{驾驶模型概述}
+\subsection{基本模型}
 
-When there is no speed guidance, a vehicle's driving behavior can be roughly classified into free-driving and car-following, which will be described in this section and the next section. $S_{control}$ is defined as the distance of interaction between vehicles. Thus, the two driving models are chosen according to the rules below.
+在对人工驾驶模型和自主驾驶模型进行描述的过程中，车辆的跟驰模型和自由驾驶模型是经常被使用的模型。因此在讨论其他的驾驶模型和控制策略之前，我们首先讨论这两个模型
+
+\subsubsection{自由驾驶模型的实现}
+
+在不存在速度引导的情况下，车辆的行为可以大体上被分类为自由驾驶模型和人工驾驶模型两类，这两个模型将在本节和下一节讨论。控制距离$S_{control}$被定义成前后两个车辆之间的距离。因此，上述两种驾驶模型将按照如下的规则进行选择。
 
 \begin{enumerate}
-\item When the distance to the front vehicle from the vehicle which we are concerned about is less than $S_{control}$, the driving choose the car-following strategy.
+\item 当和前车之间的距离小于预先设定的控制距离$S_{control}$时，我们选择跟驰模型描述车辆的行为
 
-\item When the distance is greater than $S_{control}$, the driver choose the free-driving strategy, which means trying to reach the expected speed, $v_{exp}$, during this period, a smaller acceleration may be chosen if the current speed of vehicle is almost the same as $v_{exp}$, while a greater acceleration should be chosen if the current speed is too low, such as the vehicle is stopped.
+\item 当和前车之间的距离大于控制距离$S_{control}$时，我们选择自由驾驶模型来描述车辆的行为。自由驾驶模型中，车辆将通过一些加速度的调整来将自己的速度设定为期望速度$v_{exp}$，如果当前的速度值和$v_{exp}$相近，车辆所采取的加速度可能比较小，如果当前速度和$v_{exp}$相差比较远，车辆所采取的加速度可能比较大，这描述了车辆在出现可能的停车之后的起步加速直至正常行驶的过程。
 
-Also, because some random noise may be introduced to the system, if the speed of the vehicle is higher than $v_{max}$, a minor deceleration should be taken.
+同样，由于有随机噪声的存在，如果车辆的速度大于最大速度$v_{max}$，车辆将采取适当的制动步骤。
 \end{enumerate}
-\subsubsection{The implementation of the car-following method}
-\label{cf}
 
-As mentioned above, when the vehicles is close enough to each other, the car-following method is chosen. In the strategy we used, the commonly used driving psycho-physical model—Wiedemann model is adopted, that is,
+\subsubsection{车辆跟驰模型的实现}
+\label{cf}
+上文已经提到，当和前车的距离过近的时，车辆将采用跟驰模型来描述其行为，在我们使用的策略中，我们采用了Wiedemann生理——心理模型来描述车辆的行为，即：
 $$a_n(t+\Delta_t)=\frac{[\Delta v_{n,n-1}(t)]^2}{2[\Delta x_{n,n-1}(t)-S_{exp}]}+a_{n-1}(t)$$
 
-In the above equation, $S_{exp}$ represents the expected minimum safe-following distance. Since the speed of the vehicle in the intersection may have a big range, $S_{exp}$ should not be a constant. Therefore, according to the regulations on safe distance in Regulation on the Implementation of the Road Traffic Safety Law of the People's Republic of China, we use the linear correlation model of the minimum safe following distance and the speed of the front vehicle, therefore, the $S_{exp}$ can be described like this,
+在上面的式子中，$S_{exp}$代表了期望的车辆之前的安全行驶距离，因为车辆在是将交通路口时速度变化十分剧烈，因此期望距离$S_{exp}$不应是一个常数。因此，根据交通安全法规和驾驶一般情况，我们使用了和前车速度线性相关的跟驰距离来描述期望的跟驰距离，因此，期望跟驰距离$S_{exp}$如下所示：
 $$S_n(t)=\alpha v_{n-1}(t)+S_{safe}$$
-While the $S_{safe}$is the same as the distance between the vehicles in \ref{section:feq}, and the constant $\alpha$ may be set by according to the experience.
+其中$S_{safe}$和\ref{section:feq}提到的相同，而常数$\alpha$可根据实际情况和经验设定。
 
-Once the distance between the vehicles is less than $S_{exp}$, which means the distance between the vehicles is too short, an emergency brake is taken owing to the specific situation. In most cases, the acceleration of the vehicle is set to $0.5a_{max}$
-\subsection{Manual driving model}
+一旦车辆之间的间距小于$S_{exp}$，亦即车辆之间的距离过近，车辆将采取紧急刹车制动,车辆采取的加速度值可能根据具体情形的不同而变化，在大多数情形下，车辆将采取的刹车加速度绝对值为$0.5a_{max}$
+
+\subsection{人工驾驶模型}
 \label{section:man}
-The plantform provides three models to verify the effectiveness of the platform, and the first model is manual driving model.
+平台提供了三种模型来验证平台的有效性，第一个模型是人工驾驶模型。
 
-As the name of the model indicates, manual driving model is used to describe the behavior of a vehicle driving by human. This model is often used to provide a 'basic' traffic efficiency, while other control strategies are expected to behave better than this simple model.
+正如名称所示，人工驾驶模型描述的是车辆在人的驾驶操控下的行为，这个模型经常被用来提供一个交通效率的基本指标，而其他的控制策略至少应当取得比人工驾驶模型好的控制效果，否则没有意义。
 
-Firstly, vehicles which are far (greater than $S_{inter}$) from the intersection are taken into consideration. Because they are so far from the intersection, they do not consider the influence of the traffic light. 
+我们首先讨论距离交通路口较远（距离大于$S_{inter}$）的车辆的行为。由于车辆距离路口太远，这些车辆将不受红绿灯相位的影响。因此，这些车辆可能采取建档的跟驰模型或自由驾驶模型。对于队列$Q_{in}$中的第一个车辆，如果它距离交通路口也较远的话，他应当采取自由驾驶模型。
 
-Therefore, these vehicles mat take the car-following method or the free-driving method. If a vehicle is the first one in $Q_{in}$, it has to take the the free-driving method.
-
-As for the ones which are closer to the intersection, different method will be chosen to meet the different situation below.
+对于那些距离交通路口较近的车辆，根据信号灯相位和具体场景的不同，不同的策略将被调用来描述车辆的行为，使得车辆的行为更加符合当时场景的要求。
 
 \begin{enumerate}
-\item Green traffic light with an empty waiting queue $Q_{block}$
+\item 绿灯同时$Q_{block}$为空
 
-In this situation, the behavior of the vehicles is similar to the behavior described above.
+在这种情况下，车辆的行为和之前描述的行为基本相同
 
-In addition to the behavior mentioned, the remain time of the green light is calculated, if the remaining time is less than $T_{safe}$, the possibility of entering the intersection during the green light may be taken into consider, if it is difficult for the vehicle to pass the stopping line before the light turns red, the vehicle may behave like the traffic light is red.
+另外，除之前描述的行为，车辆还需要考虑绿灯的剩余时间。如果剩余时间小于$T_{safe}$，我们认为车辆能够在绿灯时通过交通路口的可能性已经比较小了，因此车辆可能采取刹车减速，具体的行为和红灯时车辆的行为大致相同。
 
-\item Green traffic light while the  waiting queue $Q_{block}$ is not empty
+\item 绿灯同时$Q_{block}$为非空
 
-During this situation, the vehicles discussed may brake or accelerate to set its speed to $v_{dis}$, and try to enter the queue $Q_{block}$, once it enters the $Q_{block}$, it will move with the other vehicles in the queue.
+在这种情况下，车辆会刹车使得自己的速度大致为$v_{dis}$，并同时试图进入队列$Q_{block}$，一旦它进入队列$Q_{block}$，它将随着队列中的其他车辆一起向前做匀速直线运动。
 
-Also, if the remaining time is less than $T_{safe}$, the program may consider slow down the vehicle and prepare to stop. 
-\item Red traffic light
+同样，对于还没有进入队列中的车辆，绿灯剩余时间也是要考虑的，如果剩余时间小于$T_{safe}$，车辆可能会采取制动并考虑在适当的位置停车。
 
-In this case, the vehicles discussed will behave just like what we have discussed in \ref{section:feq}
+\item 红灯
+在这种情况下，车辆会和之前在\ref{section:feq}一节中讨论的简单行为一致
 \end{enumerate}
 
-What's more, we focus on portraying the behavior of the first vehicle in the driving queue $Q_{in}$, since the vehicles behind it can be controled easily by car-following method.
+另外，我们着重于研究队列$Q_{in}$头车的行为，因为剩下的车辆的行为可以被简单使用跟驰模型来描述。
 
-Taking all of the situations into consideration. the manual driving model can be abstract as the fake code below.\\
+将所有可能的情况纳入考虑之后，人工驾驶模型可以用如下的伪代码进行描述。\\
  
 \input {fake3.cpp}
 
-The plantform will traverse the queue $Q_{in}$, and during each iteration, the acceleration of the vehicle in processing will be set according to the model given above.
+平台将遍历队列$Q_{in}$，而在每次迭代中，车辆的加速度会通过上面的模型计算和设置。
 
-\subsection{The single-vehicle cooperative speed guidance model}
+\subsection{单车车路协同模型}
 \label{section:st1}
 Applied some changes on the car-following strategy, we designed a cooperative speed guidance model which only takes the influence of the traffic light into consideration.
 \subsubsection{Modification about the car-following method}
