@@ -1,0 +1,29 @@
+<UI version="4.0" >
+ <class>RandomSeqClass</class>
+ <widget class="QMainWindow" name="RandomSeqClass" >
+  <property name="objectName" >
+   <string notr="true">RandomSeqClass</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+	<x>0</x>
+	<y>0</y>
+	<width>600</width>
+	<height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>RandomSeq</string>
+  </property>
+  <widget class="QMenuBar" name="menuBar" />
+  <widget class="QToolBar" name="mainToolBar" />
+  <widget class="QWidget" name="centralWidget" />
+  <widget class="QStatusBar" name="statusBar" />
+ </widget>
+ <layoutDefault spacing="6" margin="11" />
+ <pixmapfunction></pixmapfunction>
+ <resources>
+   <include location="RandomSeq.qrc"/>
+ </resources>
+ <connections/>
+</UI>
