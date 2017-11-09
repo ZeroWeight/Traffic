@@ -4,7 +4,7 @@
 static double lambda[DIR_NUM] = { 1.0,1.0,1.0,1.0 };
 static double go[DIR_NUM] = { 0 };
 static std::default_random_engine e;
-static std::normal_distribution<double> ND_V (13.8, 0.9);
+static std::normal_distribution<double> ND_V (13, 4);
 static std::normal_distribution<double> ND (0, 0.5);
 static std::normal_distribution<double> ND_A (1.5, 0.3);
 Traffic::Traffic (QWidget *parent)
@@ -82,8 +82,8 @@ Traffic::Traffic (QWidget *parent)
 		_following ();
 		sim ();
 		this->update ();
-		if (double (rand ()) / double (RAND_MAX) < 0.1 && now_t - keep_rec > 1000) {
-			//save_queue ();
+		if (double (rand ()) / double (RAND_MAX) < 0.001 && now_t - keep_rec > 1000) {
+			save_queue ();
 			keep_rec = now_t;
 		}
 	});
@@ -278,7 +278,7 @@ void Traffic::generate () {
 		if (go[i] <= 0) {
 			bool OK[TR_NUM];
 			for (int j = 0; j < TR_NUM; j++) OK[j] = car_in[i*TR_NUM + j].empty ()
-				|| car_in[i*TR_NUM + j].last ().pos > -180.00;
+				|| car_in[i*TR_NUM + j].last ().pos > -1980.00;
 			int cont = 0;
 			for (int j = 0; j < TR_NUM; j++)if (OK[j]) cont++;
 			if (cont) {
@@ -291,7 +291,7 @@ void Traffic::generate () {
 				}
 				Car temp;
 				temp.enter_time_d = now_t;
-				temp.pos = -200.0;//control length 200m;
+				temp.pos = -2000.0;//control length 2000m;
 				if (car_in[i*TR_NUM + j].empty ())
 					temp.vec = ND_V (e);
 				else
@@ -303,7 +303,7 @@ void Traffic::generate () {
 						|| temp.vec > 25 || temp.vec < 5)
 						goto RES;
 					else
-						while (temp.vec < 10 || temp.vec>16) {
+						while (temp.vec < 9 || temp.vec > 17) {
 						RES:
 							temp.vec = ND_V (e);
 						}
