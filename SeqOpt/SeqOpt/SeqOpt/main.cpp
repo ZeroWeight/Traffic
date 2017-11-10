@@ -5,47 +5,95 @@
 #include <iterator>
 #include <cmath>
 #include <algorithm>
-int main (int argc, char ** argv) {
-	double MaxV = 16;
-	double MaxA = 3;
-	std::string foldername (argv[1]);
-	std::string filename1 = foldername + "/1.csv";
-	std::string filename2 = foldername + "/0.csv";
+#include <iomanip>
+std::vector<std::pair<int, int>> SeqOpt (int offset = 0);
+double _main_ (std::string filename1, std::string filename2);
+std::vector<std::pair<std::pair<double, double>, std::pair<double, double>>> Q1;
+std::vector<std::pair<std::pair<double, double>, std::pair<double, double>>> Q2;
+const double Dt1 = 1;
+const double Dt2 = 1.5;
+const double Dt3 = 10;
+int main (int argc, char** argv) {
+	int count = 0;
+	double ave = 0;
+	double pre;
+	std::string foldername = "result_2000_full/";
+	std::string subfoldername;
+	std::string file1;
+	std::string file2;
+	int start = 20;
+	for (int i = start; i < start + 15; i++) {
+		subfoldername = foldername + std::to_string (i) + '/';
+		for (int j = 0; j < 4; j++) {
+			file1 = subfoldername + std::to_string (j) + ".csv";
+			for (int k = 0; k < 4; k++) {
+				file2 = subfoldername + std::to_string (k) + ".csv";
+				pre = _main_ (file1, file2);
+				ave = (ave * count + pre) / (count + 1);
+				count += 1;
+				std::cout << ave << std::endl;
+			}
+		}
+	}
+}
+double _main_ (std::string filename1, std::string filename2) {
+	Q1.clear ();
+	Q2.clear ();
+	const double MaxV = 16;
+	const double MaxA = 1;
+	const double MinV = 7;
 	FILE* file1 = fopen (filename1.data (), "r");
 	FILE* file2 = fopen (filename2.data (), "r");
-	std::vector<std::pair<std::pair<double, double>, double>> Q1;
-	std::vector<std::pair<std::pair<double, double>, double>> Q2;
 	double buffer[2];
-	double temp;
+	double temp1;
+	double temp2;
 	while (!feof (file1)) {
 		fscanf (file1, "%lf,%lf\n", buffer, buffer + 1);
 		if ((MaxV * MaxV - buffer[0] * buffer[0]) / 2 / MaxA >= buffer[1])
-			temp = (sqrt (2 * MaxA * buffer[1] +
-				buffer[0] * buffer[0])
-				- buffer[0] * buffer[0]) / MaxA;
+			temp1 = (sqrt (2 * MaxA * buffer[1] + buffer[0] * buffer[0]) - buffer[0]) / MaxA;
 		else
-			temp = (MaxV - buffer[0]) / MaxA +
-			(buffer[1] - (MaxV * MaxV - buffer[0] *
-				buffer[0]) / 2 / MaxA) / MaxV;
-		Q1.insert (Q1.end (), std::pair<std::pair<double, double>, double>
-			(std::pair<double, double> (buffer[0], buffer[1]), temp));
+			temp1 = (MaxV - buffer[0]) / MaxA +
+			(buffer[1] - (MaxV * MaxV - buffer[0] * buffer[0]) / 2 / MaxA) / MaxV;
+		if ((buffer[0] * buffer[0] - MinV * MinV) / 2 / MaxA >= buffer[1])
+			temp2 = (buffer[0] - sqrt (buffer[0] * buffer[0] - 2 * MaxA * buffer[1]) / MaxA);
+		else
+			temp2 = (buffer[0] - MinV) / MaxA +
+			(buffer[1] - (buffer[0] * buffer[0] - MinV * MinV) / 2 / MaxA) / MinV;
+		Q1.insert (Q1.end (), std::pair<std::pair<double, double>, std::pair<double, double>>
+			(std::pair<double, double> (buffer[0], buffer[1]), std::pair<double, double> (temp1, temp2)));
 	}
 	while (!feof (file2)) {
 		fscanf (file2, "%lf,%lf\n", buffer, buffer + 1);
 		if ((MaxV * MaxV - buffer[0] * buffer[0]) / 2 / MaxA >= buffer[1])
-			temp = (sqrt (2 * MaxA * buffer[1] +
-				buffer[0] * buffer[0])
-				- buffer[0] * buffer[0]) / MaxA;
+			temp1 = (sqrt (2 * MaxA * buffer[1] + buffer[0] * buffer[0]) - buffer[0]) / MaxA;
 		else
-			temp = (MaxV - buffer[0]) / MaxA +
-			(buffer[1] - (MaxV * MaxV - buffer[0] *
-				buffer[0]) / 2 / MaxA) / MaxV;
-		Q2.insert (Q2.end (), std::pair<std::pair<double, double>, double>
-			(std::pair<double, double> (buffer[0], buffer[1]), temp));
+			temp1 = (MaxV - buffer[0]) / MaxA +
+			(buffer[1] - (MaxV * MaxV - buffer[0] * buffer[0]) / 2 / MaxA) / MaxV;
+		if ((buffer[0] * buffer[0] - MinV * MinV) / 2 / MaxA >= buffer[1])
+			temp2 = (buffer[0] - sqrt (buffer[0] * buffer[0] - 2 * MaxA * buffer[1]) / MaxA);
+		else
+			temp2 = (buffer[0] - MinV) / MaxA +
+			(buffer[1] - (buffer[0] * buffer[0] - MinV * MinV) / 2 / MaxA) / MinV;
+		Q2.insert (Q2.end (), std::pair<std::pair<double, double>, std::pair<double, double>>
+			(std::pair<double, double> (buffer[0], buffer[1]), std::pair<double, double> (temp1, temp2)));
 	}
+	std::vector<std::pair<int, int>> Seq1 = SeqOpt ();
+	std::vector<std::pair<int, int>> Seq2 = SeqOpt (1);
+	int count = 0;
+	std::vector<std::pair<int, int>>::iterator it1 = Seq1.end () - 1;
+	std::vector<std::pair<int, int>>::iterator it2 = Seq2.end () - 1;
+	for (; it1 >= Seq1.begin () && it2 >= Seq2.begin (); --it1, --it2) {
+		if (it1->first == it2->first && it1->second == it2->second)
+			count++;
+		else
+			break;
+	}
+	std::cout << count << '\t' << Seq1.size () << '\t' << Seq2.size () << '\t'
+		<< std::setprecision (4) << double (count) / Seq2.size () << '\t';
+	return double (count) / Seq2.size ();
+}
 
-	const double Dt1 = 3;
-	const double Dt2 = 5;
+std::vector<std::pair<int, int>> SeqOpt (int offset) {
 	struct node {
 		node * parent = nullptr;
 		node * Q1_pass;
@@ -74,8 +122,8 @@ int main (int argc, char ** argv) {
 	while (true) {
 		int rank1 = leaf.begin ()->rank_Q1;
 		int rank2 = leaf.begin ()->rank_Q2;
-		if (leaf.begin ()->rank_Q1 == Q1.size () - 1
-			&& leaf.begin ()->rank_Q2 == Q2.size () - 1) break;
+		if (leaf.begin ()->rank_Q1 == Q1.size () - 1 - offset
+			&& leaf.begin ()->rank_Q2 == Q2.size () - 1 - offset) break;
 		if (arr[leaf.begin ()->rank_Q1 + 1][leaf.begin ()->rank_Q2 + 1]
 			[leaf.begin ()->passing] + 0.01 < leaf.begin ()->time)
 			leaf.begin ()->ok = false;
@@ -96,7 +144,10 @@ int main (int argc, char ** argv) {
 				leaf.begin ()->Q1_pass->rank_Q2 = rank2;
 				leaf.begin ()->Q1_pass->passing = 1;
 				leaf.begin ()->Q1_pass->ok = true;
-				leaf.begin ()->Q1_pass->time = std::fmax (t1, Q1[leaf.begin ()->Q1_pass->rank_Q1].second);
+				leaf.begin ()->Q1_pass->time = std::fmax (t1, Q1[leaf.begin ()->Q1_pass->rank_Q1].second.first);
+				if (leaf.begin ()->Q1_pass->time > Q1[leaf.begin ()->Q1_pass->rank_Q1].second.second)
+					leaf.begin ()->Q1_pass->time += Dt3;
+
 				if (arr[leaf.begin ()->Q1_pass->rank_Q1 + 1][leaf.begin ()->Q1_pass->rank_Q2 + 1]
 					[leaf.begin ()->Q1_pass->passing] > leaf.begin ()->Q1_pass->time) {
 					arr[leaf.begin ()->Q1_pass->rank_Q1 + 1][leaf.begin ()->Q1_pass->rank_Q2 + 1]
@@ -115,7 +166,9 @@ int main (int argc, char ** argv) {
 				leaf.begin ()->Q2_pass->rank_Q2 = rank2 + 1;
 				leaf.begin ()->Q2_pass->passing = 2;
 				leaf.begin ()->Q2_pass->ok = true;
-				leaf.begin ()->Q2_pass->time = std::fmax (t2, Q2[leaf.begin ()->Q2_pass->rank_Q2].second);
+				leaf.begin ()->Q2_pass->time = std::fmax (t2, Q2[leaf.begin ()->Q2_pass->rank_Q2].second.first);
+				if (leaf.begin ()->Q2_pass->time > Q2[leaf.begin ()->Q2_pass->rank_Q2].second.second)
+					leaf.begin ()->Q2_pass->time += Dt3;
 				if (arr[leaf.begin ()->Q2_pass->rank_Q1 + 1][leaf.begin ()->Q2_pass->rank_Q2 + 1]
 					[leaf.begin ()->Q2_pass->passing] > leaf.begin ()->Q2_pass->time) {
 					arr[leaf.begin ()->Q2_pass->rank_Q1 + 1][leaf.begin ()->Q2_pass->rank_Q2 + 1]
@@ -139,12 +192,11 @@ int main (int argc, char ** argv) {
 		delete arr[i];
 	}
 	delete arr;
-	std::cout << leaf.begin ()->time << '\t' << leaf.begin ()->rank_Q1 << '\t' << leaf.begin ()->rank_Q2 <<
-		'\t' << Q1.back ().second << '\t' << Q2.back ().second << std::endl;
 	node * p = &leaf[0];
+	std::vector<std::pair<int, int>> Seq1;
 	while (p->parent != nullptr) {
-		std::cout << p->passing << '\t' << p->rank_Q1 << '\t' << p->rank_Q2 << '\t' << p->time << std::endl;
+		Seq1.push_back (std::pair<int, int> (p->rank_Q1, p->rank_Q2));
 		p = p->parent;
 	}
-	return 0;
+	return Seq1;
 }
